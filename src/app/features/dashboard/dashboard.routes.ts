@@ -1,14 +1,10 @@
 import { Routes } from '@angular/router';
 
-import { FeaturePlaceholderPage } from '../../shared/pages/feature-placeholder/feature-placeholder';
-
 export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
-    component: FeaturePlaceholderPage,
-    data: {
-      title: 'Dashboard',
-      description: 'Operational inventory metrics and activity will be implemented in Group 6.',
-    },
+    loadComponent: () =>
+      import('./dashboard-page').then((component) => component.DashboardPage),
+    title: 'Dashboard | Inventory System',
   },
 ];

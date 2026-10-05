@@ -1,0 +1,239 @@
+<app-content-container>
+  <app-page-header
+    title="Dashboard"
+    description="Current inventory position, stock risk, purchasing workload, and recent movement activity."
+  >
+    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+      Refresh
+    </app-button>
+  </app-page-header>
+
+  @if (store.error()) {
+    <div class="dashboard__alert">
+      <app-alert variant="danger" title="Dashboard unavailable">
+        {{ store.error() }}
+      </app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasData()) {
+    <section class="metrics" aria-label="Loading dashboard metrics">
+      @for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
+        <app-skeleton height="7.5rem" />
+      }
+    </section>
+
+    <section class="dashboard__loading-panels" aria-label="Loading dashboard details">
+      <app-skeleton height="18rem" />
+      <app-skeleton height="18rem" />
+    </section>
+  } @else if (store.snapshot(); as dashboard) {
+    <section class="metrics" aria-label="Inventory summary">
+      <app-dashboard-metric-card label="Products" [value]="dashboard.metrics.totalProducts" />
+      <app-dashboard-metric-card label="SKUs" [value]="dashboard.metrics.totalSkus" />
+      <app-dashboard-metric-card label="Warehouses" [value]="dashboard.metrics.totalWarehouses" />
+      <app-dashboard-metric-card
+        label="Low stock"
+        [value]="dashboard.metrics.lowStockProducts"
+        emphasis="warning"
+      />
+      <app-dashboard-metric-card
+        label="Out of stock"
+        [value]="dashboard.metrics.outOfStockProducts"
+        emphasis="danger"
+      />
+      <app-dashboard-metric-card
+        label="Pending purchase orders"
+        [value]="dashboard.metrics.pendingPurchaseOrders"
+      />
+      <app-dashboard-metric-card
+        label="Pending receipts"
+        [value]="dashboard.metrics.pendingReceipts"
+      />
+      <app-dashboard-metric-card
+        label="Inventory value"
+        [value]="
+          dashboard.metrics.inventoryValue
+            | currency: dashboard.metrics.currencyCode : 'symbol' : '1.0-0'
+        "
+      />
+    </section>
+
+    <div class="dashboard__meta">
+      Snapshot updated {{ dashboard.generatedAt | date: 'medium' }}
+    </div>
+
+    <div class="dashboard__grid">
+      <section
+        class="dashboard-panel dashboard-panel--wide"
+        *appHasPermission="permissions.inventoryView"
+      >
+        <div class="dashboard-panel__header">
+          <div>
+            <h2>Stock risk</h2>
+            <p>Products at or below their reorder threshold.</p>
+          </div>
+          <a routerLink="/inventory">View inventory</a>
+        </div>
+
+        @if (dashboard.stockRisks.length > 0) {
+          <app-table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Warehouse</th>
+                <th>On hand</th>
+                <th>Reorder level</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of dashboard.stockRisks; track item.id) {
+                <tr>
+                  <td class="dashboard__mono">{{ item.sku }}</td>
+                  <td>{{ item.productName }}</td>
+                  <td>{{ item.warehouseName }}</td>
+                  <td>{{ item.quantityOnHand }}</td>
+                  <td>{{ item.reorderLevel }}</td>
+                  <td>
+                    <app-badge [variant]="stockRiskBadge(item)">
+                      {{ stockRiskLabel(item) }}
+                    </app-badge>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </app-table>
+        } @else {
+          <app-empty-state
+            title="No stock risks"
+            description="No products are currently at or below their reorder threshold."
+          />
+        }
+      </section>
+
+      <section class="dashboard-panel" *appHasPermission="permissions.purchaseView">
+        <div class="dashboard-panel__header">
+          <div>
+            <h2>Pending purchase orders</h2>
+            <p>Orders requiring purchasing attention.</p>
+          </div>
+          <a routerLink="/purchasing">View all</a>
+        </div>
+
+        @if (dashboard.pendingPurchaseOrders.length > 0) {
+          <div class="dashboard-list">
+            @for (order of dashboard.pendingPurchaseOrders; track order.id) {
+              <article class="dashboard-list__item">
+                <div>
+                  <strong>{{ order.number }}</strong>
+                  <span>{{ order.supplierName }}</span>
+                </div>
+                <div class="dashboard-list__meta">
+                  <app-badge>{{ order.status }}</app-badge>
+                  @if (order.expectedDate) {
+                    <span>{{ order.expectedDate | date: 'mediumDate' }}</span>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            title="No pending purchase orders"
+            description="There are no purchase orders requiring attention."
+          />
+        }
+      </section>
+
+      <section class="dashboard-panel" *appHasPermission="permissions.purchaseReceive">
+        <div class="dashboard-panel__header">
+          <div>
+            <h2>Pending receipts</h2>
+            <p>Expected or in-progress goods receipts.</p>
+          </div>
+          <a routerLink="/receiving">View receiving</a>
+        </div>
+
+        @if (dashboard.pendingReceipts.length > 0) {
+          <div class="dashboard-list">
+            @for (receipt of dashboard.pendingReceipts; track receipt.id) {
+              <article class="dashboard-list__item">
+                <div>
+                  <strong>{{ receipt.number }}</strong>
+                  <span>{{ receipt.supplierName }} · {{ receipt.purchaseOrderNumber }}</span>
+                </div>
+                <div class="dashboard-list__meta">
+                  <app-badge [variant]="receipt.status === 'in-progress' ? 'info' : 'neutral'">
+                    {{ receipt.status }}
+                  </app-badge>
+                  @if (receipt.expectedDate) {
+                    <span>{{ receipt.expectedDate | date: 'mediumDate' }}</span>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        } @else {
+          <app-empty-state
+            title="No pending receipts"
+            description="There are no goods receipts waiting to be processed."
+          />
+        }
+      </section>
+
+      <section
+        class="dashboard-panel dashboard-panel--wide"
+        *appHasPermission="permissions.inventoryView"
+      >
+        <div class="dashboard-panel__header">
+          <div>
+            <h2>Recent stock movements</h2>
+            <p>Latest inbound and outbound inventory activity.</p>
+          </div>
+          <a routerLink="/inventory">View inventory</a>
+        </div>
+
+        @if (dashboard.recentMovements.length > 0) {
+          <app-table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>SKU</th>
+                <th>Product</th>
+                <th>Warehouse</th>
+                <th>Movement</th>
+                <th>Quantity</th>
+                <th>Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (movement of dashboard.recentMovements; track movement.id) {
+                <tr>
+                  <td>{{ movement.occurredAt | date: 'short' }}</td>
+                  <td class="dashboard__mono">{{ movement.sku }}</td>
+                  <td>{{ movement.productName }}</td>
+                  <td>{{ movement.warehouseName }}</td>
+                  <td>{{ movementLabel(movement.type) }}</td>
+                  <td
+                    class="dashboard__quantity"
+                    [class.is-outbound]="signedQuantity(movement.type, movement.quantity).startsWith('−')"
+                  >
+                    {{ signedQuantity(movement.type, movement.quantity) }}
+                  </td>
+                  <td>{{ movement.reference || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </app-table>
+        } @else {
+          <app-empty-state
+            title="No recent movements"
+            description="Stock movement activity will appear here once inventory transactions are posted."
+          />
+        }
+      </section>
+    </div>
+  }
+</app-content-container>
