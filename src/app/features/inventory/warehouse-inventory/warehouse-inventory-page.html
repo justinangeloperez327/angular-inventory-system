@@ -11,6 +11,14 @@
       [description]="'Warehouse inventory · ' + snapshot.warehouse.code"
     >
       <a actions routerLink="/inventory" class="inventory-detail__back">All inventory</a>
+      <a
+        actions
+        routerLink="/stock-movements"
+        [queryParams]="{ warehouseId: snapshot.warehouse.id }"
+        class="inventory-detail__back"
+      >
+        Movements
+      </a>
     </app-page-header>
 
     <div class="inventory-detail__status">

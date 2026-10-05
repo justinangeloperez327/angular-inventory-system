@@ -26,7 +26,7 @@ let inputSequence = 0;
 export class InputComponent implements ControlValueAccessor {
   @Input() id = '';
   @Input() label = '';
-  @Input() type: 'text' | 'email' | 'password' | 'number' | 'search' = 'text';
+  @Input() type: 'text' | 'email' | 'password' | 'number' | 'search' | 'date' = 'text';
   @Input() placeholder = '';
   @Input() autocomplete = '';
   @Input() hint = '';

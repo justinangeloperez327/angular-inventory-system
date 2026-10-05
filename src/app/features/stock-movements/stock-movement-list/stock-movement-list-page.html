@@ -1,0 +1,151 @@
+<app-content-container>
+  <app-page-header
+    title="Stock Movements"
+    description="Immutable inventory transaction history explaining changes to warehouse balances."
+  >
+    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+      Refresh
+    </app-button>
+  </app-page-header>
+
+  <form class="movements__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input
+      type="search"
+      label="Product"
+      placeholder="SKU or product name"
+      formControlName="search"
+    />
+
+    <app-select
+      label="Warehouse"
+      placeholder="All warehouses"
+      [options]="warehouseOptions()"
+      formControlName="warehouseId"
+    />
+
+    <app-select
+      label="Movement type"
+      placeholder="All types"
+      [options]="[
+        { label: 'Receipt', value: 'receipt' },
+        { label: 'Sale', value: 'sale' },
+        { label: 'Transfer in', value: 'transfer-in' },
+        { label: 'Transfer out', value: 'transfer-out' },
+        { label: 'Adjustment in', value: 'adjustment-in' },
+        { label: 'Adjustment out', value: 'adjustment-out' },
+        { label: 'Return in', value: 'return-in' },
+        { label: 'Return out', value: 'return-out' },
+        { label: 'Stock count', value: 'stock-count' }
+      ]"
+      formControlName="type"
+    />
+
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+
+    <app-input
+      label="Reference"
+      placeholder="PO, GRN, transfer, adjustment…"
+      formControlName="reference"
+    />
+
+    <div class="movements__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="movements__alert">
+      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
+    </div>
+  }
+
+  @if (store.error()) {
+    <div class="movements__alert">
+      <app-alert variant="danger" title="Stock movements unavailable">{{ store.error() }}</app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasMovements()) {
+    <div class="movements__loading"><app-skeleton height="24rem" /></div>
+  } @else if (store.hasMovements()) {
+    <div class="movements__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>Occurred</th>
+            <th>Product</th>
+            <th>Warehouse</th>
+            <th>Type</th>
+            <th>Change</th>
+            <th>Balance after</th>
+            <th>Reference</th>
+            <th>Performed by</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (movement of store.movements(); track movement.id) {
+            <tr>
+              <td>
+                <a [routerLink]="movement.id">{{ movement.occurredAt | date: 'short' }}</a>
+              </td>
+              <td>
+                <a [routerLink]="['/products', movement.productId]">{{ movement.productName }}</a>
+                <span class="movements__secondary">{{ movement.sku }}</span>
+              </td>
+              <td>
+                <a [routerLink]="['/inventory/warehouses', movement.warehouseId]">
+                  {{ movement.warehouseName }}
+                </a>
+                <span class="movements__secondary">{{ movement.warehouseCode }}</span>
+              </td>
+              <td>
+                <app-badge [variant]="movementTypeVariant(movement.type)">
+                  {{ movementTypeLabel(movement.type) }}
+                </app-badge>
+              </td>
+              <td
+                class="movements__quantity"
+                [class.is-negative]="movement.quantityChange < 0"
+              >
+                {{ quantityLabel(movement.quantityChange) }}
+                @if (movement.unitSymbol) {
+                  <span>{{ movement.unitSymbol }}</span>
+                }
+              </td>
+              <td>{{ movement.balanceAfter ?? '—' }}</td>
+              <td>
+                @if (movement.reference; as reference) {
+                  @if (referencePath(reference); as path) {
+                    <a [routerLink]="path">{{ reference.number }}</a>
+                  } @else {
+                    {{ reference.number }}
+                  }
+                  <span class="movements__secondary">{{ reference.type }}</span>
+                } @else {
+                  —
+                }
+              </td>
+              <td>{{ movement.performedBy?.name || 'System' }}</td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="movements__pagination">
+        <span>{{ store.pagination().totalItems }} movements</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state
+      title="No stock movements found"
+      description="No immutable inventory movements match the current filters."
+    />
+  }
+</app-content-container>

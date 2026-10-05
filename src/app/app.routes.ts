@@ -52,6 +52,14 @@ export const routes: Routes = [
           import('./features/inventory/inventory.routes').then((routes) => routes.INVENTORY_ROUTES),
       },
       {
+        path: ROUTE_PATHS.stockMovements,
+        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        loadChildren: () =>
+          import('./features/stock-movements/stock-movements.routes').then(
+            (routes) => routes.STOCK_MOVEMENTS_ROUTES,
+          ),
+      },
+      {
         path: ROUTE_PATHS.purchasing,
         canActivate: [permissionGuard(PERMISSIONS.purchaseView)],
         loadChildren: () =>

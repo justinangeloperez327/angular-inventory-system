@@ -1,0 +1,94 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Stock movement unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.movement()) {
+    <app-skeleton height="24rem" />
+  } @else if (store.movement(); as movement) {
+    <app-page-header
+      title="Stock Movement"
+      [description]="(movement.occurredAt | date: 'medium') ?? ''"
+    >
+      <a actions routerLink="/stock-movements" class="movement-detail__back">All movements</a>
+    </app-page-header>
+
+    <div class="movement-detail__summary">
+      <app-badge [variant]="movementTypeVariant(movement.type)">
+        {{ movementTypeLabel(movement.type) }}
+      </app-badge>
+      <strong
+        class="movement-detail__quantity"
+        [class.is-negative]="movement.quantityChange < 0"
+      >
+        {{ quantityLabel(movement.quantityChange) }}
+        @if (movement.unitSymbol) {
+          {{ movement.unitSymbol }}
+        }
+      </strong>
+      <span>Immutable record</span>
+    </div>
+
+    <div class="movement-detail__grid">
+      <section class="movement-detail__panel">
+        <h2>Inventory</h2>
+        <dl>
+          <div>
+            <dt>Product</dt>
+            <dd>
+              <a [routerLink]="['/products', movement.productId]">{{ movement.productName }}</a>
+              <span>{{ movement.sku }}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Warehouse</dt>
+            <dd>
+              <a [routerLink]="['/inventory/warehouses', movement.warehouseId]">
+                {{ movement.warehouseName }}
+              </a>
+              <span>{{ movement.warehouseCode }}</span>
+            </dd>
+          </div>
+          <div><dt>Quantity change</dt><dd>{{ quantityLabel(movement.quantityChange) }}</dd></div>
+          <div><dt>Balance after</dt><dd>{{ movement.balanceAfter ?? '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="movement-detail__panel">
+        <h2>Audit</h2>
+        <dl>
+          <div><dt>Occurred</dt><dd>{{ movement.occurredAt | date: 'medium' }}</dd></div>
+          <div><dt>Recorded</dt><dd>{{ movement.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Performed by</dt><dd>{{ movement.performedBy?.name || 'System' }}</dd></div>
+          <div><dt>Movement ID</dt><dd class="movement-detail__mono">{{ movement.id }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="movement-detail__panel movement-detail__panel--wide">
+        <h2>Source reference</h2>
+        @if (movement.reference; as reference) {
+          <dl>
+            <div><dt>Type</dt><dd>{{ reference.type }}</dd></div>
+            <div>
+              <dt>Reference</dt>
+              <dd>
+                @if (referencePath(reference); as path) {
+                  <a [routerLink]="path">{{ reference.number }}</a>
+                } @else {
+                  {{ reference.number }}
+                }
+              </dd>
+            </div>
+          </dl>
+        } @else {
+          <p>No source reference was supplied for this movement.</p>
+        }
+      </section>
+
+      <section class="movement-detail__panel movement-detail__panel--wide">
+        <h2>Notes</h2>
+        <p>{{ movement.notes || 'No notes recorded.' }}</p>
+      </section>
+    </div>
+  }
+</app-content-container>

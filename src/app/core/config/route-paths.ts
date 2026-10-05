@@ -5,6 +5,7 @@ export const ROUTE_PATHS = {
   masterData: 'master-data',
   suppliers: 'suppliers',
   inventory: 'inventory',
+  stockMovements: 'stock-movements',
   purchasing: 'purchasing',
   receiving: 'receiving',
   stockCounts: 'stock-counts',
