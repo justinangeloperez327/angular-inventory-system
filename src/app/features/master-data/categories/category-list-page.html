@@ -1,0 +1,82 @@
+<app-content-container>
+  <app-page-header title="Categories" description="Maintain product classification categories.">
+    <a actions routerLink="new" class="master-data__primary-action" *appHasPermission="permissions.masterDataManage">
+      Add category
+    </a>
+  </app-page-header>
+
+  <form class="master-data__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Code or category name" formControlName="search" />
+    <app-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+      ]"
+      formControlName="status"
+    />
+    <div class="master-data__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (store.error()) {
+    <div class="master-data__alert">
+      <app-alert variant="danger" title="Categories unavailable">{{ store.error() }}</app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="master-data__loading"><app-skeleton height="18rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="master-data__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>Code</th><th>Name</th><th>Description</th><th>Status</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td class="master-data__mono">{{ item.code }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.description || '—' }}</td>
+              <td><app-badge [variant]="item.active ? 'success' : 'neutral'">{{ item.active ? 'Active' : 'Inactive' }}</app-badge></td>
+              <td>
+                <div class="master-data__row-actions" *appHasPermission="permissions.masterDataManage">
+                  <a [routerLink]="[item.id, 'edit']">Edit</a>
+                  @if (item.active) {
+                    <button type="button" (click)="selectedForDeactivation.set(item)">Deactivate</button>
+                  } @else {
+                    <button type="button" (click)="store.setActive(item.id, true)" [disabled]="store.statusUpdatingId() === item.id">Reactivate</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+      <div class="master-data__pagination">
+        <span>{{ store.pagination().totalItems }} categories</span>
+        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No categories found" description="No categories match the current filters." />
+  }
+
+  @if (selectedForDeactivation(); as item) {
+    <app-confirmation-dialog
+      [open]="true"
+      title="Deactivate category"
+      [message]="'Deactivate ' + item.name + '? Existing products will retain their category reference.'"
+      confirmLabel="Deactivate"
+      [destructive]="true"
+      (confirmed)="deactivate()"
+      (cancelled)="selectedForDeactivation.set(null)"
+    />
+  }
+</app-content-container>

@@ -1,0 +1,21 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="18rem" />
+  } @else {
+    <app-page-header [title]="editing ? 'Edit warehouse' : 'Add warehouse'" description="Warehouses become inventory balance and transaction boundaries." />
+    @if (error()) {
+      <div class="master-data-form__alert"><app-alert variant="danger" title="Unable to save warehouse">{{ error() }}</app-alert></div>
+    }
+    <form class="master-data-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="master-data-form__grid">
+        <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
+        <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+        <app-input class="master-data-form__wide" label="Location" formControlName="location" [error]="fieldError('location')" />
+      </div>
+      <div class="master-data-form__actions">
+        <a routerLink="/master-data/warehouses">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save warehouse</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

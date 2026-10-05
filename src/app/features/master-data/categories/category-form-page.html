@@ -1,0 +1,26 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="20rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit category' : 'Add category'"
+      description="Category codes and names are used to classify products."
+    />
+
+    @if (error()) {
+      <div class="master-data-form__alert"><app-alert variant="danger" title="Unable to save category">{{ error() }}</app-alert></div>
+    }
+
+    <form class="master-data-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="master-data-form__grid">
+        <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
+        <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+        <app-textarea class="master-data-form__wide" label="Description" formControlName="description" [error]="fieldError('description')" />
+      </div>
+      <div class="master-data-form__actions">
+        <a routerLink="/master-data/categories">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save category</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

@@ -1,0 +1,21 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="18rem" />
+  } @else {
+    <app-page-header [title]="editing ? 'Edit unit' : 'Add unit'" description="Define the unit code, display name, and symbol." />
+    @if (error()) {
+      <div class="master-data-form__alert"><app-alert variant="danger" title="Unable to save unit">{{ error() }}</app-alert></div>
+    }
+    <form class="master-data-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="master-data-form__grid master-data-form__grid--three">
+        <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
+        <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+        <app-input label="Symbol" formControlName="symbol" [error]="fieldError('symbol')" />
+      </div>
+      <div class="master-data-form__actions">
+        <a routerLink="/master-data/units">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save unit</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>
