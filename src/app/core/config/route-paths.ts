@@ -11,4 +11,5 @@ export const ROUTE_PATHS = {
   sales: 'sales',
   reports: 'reports',
   administration: 'administration',
+  accessDenied: 'access-denied',
 } as const;

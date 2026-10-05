@@ -22,7 +22,7 @@ GET  /api/auth/me
 POST /api/auth/logout
 ```
 
-The login response is expected to contain:
+The login response is expected to contain an access token plus the authenticated user. The user contract may include role and permission metadata used by the Group 5 authorization layer.
 
 ```json
 {
@@ -30,7 +30,9 @@ The login response is expected to contain:
   "user": {
     "id": "...",
     "email": "...",
-    "name": "..."
+    "name": "...",
+    "roles": ["inventory-manager"],
+    "permissions": ["dashboard.view", "product.view", "inventory.view"]
   },
   "expiresAt": "optional ISO timestamp"
 }
@@ -59,7 +61,3 @@ Logout calls the API when a token exists and clears the local session regardless
 The frontend controls navigation and presentation only. The REST API must authenticate every protected request and must not rely on Angular route guards for security.
 
 For deployments that use secure HTTP-only cookie authentication instead of bearer tokens, the storage/token provider can be replaced without changing feature-level data-access services.
-
-## Authorization
-
-Roles and permissions are intentionally not implemented here. They belong to Group 5.

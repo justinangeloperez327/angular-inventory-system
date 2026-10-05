@@ -1,0 +1,27 @@
+export const PERMISSIONS = {
+  dashboardView: 'dashboard.view',
+  productView: 'product.view',
+  productCreate: 'product.create',
+  productUpdate: 'product.update',
+  productDelete: 'product.delete',
+  masterDataView: 'master-data.view',
+  masterDataManage: 'master-data.manage',
+  supplierView: 'supplier.view',
+  supplierManage: 'supplier.manage',
+  inventoryView: 'inventory.view',
+  inventoryAdjust: 'inventory.adjust',
+  inventoryTransfer: 'inventory.transfer',
+  inventoryCount: 'inventory.count',
+  purchaseView: 'purchase.view',
+  purchaseCreate: 'purchase.create',
+  purchaseApprove: 'purchase.approve',
+  purchaseReceive: 'purchase.receive',
+  salesView: 'sales.view',
+  salesCreate: 'sales.create',
+  reportsView: 'reports.view',
+  userManage: 'user.manage',
+  settingsManage: 'settings.manage',
+} as const;
+
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type PermissionMode = 'all' | 'any';

@@ -1,0 +1,23 @@
+.access-denied {
+  max-width: 34rem;
+  padding: 4rem 0;
+}
+
+.access-denied__code {
+  margin: 0 0 0.5rem;
+  color: var(--color-text-subtle);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.access-denied > p:not(.access-denied__code) {
+  margin: 0.75rem 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
