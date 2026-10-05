@@ -1,0 +1,74 @@
+<app-content-container>
+  <app-page-header title="Sales Orders" description="Customer orders, stock reservation, dispatch, completion, and returns.">
+    <a actions routerLink="new" class="sales-list__primary-action" *appHasPermission="permissions.salesCreate">
+      New sales order
+    </a>
+  </app-page-header>
+
+  @if (customerId) {
+    <div class="sales-list__context">Showing orders for a selected customer. <a routerLink="/sales">Clear customer filter</a></div>
+  }
+
+  <form class="sales-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Order, customer, SKU, product" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Confirmed', value: 'confirmed' },
+      { label: 'Dispatched', value: 'dispatched' },
+      { label: 'Completed', value: 'completed' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="sales-list__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="sales-list__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+  }
+
+  @if (store.error()) {
+    <div class="sales-list__alert"><app-alert variant="danger" title="Sales orders unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="sales-list__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="sales-list__table">
+      <app-table>
+        <thead>
+          <tr><th>Order</th><th>Customer</th><th>Warehouse</th><th>Order date</th><th>Lines</th><th>Subtotal</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
+              <td><a [routerLink]="['/customers', item.customerId]">{{ item.customerName }}</a><span class="sales-list__secondary">{{ item.customerCode }}</span></td>
+              <td>{{ item.warehouseName }}<span class="sales-list__secondary">{{ item.warehouseCode }}</span></td>
+              <td>{{ item.orderDate | date: 'mediumDate' }}</td>
+              <td>{{ item.lineCount }}</td>
+              <td>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>
+                @if (item.status === 'draft') {
+                  <a [routerLink]="[item.id, 'edit']" class="sales-list__action" *appHasPermission="permissions.salesCreate">Edit</a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="sales-list__pagination">
+        <span>{{ store.pagination().totalItems }} sales orders</span>
+        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No sales orders found" description="No sales orders match the current filters." />
+  }
+</app-content-container>

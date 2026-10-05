@@ -55,7 +55,8 @@ export const NAVIGATION_SECTIONS: readonly NavigationSection[] = [
       {
         label: 'Stock Counts',
         route: `/${ROUTE_PATHS.stockCounts}`,
-        permissions: [PERMISSIONS.inventoryCount],
+        permissions: [PERMISSIONS.inventoryCount, PERMISSIONS.inventoryCountApprove],
+        permissionMode: 'any',
       },
     ],
   },
@@ -81,6 +82,11 @@ export const NAVIGATION_SECTIONS: readonly NavigationSection[] = [
         label: 'Sales',
         route: `/${ROUTE_PATHS.sales}`,
         permissions: [PERMISSIONS.salesView],
+      },
+      {
+        label: 'Customers',
+        route: `/${ROUTE_PATHS.customers}`,
+        permissions: [PERMISSIONS.customerView],
       },
     ],
   },

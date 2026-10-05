@@ -1,0 +1,85 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="34rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit sales order' : 'New sales order'"
+      description="Draft pricing and quantities are editable until confirmation reserves stock."
+    />
+
+    @if (error()) {
+      <div class="sales-form__alert"><app-alert variant="danger" title="Sales order error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="sales-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="sales-form__section">
+        <div class="sales-form__heading"><h2>Order</h2><p>Customer, fulfillment warehouse, and order date.</p></div>
+        <div class="sales-form__grid">
+          <app-sales-customer-lookup
+            class="sales-form__wide"
+            [selectedLabel]="selectedCustomerLabel()"
+            [error]="fieldError('customerId')"
+            (selected)="selectCustomer($event)"
+            (cleared)="clearCustomer()"
+          />
+          <app-select
+            label="Fulfillment warehouse"
+            placeholder="Select warehouse"
+            [options]="warehouseOptions()"
+            formControlName="warehouseId"
+            [error]="fieldError('warehouseId')"
+          />
+          <app-input type="date" label="Order date" formControlName="orderDate" [error]="fieldError('orderDate')" />
+        </div>
+      </section>
+
+      <section class="sales-form__section">
+        <div class="sales-form__heading"><h2>Products</h2><p>Availability is advisory until the order is confirmed.</p></div>
+
+        <app-sales-product-lookup
+          [warehouseId]="form.controls.warehouseId.value"
+          (selected)="addProduct($event)"
+        />
+
+        @if (lineError()) {
+          <div class="sales-form__line-error">{{ lineError() }}</div>
+        }
+
+        @if (lines.length > 0) {
+          <div class="sales-form__lines" formArrayName="lines">
+            <div class="sales-form__line sales-form__line--header" aria-hidden="true">
+              <span>SKU</span><span>Product</span><span>Available</span><span>Quantity</span><span>Unit price</span><span>Line total</span><span></span>
+            </div>
+            @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
+              <div class="sales-form__line" [formGroupName]="index">
+                <span class="sales-form__mono">{{ line.controls.sku.value }}</span>
+                <strong>{{ line.controls.productName.value }} <small>{{ line.controls.unitSymbol.value }}</small></strong>
+                <span>{{ line.controls.quantityAvailable.value || '—' }}</span>
+                <app-input type="number" [min]="0.000001" step="any" formControlName="quantity" [error]="quantityError(index)" />
+                <app-input type="number" [min]="0" step="0.01" formControlName="unitPrice" [error]="unitPriceError(index)" />
+                <span class="sales-form__money">{{ lineTotal(index) | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</span>
+                <button type="button" class="sales-form__remove" (click)="removeLine(index)">Remove</button>
+              </div>
+            }
+            <div class="sales-form__subtotal">
+              <span>Subtotal</span>
+              <strong>{{ subtotal() | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</strong>
+            </div>
+          </div>
+        } @else {
+          <p class="sales-form__empty-lines">No products added yet.</p>
+        }
+      </section>
+
+      <section class="sales-form__section">
+        <div class="sales-form__heading"><h2>Notes</h2><p>Optional customer or fulfillment context.</p></div>
+        <app-textarea formControlName="notes" [error]="fieldError('notes')" />
+      </section>
+
+      <div class="sales-form__actions">
+        <a [routerLink]="id ? ['/sales', id] : ['/sales']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

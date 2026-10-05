@@ -1,0 +1,16 @@
+:host { display: block; }
+.customer-form__alert { margin-top: 1rem; }
+.customer-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.customer-form__section {
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-surface); padding: 1rem;
+}
+.customer-form__section h2 { margin: 0 0 1rem; font-size: 0.9375rem; }
+.customer-form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.875rem; }
+.customer-form__wide { grid-column: 1 / -1; }
+.customer-form__actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+.customer-form__actions a { color: var(--color-text-muted); font-size: 0.875rem; text-decoration: none; }
+@media (max-width: 650px) {
+  .customer-form__grid { grid-template-columns: 1fr; }
+  .customer-form__wide { grid-column: auto; }
+}

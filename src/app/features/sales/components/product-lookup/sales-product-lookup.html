@@ -1,0 +1,31 @@
+<div class="sales-lookup">
+  <span class="sales-lookup__label">Add product</span>
+  <div class="sales-lookup__search">
+    <app-input
+      type="search"
+      placeholder="Search SKU or product name"
+      [formControl]="search"
+      [disabled]="!warehouseId"
+      (keyup.enter)="find()"
+    />
+    <app-button type="button" variant="secondary" [disabled]="!warehouseId" [loading]="loading()" (click)="find()">
+      Search
+    </app-button>
+  </div>
+  @if (!warehouseId) {
+    <span class="sales-lookup__message">Select a warehouse before adding products.</span>
+  } @else if (error()) {
+    <span class="sales-lookup__message sales-lookup__message--error">{{ error() }}</span>
+  }
+  @if (results().length > 0) {
+    <div class="sales-lookup__results">
+      @for (item of results(); track item.id) {
+        <button type="button" (click)="choose(item)">
+          <span>{{ item.sku }}</span>
+          <strong>{{ item.name }}</strong>
+          <small>Available {{ item.quantityAvailable }} {{ item.unitSymbol || '' }}</small>
+        </button>
+      }
+    </div>
+  }
+</div>

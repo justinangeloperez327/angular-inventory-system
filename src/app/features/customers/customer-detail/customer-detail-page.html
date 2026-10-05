@@ -1,0 +1,99 @@
+<app-content-container>
+  @if (error()) {
+    <app-alert variant="danger" title="Customer unavailable">{{ error() }}</app-alert>
+  }
+
+  @if (loading() && !item()) {
+    <app-skeleton height="24rem" />
+  } @else if (item(); as customer) {
+    <app-page-header [title]="customer.name" [description]="'Customer ' + customer.code">
+      <a actions routerLink="/customers" class="customer-detail__action">All customers</a>
+      <a actions [routerLink]="['edit']" class="customer-detail__action" *appHasPermission="permissions.customerManage">Edit</a>
+      <a
+        actions
+        [routerLink]="['/sales']"
+        [queryParams]="{ customerId: customer.id }"
+        class="customer-detail__action"
+        *appHasPermission="permissions.salesView"
+      >
+        Sales orders
+      </a>
+
+      @if (customer.active) {
+        <a
+          actions
+          [routerLink]="['/sales/new']"
+          [queryParams]="{ customerId: customer.id }"
+          class="customer-detail__action"
+          *appHasPermission="permissions.salesCreate"
+        >
+          New sales order
+        </a>
+        <app-button
+          actions
+          variant="secondary"
+          *appHasPermission="permissions.customerManage"
+          [loading]="updating()"
+          (click)="confirmDeactivate.set(true)"
+        >
+          Deactivate
+        </app-button>
+      } @else {
+        <app-button
+          actions
+          variant="secondary"
+          *appHasPermission="permissions.customerManage"
+          [loading]="updating()"
+          (click)="setActive(true)"
+        >
+          Activate
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="customer-detail__summary">
+      <app-badge [variant]="customer.active ? 'success' : 'neutral'">{{ customer.active ? 'active' : 'inactive' }}</app-badge>
+      <span>Updated {{ customer.updatedAt | date: 'medium' }}</span>
+    </div>
+
+    <div class="customer-detail__grid">
+      <section class="customer-detail__panel">
+        <h2>Contact</h2>
+        <dl>
+          <div><dt>Contact</dt><dd>{{ customer.contactName || '—' }}</dd></div>
+          <div><dt>Email</dt><dd>{{ customer.email || '—' }}</dd></div>
+          <div><dt>Phone</dt><dd>{{ customer.phone || '—' }}</dd></div>
+          <div><dt>Tax number</dt><dd>{{ customer.taxNumber || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="customer-detail__panel">
+        <h2>Address</h2>
+        <dl>
+          <div>
+            <dt>Address</dt>
+            <dd>
+              {{ customer.addressLine1 || '—' }}
+              @if (customer.addressLine2) {
+                <span>{{ customer.addressLine2 }}</span>
+              }
+            </dd>
+          </div>
+          <div><dt>City</dt><dd>{{ customer.city || '—' }}</dd></div>
+          <div><dt>State / Province</dt><dd>{{ customer.stateProvince || '—' }}</dd></div>
+          <div><dt>Postal code</dt><dd>{{ customer.postalCode || '—' }}</dd></div>
+          <div><dt>Country</dt><dd>{{ customer.countryCode || '—' }}</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmDeactivate()"
+      title="Deactivate customer"
+      [message]="'Deactivate ' + customer.name + '? Existing sales history remains unchanged.'"
+      confirmLabel="Deactivate"
+      (confirmed)="setActive(false)"
+      (cancelled)="confirmDeactivate.set(false)"
+    />
+  }
+</app-content-container>

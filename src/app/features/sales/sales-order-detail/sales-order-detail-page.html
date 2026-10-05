@@ -1,0 +1,185 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Sales order unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.item()) {
+    <app-skeleton height="30rem" />
+  } @else if (store.item(); as item) {
+    <app-page-header [title]="item.number" [description]="'Sales order · ' + item.customerName">
+      <a actions routerLink="/sales" class="sales-detail__action">All sales orders</a>
+
+      @if (item.status === 'draft') {
+        <a actions [routerLink]="['edit']" class="sales-detail__action" *appHasPermission="permissions.salesCreate">Edit</a>
+        <app-button
+          actions
+          *appHasPermission="permissions.salesCreate"
+          [loading]="store.action() === 'confirm'"
+          (click)="confirmAction.set('confirm')"
+        >
+          Confirm & reserve
+        </app-button>
+      }
+
+      @if (item.status === 'confirmed') {
+        <app-button
+          actions
+          *appHasPermission="permissions.salesDispatch"
+          variant="secondary"
+          [loading]="store.action() === 'cancel'"
+          (click)="confirmAction.set('cancel')"
+        >
+          Cancel
+        </app-button>
+        <app-button
+          actions
+          *appHasPermission="permissions.salesDispatch"
+          [loading]="store.action() === 'dispatch'"
+          (click)="confirmAction.set('dispatch')"
+        >
+          Dispatch
+        </app-button>
+      }
+
+      @if (item.status === 'dispatched') {
+        <app-button
+          actions
+          *appHasPermission="permissions.salesDispatch"
+          [loading]="store.action() === 'complete'"
+          (click)="confirmAction.set('complete')"
+        >
+          Complete
+        </app-button>
+      }
+
+      @if (item.status === 'dispatched' || item.status === 'completed') {
+        <a
+          actions
+          [routerLink]="['return']"
+          class="sales-detail__action"
+          *appHasPermission="permissions.salesReturn"
+        >
+          Create return
+        </a>
+      }
+    </app-page-header>
+
+    <div class="sales-detail__summary">
+      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+      <span>{{ item.lineCount }} lines</span>
+      <strong>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</strong>
+    </div>
+
+    <div class="sales-detail__grid">
+      <section class="sales-detail__panel">
+        <h2>Order</h2>
+        <dl>
+          <div><dt>Customer</dt><dd><a [routerLink]="['/customers', item.customerId]">{{ item.customerName }}</a><span>{{ item.customerCode }}</span></dd></div>
+          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
+          <div><dt>Order date</dt><dd>{{ item.orderDate | date: 'mediumDate' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="sales-detail__panel">
+        <h2>Workflow</h2>
+        <dl>
+          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Confirmed</dt><dd>{{ item.confirmedAt ? (item.confirmedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Confirmed by</dt><dd>{{ item.confirmedBy?.name || '—' }}</dd></div>
+          <div><dt>Dispatched</dt><dd>{{ item.dispatchedAt ? (item.dispatchedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Dispatched by</dt><dd>{{ item.dispatchedBy?.name || '—' }}</dd></div>
+          <div><dt>Completed</dt><dd>{{ item.completedAt ? (item.completedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Completed by</dt><dd>{{ item.completedBy?.name || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="sales-detail__panel sales-detail__panel--wide">
+        <h2>Lines</h2>
+        <app-table>
+          <thead>
+            <tr><th>SKU</th><th>Product</th><th>Ordered</th><th>Reserved</th><th>Dispatched</th><th>Returned</th><th>Unit price</th><th>Line total</th><th>Movement</th></tr>
+          </thead>
+          <tbody>
+            @for (line of item.lines; track line.id) {
+              <tr>
+                <td class="sales-detail__mono">{{ line.sku }}</td>
+                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
+                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityReserved }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityDispatched }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityReturned }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+                <td>{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+                <td>
+                  @if (line.saleMovement) {
+                    <a [routerLink]="['/stock-movements', line.saleMovement.id]">{{ line.saleMovement.number || 'Sale movement' }}</a>
+                  } @else {
+                    —
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </app-table>
+      </section>
+
+      @if (item.returns.length > 0) {
+        <section class="sales-detail__panel sales-detail__panel--wide">
+          <h2>Returns</h2>
+          @for (salesReturn of item.returns; track salesReturn.id) {
+            <div class="sales-detail__return">
+              <div>
+                <strong>{{ salesReturn.number }}</strong>
+                <span>{{ salesReturn.createdAt | date: 'medium' }} · {{ salesReturn.createdBy?.name || 'System' }}</span>
+              </div>
+              @for (line of salesReturn.lines; track line.id) {
+                <p>
+                  {{ line.sku }} · {{ line.quantityReturned }} {{ line.unitSymbol || '' }}
+                  @if (line.movement) {
+                    · <a [routerLink]="['/stock-movements', line.movement.id]">{{ line.movement.number || 'Return movement' }}</a>
+                  }
+                </p>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      <section class="sales-detail__panel sales-detail__panel--wide"><h2>Notes</h2><p>{{ item.notes || 'No notes recorded.' }}</p></section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmAction() !== null"
+      [title]="
+        confirmAction() === 'confirm'
+          ? 'Confirm sales order'
+          : confirmAction() === 'cancel'
+            ? 'Cancel sales order'
+            : confirmAction() === 'dispatch'
+              ? 'Dispatch sales order'
+              : 'Complete sales order'
+      "
+      [message]="
+        confirmAction() === 'confirm'
+          ? 'Confirm ' + item.number + '? The backend will reserve current available stock.'
+          : confirmAction() === 'cancel'
+            ? 'Cancel ' + item.number + '? Its stock reservation will be released without changing on-hand inventory.'
+            : confirmAction() === 'dispatch'
+              ? 'Dispatch ' + item.number + '? Reserved stock will be consumed and immutable sale movements will be created.'
+              : 'Complete ' + item.number + '? This closes the order operationally and does not create another inventory movement.'
+      "
+      [confirmLabel]="
+        confirmAction() === 'confirm'
+          ? 'Confirm & reserve'
+          : confirmAction() === 'cancel'
+            ? 'Cancel order'
+            : confirmAction() === 'dispatch'
+              ? 'Dispatch'
+              : 'Complete'
+      "
+      (confirmed)="runConfirmedAction()"
+      (cancelled)="confirmAction.set(null)"
+    />
+  }
+</app-content-container>

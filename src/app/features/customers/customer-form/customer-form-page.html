@@ -1,0 +1,45 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="30rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit customer' : 'New customer'"
+      description="Maintain customer contact, tax, and address information used by sales orders."
+    />
+
+    @if (error()) {
+      <div class="customer-form__alert"><app-alert variant="danger" title="Customer error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="customer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="customer-form__section">
+        <h2>Customer</h2>
+        <div class="customer-form__grid">
+          <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
+          <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+          <app-input label="Contact name" formControlName="contactName" [error]="fieldError('contactName')" />
+          <app-input type="email" label="Email" formControlName="email" [error]="fieldError('email')" />
+          <app-input label="Phone" formControlName="phone" [error]="fieldError('phone')" />
+          <app-input label="Tax number" formControlName="taxNumber" [error]="fieldError('taxNumber')" />
+        </div>
+      </section>
+
+      <section class="customer-form__section">
+        <h2>Address</h2>
+        <div class="customer-form__grid">
+          <app-input class="customer-form__wide" label="Address line 1" formControlName="addressLine1" [error]="fieldError('addressLine1')" />
+          <app-input class="customer-form__wide" label="Address line 2" formControlName="addressLine2" [error]="fieldError('addressLine2')" />
+          <app-input label="City" formControlName="city" [error]="fieldError('city')" />
+          <app-input label="State / Province" formControlName="stateProvince" [error]="fieldError('stateProvince')" />
+          <app-input label="Postal code" formControlName="postalCode" [error]="fieldError('postalCode')" />
+          <app-input label="Country code" placeholder="AE" formControlName="countryCode" [error]="fieldError('countryCode')" />
+        </div>
+      </section>
+
+      <div class="customer-form__actions">
+        <a [routerLink]="id ? ['/customers', id] : ['/customers']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save customer</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

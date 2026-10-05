@@ -16,11 +16,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./core/layout/app-shell/app-shell').then((component) => component.AppShellComponent),
     children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: ROUTE_PATHS.dashboard,
-      },
+      { path: '', pathMatch: 'full', redirectTo: ROUTE_PATHS.dashboard },
       {
         path: ROUTE_PATHS.dashboard,
         canActivate: [permissionGuard(PERMISSIONS.dashboardView)],
@@ -44,6 +40,12 @@ export const routes: Routes = [
         canActivate: [permissionGuard(PERMISSIONS.supplierView)],
         loadChildren: () =>
           import('./features/suppliers/suppliers.routes').then((routes) => routes.SUPPLIERS_ROUTES),
+      },
+      {
+        path: ROUTE_PATHS.customers,
+        canActivate: [permissionGuard(PERMISSIONS.customerView)],
+        loadChildren: () =>
+          import('./features/customers/customers.routes').then((routes) => routes.CUSTOMERS_ROUTES),
       },
       {
         path: ROUTE_PATHS.inventory,
@@ -89,7 +91,12 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_PATHS.stockCounts,
-        canActivate: [permissionGuard(PERMISSIONS.inventoryCount)],
+        canActivate: [
+          permissionGuard(
+            [PERMISSIONS.inventoryCount, PERMISSIONS.inventoryCountApprove],
+            'any',
+          ),
+        ],
         loadChildren: () =>
           import('./features/stock-counts/stock-counts.routes').then((routes) => routes.STOCK_COUNTS_ROUTES),
       },
@@ -108,10 +115,7 @@ export const routes: Routes = [
       {
         path: ROUTE_PATHS.administration,
         canActivate: [
-          permissionGuard(
-            [PERMISSIONS.userManage, PERMISSIONS.settingsManage],
-            'any',
-          ),
+          permissionGuard([PERMISSIONS.userManage, PERMISSIONS.settingsManage], 'any'),
         ],
         loadChildren: () =>
           import('./features/administration/administration.routes').then(
@@ -126,10 +130,7 @@ export const routes: Routes = [
           ),
         title: 'Access denied | Inventory System',
       },
-      {
-        path: '**',
-        redirectTo: ROUTE_PATHS.dashboard,
-      },
+      { path: '**', redirectTo: ROUTE_PATHS.dashboard },
     ],
   },
 ];

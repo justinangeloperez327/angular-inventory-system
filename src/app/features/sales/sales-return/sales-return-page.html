@@ -1,0 +1,60 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="26rem" />
+  } @else if (order(); as item) {
+    <app-page-header
+      [title]="'Return against ' + item.number"
+      [description]="'Customer return · ' + item.customerName"
+    />
+
+    @if (error()) {
+      <div class="sales-return__alert"><app-alert variant="danger" title="Return error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="sales-return" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="sales-return__section">
+        <div class="sales-return__heading">
+          <h2>Return quantities</h2>
+          <p>Only quantities already dispatched and not previously returned are eligible.</p>
+        </div>
+
+        @if (lineError()) {
+          <div class="sales-return__line-error">{{ lineError() }}</div>
+        }
+
+        @if (lines.length > 0) {
+          <div class="sales-return__lines">
+            <div class="sales-return__line sales-return__line--header" aria-hidden="true">
+              <span>SKU</span><span>Product</span><span>Returnable</span><span>Return now</span>
+            </div>
+            @for (line of lines.controls; track line.controls.salesOrderLineId.value; let index = $index) {
+              <div class="sales-return__line">
+                <span class="sales-return__mono">{{ line.controls.sku.value }}</span>
+                <strong>{{ line.controls.productName.value }} <small>{{ line.controls.unitSymbol.value }}</small></strong>
+                <span>{{ line.controls.returnableQuantity.value }}</span>
+                <app-input
+                  type="number"
+                  [min]="0"
+                  [max]="line.controls.returnableQuantity.value"
+                  step="any"
+                  [formControl]="line.controls.quantity"
+                  [error]="quantityError(index)"
+                />
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="sales-return__section">
+        <div class="sales-return__heading"><h2>Notes</h2><p>Optional reason or inspection notes.</p></div>
+        <app-textarea formControlName="notes" [error]="notesError()" />
+      </section>
+
+      <div class="sales-return__actions">
+        <a [routerLink]="['/sales', orderId]">Cancel</a>
+        <app-button type="submit" [disabled]="lines.length === 0" [loading]="saving()">Post return</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

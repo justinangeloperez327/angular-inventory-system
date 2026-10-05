@@ -1,0 +1,38 @@
+:host { display: block; }
+.sales-form__alert { margin-top: 1rem; }
+.sales-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.sales-form__section {
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-surface); padding: 1rem;
+}
+.sales-form__heading { margin-bottom: 1rem; }
+.sales-form__heading h2 { margin: 0; font-size: 0.9375rem; }
+.sales-form__heading p { margin: 0.25rem 0 0; color: var(--color-text-muted); font-size: 0.75rem; }
+.sales-form__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.875rem; }
+.sales-form__wide { grid-column: 1 / -1; }
+.sales-form__line-error { margin-top: 0.75rem; color: var(--color-danger); font-size: 0.75rem; }
+.sales-form__lines { margin-top: 1rem; border-top: 1px solid var(--color-border); }
+.sales-form__line {
+  display: grid; grid-template-columns: 7rem minmax(12rem, 2fr) minmax(7rem, 1fr) minmax(7rem, 1fr) minmax(8rem, 1fr) minmax(8rem, 1fr) auto;
+  gap: 0.75rem; align-items: center; border-bottom: 1px solid var(--color-border); padding: 0.625rem 0; font-size: 0.8125rem;
+}
+.sales-form__line--header { color: var(--color-text-muted); font-size: 0.75rem; font-weight: 600; }
+.sales-form__line strong small { color: var(--color-text-muted); font-weight: 400; }
+.sales-form__mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.75rem; }
+.sales-form__money { font-variant-numeric: tabular-nums; }
+.sales-form__remove {
+  border: 0; background: transparent; color: var(--color-danger); cursor: pointer;
+  font: inherit; font-size: 0.75rem; font-weight: 600;
+}
+.sales-form__subtotal { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 0.875rem; font-size: 0.875rem; }
+.sales-form__empty-lines { margin: 0.75rem 0 0; color: var(--color-text-muted); font-size: 0.8125rem; }
+.sales-form__actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+.sales-form__actions a { color: var(--color-text-muted); font-size: 0.875rem; text-decoration: none; }
+@media (max-width: 1000px) {
+  .sales-form__line, .sales-form__line--header { grid-template-columns: 1fr; }
+  .sales-form__line--header { display: none; }
+}
+@media (max-width: 650px) {
+  .sales-form__grid { grid-template-columns: 1fr; }
+  .sales-form__wide { grid-column: auto; }
+}

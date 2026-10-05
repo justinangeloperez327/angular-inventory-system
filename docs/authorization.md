@@ -25,6 +25,14 @@ purchase.create
 purchase.approve
 purchase.receive
 
+customer.view
+customer.manage
+
+sales.view
+sales.create
+sales.dispatch
+sales.return
+
 reports.view
 user.manage
 settings.manage
@@ -111,4 +119,4 @@ The default mode requires all supplied permissions. Use `mode: 'any'` when any l
 
 Angular authorization must never replace backend authorization.
 
-The REST API must validate the authenticated user's permission for every protected operation, including reads, creates, updates, approvals, stock adjustments, transfers, receiving, and administrative changes.
+The REST API must validate the authenticated user's permission for every protected operation, including reads, creates, updates, approvals, stock adjustments, transfers, receiving, sales reservations/dispatch/returns, and administrative changes.
