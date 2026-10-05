@@ -1,14 +1,17 @@
 import { Routes } from '@angular/router';
 
-import { FeaturePlaceholderPage } from '../../shared/pages/feature-placeholder/feature-placeholder';
+import { anonymousGuard } from '../../core/auth/guards/anonymous.guard';
 
 export const AUTH_ROUTES: Routes = [
   {
     path: '',
-    component: FeaturePlaceholderPage,
-    data: {
-      title: 'Authentication',
-      description: 'Authentication workflows will be implemented in Group 4.',
-    },
+    pathMatch: 'full',
+    redirectTo: 'login',
+  },
+  {
+    path: 'login',
+    canActivate: [anonymousGuard],
+    loadComponent: () => import('./login/login-page').then((component) => component.LoginPage),
+    title: 'Sign in | Inventory System',
   },
 ];

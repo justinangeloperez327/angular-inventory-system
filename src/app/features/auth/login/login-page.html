@@ -1,0 +1,45 @@
+<main class="login">
+  <section class="login__panel" aria-labelledby="login-title">
+    <div class="login__brand">
+      <span class="login__brand-mark" aria-hidden="true">IS</span>
+      <div>
+        <strong>Inventory</strong>
+        <span>Management System</span>
+      </div>
+    </div>
+
+    <div class="login__heading">
+      <h1 id="login-title">Sign in</h1>
+      <p>Use your account to access inventory operations.</p>
+    </div>
+
+    @if (formError()) {
+      <app-alert variant="danger" title="Sign-in failed">
+        {{ formError() }}
+      </app-alert>
+    }
+
+    <form class="login__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-input
+        type="email"
+        label="Email"
+        placeholder="name@example.com"
+        autocomplete="username"
+        formControlName="email"
+        [error]="emailError()"
+      />
+
+      <app-input
+        type="password"
+        label="Password"
+        autocomplete="current-password"
+        formControlName="password"
+        [error]="passwordError()"
+      />
+
+      <app-button type="submit" [loading]="submitting()">
+        Sign in
+      </app-button>
+    </form>
+  </section>
+</main>

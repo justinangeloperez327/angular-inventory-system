@@ -10,6 +10,15 @@
   </div>
 
   <div class="header__actions">
-    <span class="header__status">Ready</span>
+    @if (session.currentUser(); as user) {
+      <div class="header__user">
+        <strong>{{ user.name }}</strong>
+        <span>{{ user.email }}</span>
+      </div>
+    }
+
+    <button class="header__logout" type="button" [disabled]="loggingOut()" (click)="logout()">
+      {{ loggingOut() ? 'Signing out…' : 'Sign out' }}
+    </button>
   </div>
 </header>

@@ -28,6 +28,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() type: 'text' | 'email' | 'password' | 'number' | 'search' = 'text';
   @Input() placeholder = '';
+  @Input() autocomplete = '';
   @Input() hint = '';
   @Input() error = '';
   @Input() disabled = false;
