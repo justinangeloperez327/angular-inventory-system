@@ -1,0 +1,90 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Warehouse inventory unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.snapshot()) {
+    <app-skeleton height="24rem" />
+  } @else if (store.snapshot(); as snapshot) {
+    <app-page-header
+      [title]="snapshot.warehouse.name"
+      [description]="'Warehouse inventory · ' + snapshot.warehouse.code"
+    >
+      <a actions routerLink="/inventory" class="inventory-detail__back">All inventory</a>
+    </app-page-header>
+
+    <div class="inventory-detail__status">
+      <app-badge [variant]="snapshot.warehouse.active ? 'success' : 'neutral'">
+        {{ snapshot.warehouse.active ? 'Active warehouse' : 'Inactive warehouse' }}
+      </app-badge>
+      @if (snapshot.warehouse.location) {
+        <span>{{ snapshot.warehouse.location }}</span>
+      }
+    </div>
+
+    <app-inventory-totals [totals]="snapshot.totals" />
+
+    <section class="inventory-detail__panel">
+      <div class="inventory-detail__heading">
+        <h2>Product balances</h2>
+        <p>Current stock position for products held in this warehouse.</p>
+      </div>
+
+      @if (snapshot.balances.data.length > 0) {
+        <app-table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>On hand</th>
+              <th>Reserved</th>
+              <th>Available</th>
+              <th>Reorder</th>
+              <th>Status</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (balance of snapshot.balances.data; track balance.id) {
+              <tr>
+                <td class="inventory-detail__mono">{{ balance.sku }}</td>
+                <td>
+                  <a [routerLink]="['/inventory/products', balance.productId]">
+                    {{ balance.productName }}
+                  </a>
+                  @if (balance.unitSymbol || balance.unitName) {
+                    <span class="inventory-detail__secondary">{{ balance.unitSymbol || balance.unitName }}</span>
+                  }
+                </td>
+                <td>{{ balance.quantityOnHand }}</td>
+                <td>{{ balance.quantityReserved }}</td>
+                <td>{{ balance.quantityAvailable }}</td>
+                <td>{{ balance.reorderLevel }}</td>
+                <td>
+                  <app-badge [variant]="statusVariant(balance.status)">
+                    {{ statusLabel(balance.status) }}
+                  </app-badge>
+                </td>
+                <td>{{ balance.updatedAt | date: 'short' }}</td>
+              </tr>
+            }
+          </tbody>
+        </app-table>
+
+        <div class="inventory-detail__pagination">
+          <span>{{ snapshot.balances.pagination.totalItems }} products</span>
+          <app-pagination
+            [page]="snapshot.balances.pagination.page"
+            [totalPages]="snapshot.balances.pagination.totalPages"
+            (pageChange)="store.setPage($event)"
+          />
+        </div>
+      } @else {
+        <app-empty-state
+          title="No product balances"
+          description="This warehouse does not currently hold product inventory."
+        />
+      }
+    </section>
+  }
+</app-content-container>

@@ -1,0 +1,22 @@
+<section class="inventory-totals" aria-label="Inventory totals">
+  <article>
+    <span>On hand</span>
+    <strong>{{ totals.quantityOnHand }}</strong>
+  </article>
+  <article>
+    <span>Reserved</span>
+    <strong>{{ totals.quantityReserved }}</strong>
+  </article>
+  <article>
+    <span>Available</span>
+    <strong>{{ totals.quantityAvailable }}</strong>
+  </article>
+  <article class="inventory-totals__warning">
+    <span>Low-stock lines</span>
+    <strong>{{ totals.lowStockLines }}</strong>
+  </article>
+  <article class="inventory-totals__danger">
+    <span>Out-of-stock lines</span>
+    <strong>{{ totals.outOfStockLines }}</strong>
+  </article>
+</section>

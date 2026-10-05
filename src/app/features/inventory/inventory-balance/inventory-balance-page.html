@@ -1,0 +1,111 @@
+<app-content-container>
+  <app-page-header
+    title="Inventory"
+    description="Current product balances by warehouse. Quantities are transaction-derived and cannot be edited here."
+  >
+    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+      Refresh
+    </app-button>
+  </app-page-header>
+
+  <form class="inventory__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input
+      type="search"
+      label="Search products"
+      placeholder="SKU or product name"
+      formControlName="search"
+    />
+
+    <app-select
+      label="Warehouse"
+      placeholder="All warehouses"
+      [options]="warehouseOptions()"
+      formControlName="warehouseId"
+    />
+
+    <app-select
+      label="Stock status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'In stock', value: 'in-stock' },
+        { label: 'Low stock', value: 'low-stock' },
+        { label: 'Out of stock', value: 'out-of-stock' }
+      ]"
+      formControlName="status"
+    />
+
+    <div class="inventory__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (store.error()) {
+    <div class="inventory__alert">
+      <app-alert variant="danger" title="Inventory unavailable">{{ store.error() }}</app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasBalances()) {
+    <div class="inventory__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasBalances()) {
+    <div class="inventory__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product</th>
+            <th>Warehouse</th>
+            <th>On hand</th>
+            <th>Reserved</th>
+            <th>Available</th>
+            <th>Reorder</th>
+            <th>Status</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (balance of store.balances(); track balance.id) {
+            <tr>
+              <td class="inventory__mono">{{ balance.sku }}</td>
+              <td>
+                <a [routerLink]="['products', balance.productId]">{{ balance.productName }}</a>
+                @if (balance.unitSymbol || balance.unitName) {
+                  <span class="inventory__secondary">{{ balance.unitSymbol || balance.unitName }}</span>
+                }
+              </td>
+              <td>
+                <a [routerLink]="['warehouses', balance.warehouseId]">{{ balance.warehouseName }}</a>
+                <span class="inventory__secondary">{{ balance.warehouseCode }}</span>
+              </td>
+              <td class="inventory__number">{{ balance.quantityOnHand }}</td>
+              <td class="inventory__number">{{ balance.quantityReserved }}</td>
+              <td class="inventory__number">{{ balance.quantityAvailable }}</td>
+              <td class="inventory__number">{{ balance.reorderLevel }}</td>
+              <td>
+                <app-badge [variant]="statusVariant(balance.status)">
+                  {{ statusLabel(balance.status) }}
+                </app-badge>
+              </td>
+              <td>{{ balance.updatedAt | date: 'short' }}</td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="inventory__pagination">
+        <span>{{ store.pagination().totalItems }} balance lines</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state
+      title="No inventory balances found"
+      description="No product/warehouse balances match the current filters."
+    />
+  }
+</app-content-container>

@@ -1,0 +1,49 @@
+.inventory-totals {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.inventory-totals article {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 0.875rem;
+}
+
+.inventory-totals__warning {
+  border-left: 3px solid #b97700 !important;
+}
+
+.inventory-totals__danger {
+  border-left: 3px solid var(--color-danger) !important;
+}
+
+.inventory-totals span,
+.inventory-totals strong {
+  display: block;
+}
+
+.inventory-totals span {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.inventory-totals strong {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .inventory-totals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .inventory-totals {
+    grid-template-columns: 1fr;
+  }
+}
