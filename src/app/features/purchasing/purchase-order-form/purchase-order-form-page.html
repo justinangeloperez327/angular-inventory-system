@@ -1,0 +1,81 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="34rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit purchase order' : 'New purchase order'"
+      description="Save as draft. Submission locks commercial details for approval."
+    />
+
+    @if (error()) {
+      <div class="po-form__alert"><app-alert variant="danger" title="Purchase order error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="po-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="po-form__section">
+        <div class="po-form__heading"><h2>Order</h2><p>Supplier, receiving warehouse, and schedule.</p></div>
+        <div class="po-form__grid">
+          <app-purchase-supplier-lookup
+            class="po-form__wide"
+            [selectedLabel]="selectedSupplierLabel()"
+            [error]="fieldError('supplierId')"
+            (selected)="selectSupplier($event)"
+            (cleared)="clearSupplier()"
+          />
+          <app-select
+            label="Receiving warehouse"
+            placeholder="Select warehouse"
+            [options]="warehouseOptions()"
+            formControlName="warehouseId"
+            [error]="fieldError('warehouseId')"
+          />
+          <app-input type="date" label="Order date" formControlName="orderDate" [error]="fieldError('orderDate')" />
+          <app-input type="date" label="Expected date" formControlName="expectedDate" />
+        </div>
+      </section>
+
+      <section class="po-form__section">
+        <div class="po-form__heading"><h2>Products</h2><p>Enter ordered quantity and agreed unit price.</p></div>
+        <app-purchase-product-lookup (selected)="addProduct($event)" />
+
+        @if (lineError()) {
+          <div class="po-form__line-error">{{ lineError() }}</div>
+        }
+
+        @if (lines.length > 0) {
+          <div class="po-form__lines" formArrayName="lines">
+            <div class="po-form__line po-form__line--header" aria-hidden="true">
+              <span>SKU</span><span>Product</span><span>Quantity</span><span>Unit price</span><span>Line total</span><span></span>
+            </div>
+            @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
+              <div class="po-form__line" [formGroupName]="index">
+                <span class="po-form__mono">{{ line.controls.sku.value }}</span>
+                <strong>{{ line.controls.productName.value }} <small>{{ line.controls.unitSymbol.value }}</small></strong>
+                <app-input type="number" [min]="0.000001" step="any" formControlName="quantity" [error]="quantityError(index)" />
+                <app-input type="number" [min]="0" step="0.01" formControlName="unitPrice" [error]="unitPriceError(index)" />
+                <span class="po-form__money">{{ lineTotal(index) | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</span>
+                <button type="button" class="po-form__remove" (click)="removeLine(index)">Remove</button>
+              </div>
+            }
+            <div class="po-form__subtotal">
+              <span>Subtotal</span>
+              <strong>{{ subtotal() | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</strong>
+            </div>
+          </div>
+        } @else {
+          <p class="po-form__empty-lines">No products added yet.</p>
+        }
+      </section>
+
+      <section class="po-form__section">
+        <div class="po-form__heading"><h2>Notes</h2><p>Optional commercial or delivery context.</p></div>
+        <app-textarea formControlName="notes" [error]="fieldError('notes')" />
+      </section>
+
+      <div class="po-form__actions">
+        <a [routerLink]="id ? ['/purchasing', id] : ['/purchasing']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

@@ -1,0 +1,36 @@
+<div class="purchase-lookup">
+  <span class="purchase-lookup__label">Supplier</span>
+  @if (selectedLabel) {
+    <div class="purchase-lookup__selected">
+      <strong>{{ selectedLabel }}</strong>
+      <button type="button" (click)="clear()">Change</button>
+    </div>
+  } @else {
+    <div class="purchase-lookup__search">
+      <app-input
+        type="search"
+        placeholder="Search supplier code or name"
+        [formControl]="search"
+        (keyup.enter)="find()"
+      />
+      <app-button type="button" variant="secondary" [loading]="loading()" (click)="find()">
+        Search
+      </app-button>
+    </div>
+    @if (searchError()) {
+      <span class="purchase-lookup__message purchase-lookup__message--error">{{ searchError() }}</span>
+    }
+    @if (results().length > 0) {
+      <div class="purchase-lookup__results">
+        @for (item of results(); track item.id) {
+          <button type="button" (click)="choose(item)">
+            <span>{{ item.code }}</span><strong>{{ item.name }}</strong>
+          </button>
+        }
+      </div>
+    }
+  }
+  @if (error) {
+    <span class="purchase-lookup__message purchase-lookup__message--error">{{ error }}</span>
+  }
+</div>

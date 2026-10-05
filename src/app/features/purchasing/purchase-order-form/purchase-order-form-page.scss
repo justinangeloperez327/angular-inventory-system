@@ -1,0 +1,39 @@
+:host { display: block; }
+.po-form__alert { margin-top: 1rem; }
+.po-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.po-form__section {
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
+  background: var(--color-surface); padding: 1rem;
+}
+.po-form__heading { margin-bottom: 1rem; }
+.po-form__heading h2 { margin: 0; font-size: 0.9375rem; }
+.po-form__heading p { margin: 0.25rem 0 0; color: var(--color-text-muted); font-size: 0.75rem; }
+.po-form__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.875rem; }
+.po-form__wide { grid-column: 1 / -1; }
+.po-form__line-error { margin-top: 0.75rem; color: var(--color-danger); font-size: 0.75rem; }
+.po-form__lines { margin-top: 1rem; border-top: 1px solid var(--color-border); }
+.po-form__line {
+  display: grid; grid-template-columns: 7rem minmax(12rem, 2fr) minmax(7rem, 1fr) minmax(8rem, 1fr) minmax(8rem, 1fr) auto;
+  gap: 0.75rem; align-items: center; border-bottom: 1px solid var(--color-border); padding: 0.625rem 0; font-size: 0.8125rem;
+}
+.po-form__line--header { color: var(--color-text-muted); font-size: 0.75rem; font-weight: 600; }
+.po-form__line strong small { color: var(--color-text-muted); font-weight: 400; }
+.po-form__mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.75rem; }
+.po-form__money { font-variant-numeric: tabular-nums; }
+.po-form__remove {
+  border: 0; background: transparent; color: var(--color-danger); cursor: pointer;
+  padding: 0; font: inherit; font-size: 0.75rem; font-weight: 600;
+}
+.po-form__subtotal {
+  display: flex; justify-content: flex-end; gap: 1rem; padding: 0.875rem 0 0;
+  font-size: 0.875rem; font-variant-numeric: tabular-nums;
+}
+.po-form__empty-lines { margin: 0.75rem 0 0; color: var(--color-text-muted); font-size: 0.8125rem; }
+.po-form__actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
+.po-form__actions a { color: var(--color-text-muted); font-size: 0.875rem; text-decoration: none; }
+@media (max-width: 950px) {
+  .po-form__grid { grid-template-columns: 1fr 1fr; }
+  .po-form__line, .po-form__line--header { grid-template-columns: 1fr; }
+  .po-form__line--header { display: none; }
+}
+@media (max-width: 650px) { .po-form__grid { grid-template-columns: 1fr; } .po-form__wide { grid-column: auto; } }

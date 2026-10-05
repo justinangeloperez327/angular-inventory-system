@@ -1,0 +1,28 @@
+<div class="purchase-lookup">
+  <span class="purchase-lookup__label">Add product</span>
+  <div class="purchase-lookup__search">
+    <app-input
+      type="search"
+      placeholder="Search SKU or product name"
+      [formControl]="search"
+      (keyup.enter)="find()"
+    />
+    <app-button type="button" variant="secondary" [loading]="loading()" (click)="find()">
+      Search
+    </app-button>
+  </div>
+  @if (error()) {
+    <span class="purchase-lookup__message purchase-lookup__message--error">{{ error() }}</span>
+  }
+  @if (results().length > 0) {
+    <div class="purchase-lookup__results">
+      @for (item of results(); track item.id) {
+        <button type="button" (click)="choose(item)">
+          <span>{{ item.sku }}</span>
+          <strong>{{ item.name }}</strong>
+          <small>{{ item.unitSymbol || '' }}</small>
+        </button>
+      }
+    </div>
+  }
+</div>

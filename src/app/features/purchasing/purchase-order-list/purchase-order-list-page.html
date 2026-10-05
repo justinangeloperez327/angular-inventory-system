@@ -1,0 +1,70 @@
+<app-content-container>
+  <app-page-header title="Purchase Orders" description="Create, review, submit, and approve supplier purchase orders.">
+    <a actions routerLink="new" class="po-list__primary-action" *appHasPermission="permissions.purchaseCreate">
+      New purchase order
+    </a>
+  </app-page-header>
+
+  <form class="po-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="PO number, supplier, SKU, product" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Submitted', value: 'submitted' },
+      { label: 'Approved', value: 'approved' },
+      { label: 'Partially received', value: 'partially-received' },
+      { label: 'Received', value: 'received' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="po-list__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="po-list__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+  }
+  @if (store.error()) {
+    <div class="po-list__alert"><app-alert variant="danger" title="Purchase orders unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="po-list__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="po-list__table">
+      <app-table>
+        <thead>
+          <tr><th>PO Number</th><th>Supplier</th><th>Warehouse</th><th>Order date</th><th>Expected</th><th>Lines</th><th>Subtotal</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
+              <td>{{ item.supplierName }}<span class="po-list__secondary">{{ item.supplierCode }}</span></td>
+              <td>{{ item.warehouseName }}<span class="po-list__secondary">{{ item.warehouseCode }}</span></td>
+              <td>{{ item.orderDate | date: 'mediumDate' }}</td>
+              <td>{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</td>
+              <td>{{ item.lineCount }}</td>
+              <td>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>
+                @if (item.status === 'draft') {
+                  <a [routerLink]="[item.id, 'edit']" class="po-list__action" *appHasPermission="permissions.purchaseCreate">Edit</a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+      <div class="po-list__pagination">
+        <span>{{ store.pagination().totalItems }} purchase orders</span>
+        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No purchase orders found" description="No purchase orders match the current filters." />
+  }
+</app-content-container>

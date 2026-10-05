@@ -1,0 +1,115 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Purchase order unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.item()) {
+    <app-skeleton height="30rem" />
+  } @else if (store.item(); as item) {
+    <app-page-header [title]="item.number" [description]="'Purchase order · ' + item.supplierName">
+      <a actions routerLink="/purchasing" class="po-detail__action">All purchase orders</a>
+
+      @if (item.status === 'draft') {
+        <a actions [routerLink]="['edit']" class="po-detail__action" *appHasPermission="permissions.purchaseCreate">Edit</a>
+        <app-button
+          actions
+          *appHasPermission="permissions.purchaseCreate"
+          [loading]="store.action() === 'submit'"
+          (click)="confirmAction.set('submit')"
+        >
+          Submit
+        </app-button>
+      }
+
+      @if (item.status === 'submitted') {
+        <app-button
+          actions
+          *appHasPermission="permissions.purchaseApprove"
+          [loading]="store.action() === 'approve'"
+          (click)="confirmAction.set('approve')"
+        >
+          Approve
+        </app-button>
+      }
+
+      @if (item.status === 'approved' || item.status === 'partially-received') {
+        <a
+          actions
+          [routerLink]="['/receiving']"
+          [queryParams]="{ purchaseOrderId: item.id }"
+          class="po-detail__action"
+          *appHasPermission="permissions.purchaseReceive"
+        >
+          Receive
+        </a>
+      }
+    </app-page-header>
+
+    <div class="po-detail__summary">
+      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+      <span>{{ item.lineCount }} lines</span>
+      <strong>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</strong>
+    </div>
+
+    <div class="po-detail__grid">
+      <section class="po-detail__panel">
+        <h2>Supplier</h2>
+        <dl>
+          <div><dt>Supplier</dt><dd><a [routerLink]="['/suppliers', item.supplierId]">{{ item.supplierName }}</a><span>{{ item.supplierCode }}</span></dd></div>
+          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
+          <div><dt>Order date</dt><dd>{{ item.orderDate | date: 'mediumDate' }}</dd></div>
+          <div><dt>Expected</dt><dd>{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="po-detail__panel">
+        <h2>Workflow</h2>
+        <dl>
+          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Submitted</dt><dd>{{ item.submittedAt ? (item.submittedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Submitted by</dt><dd>{{ item.submittedBy?.name || '—' }}</dd></div>
+          <div><dt>Approved</dt><dd>{{ item.approvedAt ? (item.approvedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Approved by</dt><dd>{{ item.approvedBy?.name || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="po-detail__panel po-detail__panel--wide">
+        <h2>Lines</h2>
+        <app-table>
+          <thead>
+            <tr><th>SKU</th><th>Product</th><th>Ordered</th><th>Received</th><th>Remaining</th><th>Unit price</th><th>Line total</th></tr>
+          </thead>
+          <tbody>
+            @for (line of item.lines; track line.id) {
+              <tr>
+                <td class="po-detail__mono">{{ line.sku }}</td>
+                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
+                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityRemaining }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+                <td>{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </app-table>
+      </section>
+
+      <section class="po-detail__panel po-detail__panel--wide"><h2>Notes</h2><p>{{ item.notes || 'No notes recorded.' }}</p></section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmAction() !== null"
+      [title]="confirmAction() === 'approve' ? 'Approve purchase order' : 'Submit purchase order'"
+      [message]="
+        confirmAction() === 'approve'
+          ? 'Approve ' + item.number + '? It will become eligible for receiving.'
+          : 'Submit ' + item.number + '? Draft commercial details will be locked for approval.'
+      "
+      [confirmLabel]="confirmAction() === 'approve' ? 'Approve' : 'Submit'"
+      (confirmed)="confirm()"
+      (cancelled)="confirmAction.set(null)"
+    />
+  }
+</app-content-container>
