@@ -100,13 +100,19 @@ Once approved, the PO becomes eligible for receiving.
 
 ## Receiving boundary
 
-Approved and partially received purchase orders expose a link to:
+Approved and partially received purchase orders expose a direct receiving action:
+
+```text
+/receiving/new?purchaseOrderId=:id
+```
+
+Receipt history for the PO is available at:
 
 ```text
 /receiving?purchaseOrderId=:id
 ```
 
-Group 15 owns actual receipt creation, partial receiving, posting, and receipt-generated inventory movements.
+Group 15 owns receipt creation, partial receiving, posting, and receipt-generated inventory movements.
 
 ## Permissions
 

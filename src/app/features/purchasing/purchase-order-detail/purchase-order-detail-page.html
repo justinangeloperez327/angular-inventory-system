@@ -35,12 +35,28 @@
       @if (item.status === 'approved' || item.status === 'partially-received') {
         <a
           actions
-          [routerLink]="['/receiving']"
+          [routerLink]="['/receiving/new']"
           [queryParams]="{ purchaseOrderId: item.id }"
           class="po-detail__action"
           *appHasPermission="permissions.purchaseReceive"
         >
           Receive
+        </a>
+      }
+
+      @if (
+        item.status === 'approved' ||
+        item.status === 'partially-received' ||
+        item.status === 'received'
+      ) {
+        <a
+          actions
+          [routerLink]="['/receiving']"
+          [queryParams]="{ purchaseOrderId: item.id }"
+          class="po-detail__action"
+          *appHasPermission="permissions.purchaseReceive"
+        >
+          Receipts
         </a>
       }
     </app-page-header>

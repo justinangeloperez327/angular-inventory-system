@@ -1,0 +1,87 @@
+<app-content-container>
+  <app-page-header
+    title="Receiving"
+    description="Record goods received against approved purchase orders and post them into inventory."
+  >
+    <a
+      actions
+      [routerLink]="['new']"
+      [queryParams]="purchaseOrderId ? { purchaseOrderId: purchaseOrderId } : null"
+      class="receipt-list__primary-action"
+    >
+      New receipt
+    </a>
+  </app-page-header>
+
+  @if (purchaseOrderId) {
+    <div class="receipt-list__context">
+      Showing receipts for a selected purchase order.
+      <a routerLink="/receiving">Clear PO filter</a>
+    </div>
+  }
+
+  <form class="receipt-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Receipt, PO, supplier, delivery reference" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Posted', value: 'posted' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="receipt-list__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="receipt-list__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+  }
+
+  @if (store.error()) {
+    <div class="receipt-list__alert"><app-alert variant="danger" title="Receiving unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="receipt-list__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="receipt-list__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>Receipt</th><th>Purchase Order</th><th>Supplier</th><th>Warehouse</th>
+            <th>Receipt date</th><th>Lines</th><th>Status</th><th>Posted</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
+              <td><a [routerLink]="['/purchasing', item.purchaseOrderId]">{{ item.purchaseOrderNumber }}</a></td>
+              <td>{{ item.supplierName }}<span class="receipt-list__secondary">{{ item.supplierCode }}</span></td>
+              <td>{{ item.warehouseName }}<span class="receipt-list__secondary">{{ item.warehouseCode }}</span></td>
+              <td>{{ item.receiptDate | date: 'mediumDate' }}</td>
+              <td>{{ item.lineCount }}</td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td>
+                @if (item.status === 'draft') {
+                  <a [routerLink]="[item.id, 'edit']" class="receipt-list__action">Edit</a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="receipt-list__pagination">
+        <span>{{ store.pagination().totalItems }} receipts</span>
+        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No goods receipts found" description="No receipts match the current filters." />
+  }
+</app-content-container>

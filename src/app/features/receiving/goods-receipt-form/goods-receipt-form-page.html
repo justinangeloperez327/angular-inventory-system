@@ -1,0 +1,122 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="34rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit goods receipt' : 'New goods receipt'"
+      description="Record actual quantities received. Posting updates inventory and the purchase order atomically."
+    />
+
+    @if (error()) {
+      <div class="receipt-form__alert">
+        <app-alert variant="danger" title="Goods receipt error">{{ error() }}</app-alert>
+      </div>
+    }
+
+    <form class="receipt-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="receipt-form__section">
+        <div class="receipt-form__heading">
+          <h2>Purchase order</h2>
+          <p>
+            Only approved or partially received purchase orders are eligible.
+            @if (editing) {
+              The purchase order is fixed once a receipt draft has been created.
+            }
+          </p>
+        </div>
+
+        <app-receipt-purchase-order-lookup
+          [selectedLabel]="selectedPurchaseOrderLabel()"
+          [error]="fieldError('purchaseOrderId')"
+          [locked]="editing"
+          (selected)="selectPurchaseOrder($event)"
+          (cleared)="clearPurchaseOrder()"
+        />
+
+        @if (contextLoading()) {
+          <div class="receipt-form__context-loading"><app-skeleton height="5rem" /></div>
+        }
+
+        @if (purchaseOrderContext(); as context) {
+          <div class="receipt-form__context">
+            <div><span>Supplier</span><strong>{{ context.supplierName }}</strong></div>
+            <div><span>Warehouse</span><strong>{{ context.warehouseName }}</strong></div>
+            <div><span>Expected</span><strong>{{ context.expectedDate || '—' }}</strong></div>
+          </div>
+        }
+      </section>
+
+      <section class="receipt-form__section">
+        <div class="receipt-form__heading">
+          <h2>Receipt</h2>
+          <p>The warehouse is inherited from the purchase order and cannot be changed here.</p>
+        </div>
+
+        <div class="receipt-form__grid">
+          <app-input
+            type="date"
+            label="Receipt date"
+            formControlName="receiptDate"
+            [error]="fieldError('receiptDate')"
+          />
+          <app-input
+            label="Supplier delivery reference"
+            placeholder="Delivery note / packing slip"
+            formControlName="supplierDeliveryReference"
+            [error]="fieldError('supplierDeliveryReference')"
+          />
+        </div>
+      </section>
+
+      <section class="receipt-form__section">
+        <div class="receipt-form__heading">
+          <h2>Received quantities</h2>
+          <p>Enter only what was physically received in this delivery.</p>
+        </div>
+
+        @if (lineError()) {
+          <div class="receipt-form__line-error">{{ lineError() }}</div>
+        }
+
+        @if (lines.length > 0) {
+          <div class="receipt-form__lines" formArrayName="lines">
+            <div class="receipt-form__line receipt-form__line--header" aria-hidden="true">
+              <span>SKU</span><span>Product</span><span>Ordered</span><span>Previously received</span>
+              <span>Remaining</span><span>Receive now</span>
+            </div>
+
+            @for (line of lines.controls; track line.controls.purchaseOrderLineId.value; let index = $index) {
+              <div class="receipt-form__line" [formGroupName]="index">
+                <span class="receipt-form__mono">{{ line.controls.sku.value }}</span>
+                <strong>{{ line.controls.productName.value }} <small>{{ line.controls.unitSymbol.value }}</small></strong>
+                <span>{{ line.controls.quantityOrdered.value }}</span>
+                <span>{{ line.controls.quantityReceivedBefore.value }}</span>
+                <span>{{ line.controls.quantityRemaining.value }}</span>
+                <app-input
+                  type="number"
+                  [min]="0"
+                  [max]="line.controls.quantityRemaining.value"
+                  step="any"
+                  formControlName="quantityReceived"
+                  [error]="quantityError(index)"
+                />
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="receipt-form__empty-lines">Select a purchase order with remaining quantities.</p>
+        }
+      </section>
+
+      <section class="receipt-form__section">
+        <div class="receipt-form__heading"><h2>Notes</h2><p>Optional receiving or inspection context.</p></div>
+        <app-textarea formControlName="notes" [error]="fieldError('notes')" />
+      </section>
+
+      <div class="receipt-form__actions">
+        <a [routerLink]="id ? ['/receiving', id] : ['/receiving']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

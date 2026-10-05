@@ -1,0 +1,105 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Goods receipt unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.item()) {
+    <app-skeleton height="30rem" />
+  } @else if (store.item(); as item) {
+    <app-page-header [title]="item.number" [description]="'Goods receipt · ' + item.supplierName">
+      <a actions routerLink="/receiving" class="receipt-detail__action">All receipts</a>
+
+      @if (item.status === 'draft') {
+        <a actions [routerLink]="['edit']" class="receipt-detail__action">Edit</a>
+        <app-button actions [loading]="store.posting()" (click)="confirmPost.set(true)">
+          Post receipt
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="receipt-detail__summary">
+      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+      <span>{{ item.lineCount }} lines</span>
+      @if (item.supplierDeliveryReference) {
+        <span>Delivery ref. {{ item.supplierDeliveryReference }}</span>
+      }
+    </div>
+
+    <div class="receipt-detail__grid">
+      <section class="receipt-detail__panel">
+        <h2>Purchase order</h2>
+        <dl>
+          <div><dt>PO</dt><dd><a [routerLink]="['/purchasing', item.purchaseOrderId]">{{ item.purchaseOrderNumber }}</a></dd></div>
+          <div><dt>Supplier</dt><dd><a [routerLink]="['/suppliers', item.supplierId]">{{ item.supplierName }}</a><span>{{ item.supplierCode }}</span></dd></div>
+          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
+          <div><dt>Receipt date</dt><dd>{{ item.receiptDate | date: 'mediumDate' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="receipt-detail__panel">
+        <h2>Audit</h2>
+        <dl>
+          <div><dt>Status</dt><dd>{{ item.status }}</dd></div>
+          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Posted</dt><dd>{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Posted by</dt><dd>{{ item.postedBy?.name || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="receipt-detail__panel receipt-detail__panel--wide">
+        <h2>Received products</h2>
+        <app-table>
+          <thead>
+            <tr>
+              <th>SKU</th><th>Product</th><th>Ordered</th><th>Previously received</th>
+              <th>This receipt</th><th>Remaining after</th><th>Balance</th><th>Movement</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of item.lines; track line.id) {
+              <tr>
+                <td class="receipt-detail__mono">{{ line.sku }}</td>
+                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
+                <td>{{ line.quantityOrdered }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityReceivedBefore }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
+                <td>{{ line.quantityRemainingAfter }} {{ line.unitSymbol || '' }}</td>
+                <td>
+                  @if (line.balanceBefore !== undefined && line.balanceAfter !== undefined) {
+                    {{ line.balanceBefore }} → {{ line.balanceAfter }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>
+                  @if (line.movement) {
+                    <a [routerLink]="['/stock-movements', line.movement.id]">
+                      {{ line.movement.number || 'Receipt movement' }}
+                    </a>
+                  } @else {
+                    —
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </app-table>
+      </section>
+
+      <section class="receipt-detail__panel receipt-detail__panel--wide">
+        <h2>Notes</h2>
+        <p>{{ item.notes || 'No notes recorded.' }}</p>
+      </section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmPost()"
+      title="Post goods receipt"
+      [message]="'Post ' + item.number + '? Inventory will increase in ' + item.warehouseName + ' and the purchase order received quantities will be updated atomically.'"
+      confirmLabel="Post receipt"
+      (confirmed)="post()"
+      (cancelled)="confirmPost.set(false)"
+    />
+  }
+</app-content-container>

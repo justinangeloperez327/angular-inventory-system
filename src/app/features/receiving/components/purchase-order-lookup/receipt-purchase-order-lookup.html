@@ -1,0 +1,55 @@
+<div class="receipt-po-lookup">
+  <span class="receipt-po-lookup__label">Purchase order</span>
+
+  @if (selectedLabel) {
+    <div class="receipt-po-lookup__selected">
+      <strong>{{ selectedLabel }}</strong>
+      @if (!locked) {
+        <button type="button" (click)="clear()">Change</button>
+      } @else {
+        <span class="receipt-po-lookup__locked">Fixed for this draft</span>
+      }
+    </div>
+  } @else {
+    <div class="receipt-po-lookup__search">
+      <app-input
+        type="search"
+        placeholder="Search approved PO number or supplier"
+        [formControl]="search"
+        [disabled]="locked"
+        (keyup.enter)="find()"
+      />
+      <app-button
+        type="button"
+        variant="secondary"
+        [disabled]="locked"
+        [loading]="loading()"
+        (click)="find()"
+      >
+        Search
+      </app-button>
+    </div>
+
+    @if (searchError()) {
+      <span class="receipt-po-lookup__message receipt-po-lookup__message--error">
+        {{ searchError() }}
+      </span>
+    }
+
+    @if (results().length > 0) {
+      <div class="receipt-po-lookup__results">
+        @for (item of results(); track item.id) {
+          <button type="button" (click)="choose(item)">
+            <span>{{ item.number }}</span>
+            <strong>{{ item.supplierName }}</strong>
+            <small>{{ item.warehouseName }}</small>
+          </button>
+        }
+      </div>
+    }
+  }
+
+  @if (error) {
+    <span class="receipt-po-lookup__message receipt-po-lookup__message--error">{{ error }}</span>
+  }
+</div>
