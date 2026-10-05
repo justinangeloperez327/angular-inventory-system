@@ -48,6 +48,11 @@ export const NAVIGATION_SECTIONS: readonly NavigationSection[] = [
         permissions: [PERMISSIONS.inventoryView],
       },
       {
+        label: 'Transfers',
+        route: `/${ROUTE_PATHS.transfers}`,
+        permissions: [PERMISSIONS.inventoryView],
+      },
+      {
         label: 'Stock Counts',
         route: `/${ROUTE_PATHS.stockCounts}`,
         permissions: [PERMISSIONS.inventoryCount],

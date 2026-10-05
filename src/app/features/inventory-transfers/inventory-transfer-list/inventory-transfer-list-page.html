@@ -1,0 +1,100 @@
+<app-content-container>
+  <app-page-header
+    title="Transfers"
+    description="Move inventory between warehouses through controlled, auditable transfer transactions."
+  >
+    <a
+      actions
+      routerLink="new"
+      class="transfers__primary-action"
+      *appHasPermission="permissions.inventoryTransfer"
+    >
+      New transfer
+    </a>
+  </app-page-header>
+
+  <form class="transfers__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Transfer number or product" formControlName="search" />
+    <app-select label="Source" placeholder="All sources" [options]="warehouseOptions()" formControlName="sourceWarehouseId" />
+    <app-select label="Destination" placeholder="All destinations" [options]="warehouseOptions()" formControlName="destinationWarehouseId" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Posted', value: 'posted' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="transfers__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="transfers__alert">
+      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
+    </div>
+  }
+
+  @if (store.error()) {
+    <div class="transfers__alert">
+      <app-alert variant="danger" title="Transfers unavailable">{{ store.error() }}</app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="transfers__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="transfers__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Source</th>
+            <th>Destination</th>
+            <th>Lines</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Posted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
+              <td>{{ item.sourceWarehouseName }}<span class="transfers__secondary">{{ item.sourceWarehouseCode }}</span></td>
+              <td>{{ item.destinationWarehouseName }}<span class="transfers__secondary">{{ item.destinationWarehouseCode }}</span></td>
+              <td>{{ item.lineCount }}</td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>{{ item.createdAt | date: 'short' }}</td>
+              <td>{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td>
+                @if (item.status === 'draft') {
+                  <a
+                    [routerLink]="[item.id, 'edit']"
+                    class="transfers__action"
+                    *appHasPermission="permissions.inventoryTransfer"
+                  >
+                    Edit
+                  </a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="transfers__pagination">
+        <span>{{ store.pagination().totalItems }} transfers</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No transfers found" description="No inventory transfers match the current filters." />
+  }
+</app-content-container>

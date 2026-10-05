@@ -1,0 +1,39 @@
+<div class="transfer-lookup">
+  <span class="transfer-lookup__label">Add product</span>
+  <div class="transfer-lookup__search">
+    <app-input
+      type="search"
+      placeholder="Search SKU or product name"
+      [formControl]="search"
+      [disabled]="!sourceWarehouseId"
+      (keyup.enter)="find()"
+    />
+    <app-button
+      type="button"
+      variant="secondary"
+      [disabled]="!sourceWarehouseId"
+      [loading]="loading()"
+      (click)="find()"
+    >
+      Search
+    </app-button>
+  </div>
+
+  @if (!sourceWarehouseId) {
+    <span class="transfer-lookup__message">Select the source warehouse before adding products.</span>
+  } @else if (error()) {
+    <span class="transfer-lookup__message transfer-lookup__message--error">{{ error() }}</span>
+  }
+
+  @if (results().length > 0) {
+    <div class="transfer-lookup__results">
+      @for (product of results(); track product.id) {
+        <button type="button" (click)="choose(product)">
+          <span>{{ product.sku }}</span>
+          <strong>{{ product.name }}</strong>
+          <small>Available {{ product.quantityAvailable }} {{ product.unitSymbol || '' }}</small>
+        </button>
+      }
+    </div>
+  }
+</div>

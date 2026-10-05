@@ -1,0 +1,106 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="32rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit transfer' : 'New transfer'"
+      description="Save as draft first. Posting atomically moves stock and creates paired movement records."
+    />
+
+    @if (error()) {
+      <div class="transfer-form__alert">
+        <app-alert variant="danger" title="Unable to save transfer">{{ error() }}</app-alert>
+      </div>
+    }
+
+    <form class="transfer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="transfer-form__section">
+        <div class="transfer-form__heading">
+          <h2>Warehouses</h2>
+          <p>Source and destination must be different. Changing the source clears product lines selected for the previous source.</p>
+        </div>
+
+        <div class="transfer-form__grid">
+          <app-select
+            label="Source warehouse"
+            placeholder="Select source"
+            [options]="sourceWarehouseOptions()"
+            formControlName="sourceWarehouseId"
+            [error]="fieldError('sourceWarehouseId')"
+          />
+          <app-select
+            label="Destination warehouse"
+            placeholder="Select destination"
+            [options]="destinationWarehouseOptions()"
+            formControlName="destinationWarehouseId"
+            [error]="fieldError('destinationWarehouseId')"
+          />
+        </div>
+      </section>
+
+      <section class="transfer-form__section">
+        <div class="transfer-form__heading">
+          <h2>Products</h2>
+          <p>Search products from the source warehouse and enter the quantity to move.</p>
+        </div>
+
+        <app-transfer-product-lookup
+          [sourceWarehouseId]="form.controls.sourceWarehouseId.value"
+          (selected)="addProduct($event)"
+        />
+
+        @if (lineError()) {
+          <div class="transfer-form__line-error">{{ lineError() }}</div>
+        }
+
+        @if (lines.length > 0) {
+          <div class="transfer-form__lines" formArrayName="lines">
+            <div class="transfer-form__line transfer-form__line--header" aria-hidden="true">
+              <span>SKU</span>
+              <span>Product</span>
+              <span>Available</span>
+              <span>Quantity</span>
+              <span></span>
+            </div>
+
+            @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
+              <div class="transfer-form__line" [formGroupName]="index">
+                <span class="transfer-form__mono">{{ line.controls.sku.value }}</span>
+                <strong>{{ line.controls.productName.value }}</strong>
+                <span>
+                  {{ line.controls.quantityAvailable.value || '—' }}
+                  {{ line.controls.unitSymbol.value }}
+                </span>
+                <app-input
+                  type="number"
+                  [min]="0.000001"
+                  step="any"
+                  formControlName="quantity"
+                  [error]="quantityError(index)"
+                />
+                <button type="button" class="transfer-form__remove" (click)="removeLine(index)">
+                  Remove
+                </button>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="transfer-form__empty-lines">No products added yet.</p>
+        }
+      </section>
+
+      <section class="transfer-form__section">
+        <div class="transfer-form__heading">
+          <h2>Notes</h2>
+          <p>Optional operational context for the transfer.</p>
+        </div>
+        <app-textarea formControlName="notes" [error]="fieldError('notes')" />
+      </section>
+
+      <div class="transfer-form__actions">
+        <a [routerLink]="id ? ['/transfers', id] : ['/transfers']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

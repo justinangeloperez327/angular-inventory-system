@@ -68,6 +68,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: ROUTE_PATHS.transfers,
+        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        loadChildren: () =>
+          import('./features/inventory-transfers/inventory-transfers.routes').then(
+            (routes) => routes.INVENTORY_TRANSFERS_ROUTES,
+          ),
+      },
+      {
         path: ROUTE_PATHS.purchasing,
         canActivate: [permissionGuard(PERMISSIONS.purchaseView)],
         loadChildren: () =>

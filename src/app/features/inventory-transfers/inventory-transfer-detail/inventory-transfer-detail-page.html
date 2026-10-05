@@ -1,0 +1,140 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Transfer unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.item()) {
+    <app-skeleton height="28rem" />
+  } @else if (store.item(); as item) {
+    <app-page-header [title]="item.number" description="Warehouse inventory transfer">
+      <a actions routerLink="/transfers" class="transfer-detail__action">All transfers</a>
+
+      @if (item.status === 'draft') {
+        <a
+          actions
+          [routerLink]="['edit']"
+          class="transfer-detail__action"
+          *appHasPermission="permissions.inventoryTransfer"
+        >
+          Edit
+        </a>
+        <app-button
+          actions
+          *appHasPermission="permissions.inventoryTransfer"
+          [loading]="store.posting()"
+          (click)="confirmPost.set(true)"
+        >
+          Post transfer
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="transfer-detail__summary">
+      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+      <span>{{ item.lineCount }} lines</span>
+    </div>
+
+    <div class="transfer-detail__grid">
+      <section class="transfer-detail__panel">
+        <h2>Route</h2>
+        <dl>
+          <div>
+            <dt>Source</dt>
+            <dd>
+              <a [routerLink]="['/inventory/warehouses', item.sourceWarehouseId]">{{ item.sourceWarehouseName }}</a>
+              <span>{{ item.sourceWarehouseCode }}</span>
+            </dd>
+          </div>
+          <div>
+            <dt>Destination</dt>
+            <dd>
+              <a [routerLink]="['/inventory/warehouses', item.destinationWarehouseId]">{{ item.destinationWarehouseName }}</a>
+              <span>{{ item.destinationWarehouseCode }}</span>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="transfer-detail__panel">
+        <h2>Audit</h2>
+        <dl>
+          <div><dt>Status</dt><dd>{{ item.status }}</dd></div>
+          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Posted</dt><dd>{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Posted by</dt><dd>{{ item.postedBy?.name || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="transfer-detail__panel transfer-detail__panel--wide">
+        <h2>Products</h2>
+        <app-table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Source balance</th>
+              <th>Destination balance</th>
+              <th>Movements</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of item.lines; track line.id) {
+              <tr>
+                <td class="transfer-detail__mono">{{ line.sku }}</td>
+                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
+                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+                <td>
+                  @if (line.sourceBalanceBefore !== undefined && line.sourceBalanceAfter !== undefined) {
+                    {{ line.sourceBalanceBefore }} → {{ line.sourceBalanceAfter }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>
+                  @if (line.destinationBalanceBefore !== undefined && line.destinationBalanceAfter !== undefined) {
+                    {{ line.destinationBalanceBefore }} → {{ line.destinationBalanceAfter }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>
+                  <div class="transfer-detail__movement-links">
+                    @if (line.outboundMovement) {
+                      <a [routerLink]="['/stock-movements', line.outboundMovement.id]">
+                        {{ line.outboundMovement.number || 'Transfer out' }}
+                      </a>
+                    }
+                    @if (line.inboundMovement) {
+                      <a [routerLink]="['/stock-movements', line.inboundMovement.id]">
+                        {{ line.inboundMovement.number || 'Transfer in' }}
+                      </a>
+                    }
+                    @if (!line.outboundMovement && !line.inboundMovement) {
+                      —
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </app-table>
+      </section>
+
+      <section class="transfer-detail__panel transfer-detail__panel--wide">
+        <h2>Notes</h2>
+        <p>{{ item.notes || 'No notes recorded.' }}</p>
+      </section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmPost()"
+      title="Post transfer"
+      [message]="'Post ' + item.number + '? Stock will leave ' + item.sourceWarehouseName + ' and enter ' + item.destinationWarehouseName + ' atomically.'"
+      confirmLabel="Post transfer"
+      (confirmed)="post()"
+      (cancelled)="confirmPost.set(false)"
+    />
+  }
+</app-content-container>
