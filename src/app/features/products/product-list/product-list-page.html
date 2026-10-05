@@ -1,0 +1,132 @@
+<app-content-container>
+  <app-page-header
+    title="Products"
+    description="Manage product master data, identification, pricing, and reorder settings."
+  >
+    <a actions routerLink="new" class="product-list__primary-action" *appHasPermission="permissions.productCreate">
+      Add product
+    </a>
+  </app-page-header>
+
+  <form class="filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input
+      type="search"
+      label="Search"
+      placeholder="SKU, barcode, or product name"
+      formControlName="search"
+    />
+
+    <app-select
+      label="Category"
+      placeholder="All categories"
+      [options]="categoryOptions()"
+      formControlName="categoryId"
+    />
+
+    <app-select
+      label="Unit"
+      placeholder="All units"
+      [options]="unitOptions()"
+      formControlName="unitId"
+    />
+
+    <app-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+      ]"
+      formControlName="status"
+    />
+
+    <div class="filters__actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (store.error()) {
+    <div class="product-list__alert">
+      <app-alert variant="danger" title="Products unavailable">
+        {{ store.error() }}
+      </app-alert>
+    </div>
+  }
+
+  @if (store.loading() && !store.hasProducts()) {
+    <div class="product-list__loading">
+      <app-skeleton height="20rem" />
+    </div>
+  } @else if (store.hasProducts()) {
+    <div class="product-list__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Unit</th>
+            <th>Cost</th>
+            <th>Selling price</th>
+            <th>Reorder</th>
+            <th>Status</th>
+            <th>Updated</th>
+            <th><span class="sr-only">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of store.products(); track product.id) {
+            <tr>
+              <td class="product-list__mono">{{ product.sku }}</td>
+              <td>
+                <a [routerLink]="product.id" class="product-list__name">{{ product.name }}</a>
+                @if (product.barcode) {
+                  <span class="product-list__secondary">{{ product.barcode }}</span>
+                }
+              </td>
+              <td>{{ product.categoryName || '—' }}</td>
+              <td>{{ product.unitName || '—' }}</td>
+              <td>{{ product.costPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}</td>
+              <td>{{ product.sellingPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}</td>
+              <td>{{ product.reorderLevel }}</td>
+              <td>
+                <app-badge [variant]="product.active ? 'success' : 'neutral'">
+                  {{ product.active ? 'Active' : 'Inactive' }}
+                </app-badge>
+              </td>
+              <td>{{ product.updatedAt | date: 'mediumDate' }}</td>
+              <td>
+                <a
+                  [routerLink]="[product.id, 'edit']"
+                  class="product-list__action"
+                  *appHasPermission="permissions.productUpdate"
+                >
+                  Edit
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+    </div>
+
+    <div class="product-list__pagination">
+      <span>{{ store.pagination().totalItems }} products</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state
+      title="No products found"
+      description="No products match the current filters."
+    >
+      <a routerLink="new" class="product-list__primary-action" *appHasPermission="permissions.productCreate">
+        Add product
+      </a>
+    </app-empty-state>
+  }
+</app-content-container>

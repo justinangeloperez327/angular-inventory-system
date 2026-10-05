@@ -1,0 +1,98 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Product unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.product()) {
+    <app-skeleton height="18rem" />
+  } @else if (store.product(); as product) {
+    <app-page-header [title]="product.name" [description]="'SKU ' + product.sku">
+      <a
+        actions
+        [routerLink]="['edit']"
+        class="product-detail__edit"
+        *appHasPermission="permissions.productUpdate"
+      >
+        Edit
+      </a>
+
+      @if (product.active) {
+        <app-button
+          actions
+          variant="danger"
+          *appHasPermission="permissions.productDelete"
+          [loading]="store.updatingStatus()"
+          (click)="confirmDeactivate.set(true)"
+        >
+          Deactivate
+        </app-button>
+      } @else {
+        <app-button
+          actions
+          variant="secondary"
+          *appHasPermission="permissions.productUpdate"
+          [loading]="store.updatingStatus()"
+          (click)="store.setActive(product.id, true)"
+        >
+          Reactivate
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="product-detail__status">
+      <app-badge [variant]="product.active ? 'success' : 'neutral'">
+        {{ product.active ? 'Active' : 'Inactive' }}
+      </app-badge>
+    </div>
+
+    <div class="product-detail__grid">
+      <section class="product-detail__panel">
+        <h2>Identification</h2>
+        <dl>
+          <div><dt>SKU</dt><dd class="product-detail__mono">{{ product.sku }}</dd></div>
+          <div><dt>Barcode</dt><dd>{{ product.barcode || '—' }}</dd></div>
+          <div><dt>Category</dt><dd>{{ product.categoryName || '—' }}</dd></div>
+          <div><dt>Unit</dt><dd>{{ product.unitName || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="product-detail__panel">
+        <h2>Commercial</h2>
+        <dl>
+          <div>
+            <dt>Cost price</dt>
+            <dd>{{ product.costPrice | currency: product.currencyCode : 'symbol' : '1.2-2' }}</dd>
+          </div>
+          <div>
+            <dt>Selling price</dt>
+            <dd>{{ product.sellingPrice | currency: product.currencyCode : 'symbol' : '1.2-2' }}</dd>
+          </div>
+          <div><dt>Reorder level</dt><dd>{{ product.reorderLevel }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="product-detail__panel product-detail__panel--wide">
+        <h2>Description</h2>
+        <p>{{ product.description || 'No description provided.' }}</p>
+      </section>
+
+      <section class="product-detail__panel product-detail__panel--wide">
+        <h2>Record</h2>
+        <dl class="product-detail__record">
+          <div><dt>Created</dt><dd>{{ product.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Last updated</dt><dd>{{ product.updatedAt | date: 'medium' }}</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmDeactivate()"
+      title="Deactivate product"
+      [message]="'Deactivate ' + product.name + '? Existing transaction history will be preserved.'"
+      confirmLabel="Deactivate"
+      [destructive]="true"
+      (confirmed)="deactivate()"
+      (cancelled)="confirmDeactivate.set(false)"
+    />
+  }
+</app-content-container>

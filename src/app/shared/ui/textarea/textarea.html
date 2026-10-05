@@ -3,23 +3,19 @@
     <span class="field__label">{{ label }}</span>
   }
 
-  <input
+  <textarea
     class="field__control"
     [class.is-invalid]="error"
     [id]="id || fallbackId"
-    [type]="type"
+    [rows]="rows"
     [placeholder]="placeholder"
-    [attr.autocomplete]="autocomplete || null"
-    [attr.min]="min"
-    [attr.max]="max"
-    [attr.step]="step"
     [disabled]="disabled"
     [value]="value"
     [attr.aria-invalid]="error ? 'true' : null"
     [attr.aria-describedby]="error ? (id || fallbackId) + '-error' : hint ? (id || fallbackId) + '-hint' : null"
     (input)="handleInput($event)"
     (blur)="handleBlur()"
-  />
+  ></textarea>
 
   @if (error) {
     <span class="field__message field__message--error" [id]="(id || fallbackId) + '-error'">{{ error }}</span>

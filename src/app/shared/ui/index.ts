@@ -13,5 +13,6 @@ export * from './pagination/pagination';
 export * from './select/select';
 export * from './skeleton/skeleton';
 export * from './table/table';
+export * from './textarea/textarea';
 export * from './toast/toast-outlet';
 export * from './toast/toast.service';

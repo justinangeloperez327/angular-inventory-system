@@ -8,35 +8,31 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-let inputSequence = 0;
+let textareaSequence = 0;
 
 @Component({
-  selector: 'app-input',
-  templateUrl: './input.html',
-  styleUrl: './input.scss',
+  selector: 'app-textarea',
+  templateUrl: './textarea.html',
+  styleUrl: './textarea.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputComponent),
+      useExisting: forwardRef(() => TextareaComponent),
       multi: true,
     },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InputComponent implements ControlValueAccessor {
+export class TextareaComponent implements ControlValueAccessor {
   @Input() id = '';
   @Input() label = '';
-  @Input() type: 'text' | 'email' | 'password' | 'number' | 'search' = 'text';
   @Input() placeholder = '';
-  @Input() autocomplete = '';
+  @Input() rows = 4;
   @Input() hint = '';
   @Input() error = '';
   @Input() disabled = false;
-  @Input() min: string | number | null = null;
-  @Input() max: string | number | null = null;
-  @Input() step: string | number | null = null;
 
-  readonly fallbackId = `app-input-${++inputSequence}`;
+  readonly fallbackId = `app-textarea-${++textareaSequence}`;
   value = '';
 
   private readonly changeDetector = inject(ChangeDetectorRef);
@@ -62,7 +58,7 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   handleInput(event: Event): void {
-    this.value = (event.target as HTMLInputElement).value;
+    this.value = (event.target as HTMLTextAreaElement).value;
     this.onChange(this.value);
   }
 
