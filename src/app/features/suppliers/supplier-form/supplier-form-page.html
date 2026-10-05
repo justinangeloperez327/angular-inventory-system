@@ -1,0 +1,66 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="30rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit supplier' : 'Add supplier'"
+      [description]="
+        editing
+          ? 'Update supplier contact, tax, and address information.'
+          : 'Create a supplier for purchasing and receiving workflows.'
+      "
+    />
+
+    @if (error()) {
+      <div class="supplier-form__alert">
+        <app-alert variant="danger" title="Unable to save supplier">{{ error() }}</app-alert>
+      </div>
+    }
+
+    <form class="supplier-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="supplier-form__section">
+        <div class="supplier-form__heading">
+          <h2>Supplier</h2>
+          <p>Core supplier identification and tax information.</p>
+        </div>
+        <div class="supplier-form__grid">
+          <app-input label="Supplier code" formControlName="code" [error]="fieldError('code')" />
+          <app-input label="Supplier name" formControlName="name" [error]="fieldError('name')" />
+          <app-input label="Tax number" formControlName="taxNumber" [error]="fieldError('taxNumber')" />
+        </div>
+      </section>
+
+      <section class="supplier-form__section">
+        <div class="supplier-form__heading">
+          <h2>Contact</h2>
+          <p>Primary supplier contact details.</p>
+        </div>
+        <div class="supplier-form__grid">
+          <app-input label="Contact name" formControlName="contactName" [error]="fieldError('contactName')" />
+          <app-input type="email" label="Email" autocomplete="email" formControlName="email" [error]="fieldError('email')" />
+          <app-input label="Phone" autocomplete="tel" formControlName="phone" [error]="fieldError('phone')" />
+        </div>
+      </section>
+
+      <section class="supplier-form__section">
+        <div class="supplier-form__heading">
+          <h2>Address</h2>
+          <p>Supplier registered or primary business address.</p>
+        </div>
+        <div class="supplier-form__grid">
+          <app-input class="supplier-form__wide" label="Address line 1" formControlName="addressLine1" [error]="fieldError('addressLine1')" />
+          <app-input class="supplier-form__wide" label="Address line 2" formControlName="addressLine2" [error]="fieldError('addressLine2')" />
+          <app-input label="City" formControlName="city" [error]="fieldError('city')" />
+          <app-input label="State / Province" formControlName="stateProvince" [error]="fieldError('stateProvince')" />
+          <app-input label="Postal code" formControlName="postalCode" [error]="fieldError('postalCode')" />
+          <app-input label="Country code" placeholder="AE" hint="ISO 3166-1 alpha-2" formControlName="countryCode" [error]="fieldError('countryCode')" />
+        </div>
+      </section>
+
+      <div class="supplier-form__actions">
+        <a [routerLink]="id ? ['/suppliers', id] : ['/suppliers']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save supplier</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

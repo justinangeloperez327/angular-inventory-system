@@ -1,0 +1,152 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Supplier unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.supplier()) {
+    <app-skeleton height="28rem" />
+  } @else if (store.supplier(); as supplier) {
+    <app-page-header [title]="supplier.name" [description]="'Supplier ' + supplier.code">
+      <a
+        actions
+        [routerLink]="['edit']"
+        class="supplier-detail__edit"
+        *appHasPermission="permissions.supplierManage"
+      >
+        Edit
+      </a>
+
+      @if (supplier.active) {
+        <app-button
+          actions
+          variant="danger"
+          *appHasPermission="permissions.supplierManage"
+          [loading]="store.statusUpdating()"
+          (click)="confirmDeactivate.set(true)"
+        >
+          Deactivate
+        </app-button>
+      } @else {
+        <app-button
+          actions
+          variant="secondary"
+          *appHasPermission="permissions.supplierManage"
+          [loading]="store.statusUpdating()"
+          (click)="store.setActive(true)"
+        >
+          Reactivate
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="supplier-detail__status">
+      <app-badge [variant]="supplier.active ? 'success' : 'neutral'">
+        {{ supplier.active ? 'Active' : 'Inactive' }}
+      </app-badge>
+    </div>
+
+    <div class="supplier-detail__grid">
+      <section class="supplier-detail__panel">
+        <h2>Contact</h2>
+        <dl>
+          <div><dt>Contact</dt><dd>{{ supplier.contactName || '—' }}</dd></div>
+          <div><dt>Email</dt><dd>{{ supplier.email || '—' }}</dd></div>
+          <div><dt>Phone</dt><dd>{{ supplier.phone || '—' }}</dd></div>
+          <div><dt>Tax number</dt><dd>{{ supplier.taxNumber || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="supplier-detail__panel">
+        <h2>Address</h2>
+        <dl>
+          <div><dt>Address 1</dt><dd>{{ supplier.addressLine1 || '—' }}</dd></div>
+          <div><dt>Address 2</dt><dd>{{ supplier.addressLine2 || '—' }}</dd></div>
+          <div><dt>City</dt><dd>{{ supplier.city || '—' }}</dd></div>
+          <div><dt>State / Province</dt><dd>{{ supplier.stateProvince || '—' }}</dd></div>
+          <div><dt>Postal code</dt><dd>{{ supplier.postalCode || '—' }}</dd></div>
+          <div><dt>Country</dt><dd>{{ supplier.countryCode || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="supplier-detail__panel supplier-detail__panel--wide">
+        <h2>Record</h2>
+        <dl class="supplier-detail__record">
+          <div><dt>Created</dt><dd>{{ supplier.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Last updated</dt><dd>{{ supplier.updatedAt | date: 'medium' }}</dd></div>
+        </dl>
+      </section>
+    </div>
+
+    <section class="supplier-detail__history" *appHasPermission="permissions.purchaseView">
+      <div class="supplier-detail__history-header">
+        <div>
+          <h2>Purchase history</h2>
+          <p>Purchase orders issued to this supplier.</p>
+        </div>
+      </div>
+
+      @if (store.historyError()) {
+        <app-alert variant="warning" title="Purchase history unavailable">
+          {{ store.historyError() }}
+        </app-alert>
+      }
+
+      @if (store.historyLoading() && !store.purchaseHistory()) {
+        <app-skeleton height="12rem" />
+      } @else if (store.purchaseHistory(); as history) {
+        @if (history.data.length > 0) {
+          <app-table>
+            <thead>
+              <tr>
+                <th>PO Number</th>
+                <th>Order date</th>
+                <th>Expected</th>
+                <th>Status</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of history.data; track order.id) {
+                <tr>
+                  <td class="supplier-detail__mono">{{ order.number }}</td>
+                  <td>{{ order.orderDate | date: 'mediumDate' }}</td>
+                  <td>{{ order.expectedDate ? (order.expectedDate | date: 'mediumDate') : '—' }}</td>
+                  <td>
+                    <app-badge [variant]="purchaseStatusVariant(order.status)">
+                      {{ order.status }}
+                    </app-badge>
+                  </td>
+                  <td>{{ order.totalAmount | currency: history.currencyCode : 'symbol' : '1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </app-table>
+
+          <div class="supplier-detail__pagination">
+            <span>{{ history.pagination.totalItems }} purchase orders</span>
+            <app-pagination
+              [page]="history.pagination.page"
+              [totalPages]="history.pagination.totalPages"
+              (pageChange)="store.setHistoryPage($event)"
+            />
+          </div>
+        } @else {
+          <app-empty-state
+            title="No purchase history"
+            description="Purchase orders for this supplier will appear here."
+          />
+        }
+      }
+    </section>
+
+    <app-confirmation-dialog
+      [open]="confirmDeactivate()"
+      title="Deactivate supplier"
+      [message]="'Deactivate ' + supplier.name + '? Existing purchase and receiving history will be preserved.'"
+      confirmLabel="Deactivate"
+      [destructive]="true"
+      (confirmed)="deactivate()"
+      (cancelled)="confirmDeactivate.set(false)"
+    />
+  }
+</app-content-container>

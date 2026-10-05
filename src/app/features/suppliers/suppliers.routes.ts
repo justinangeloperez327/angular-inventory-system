@@ -1,14 +1,41 @@
 import { Routes } from '@angular/router';
 
-import { FeaturePlaceholderPage } from '../../shared/pages/feature-placeholder/feature-placeholder';
+import { permissionGuard } from '../../core/auth/guards/permission.guard';
+import { PERMISSIONS } from '../../core/auth/permissions';
 
 export const SUPPLIERS_ROUTES: Routes = [
   {
     path: '',
-    component: FeaturePlaceholderPage,
-    data: {
-      title: 'Suppliers',
-      description: 'Supplier management will be implemented in Group 9.',
-    },
+    loadComponent: () =>
+      import('./supplier-list/supplier-list-page').then(
+        (component) => component.SupplierListPage,
+      ),
+    title: 'Suppliers | Inventory System',
+  },
+  {
+    path: 'new',
+    canActivate: [permissionGuard(PERMISSIONS.supplierManage)],
+    loadComponent: () =>
+      import('./supplier-form/supplier-form-page').then(
+        (component) => component.SupplierFormPage,
+      ),
+    title: 'Add supplier | Inventory System',
+  },
+  {
+    path: ':id/edit',
+    canActivate: [permissionGuard(PERMISSIONS.supplierManage)],
+    loadComponent: () =>
+      import('./supplier-form/supplier-form-page').then(
+        (component) => component.SupplierFormPage,
+      ),
+    title: 'Edit supplier | Inventory System',
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./supplier-detail/supplier-detail-page').then(
+        (component) => component.SupplierDetailPage,
+      ),
+    title: 'Supplier | Inventory System',
   },
 ];
