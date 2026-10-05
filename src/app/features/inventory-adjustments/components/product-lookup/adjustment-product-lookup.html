@@ -1,0 +1,44 @@
+<div class="product-lookup">
+  <span class="product-lookup__label">Product</span>
+
+  @if (selectedLabel) {
+    <div class="product-lookup__selected">
+      <strong>{{ selectedLabel }}</strong>
+      <button type="button" (click)="clear()">Change</button>
+    </div>
+  } @else {
+    <div class="product-lookup__search">
+      <app-input
+        type="search"
+        placeholder="Search SKU or product name"
+        [formControl]="search"
+        (keyup.enter)="find()"
+      />
+      <app-button type="button" variant="secondary" [loading]="loading()" (click)="find()">
+        Search
+      </app-button>
+    </div>
+
+    @if (searchError()) {
+      <span class="product-lookup__message">{{ searchError() }}</span>
+    }
+
+    @if (results().length > 0) {
+      <div class="product-lookup__results">
+        @for (product of results(); track product.id) {
+          <button type="button" (click)="choose(product)">
+            <span>{{ product.sku }}</span>
+            <strong>{{ product.name }}</strong>
+            @if (product.unitSymbol) {
+              <small>{{ product.unitSymbol }}</small>
+            }
+          </button>
+        }
+      </div>
+    }
+  }
+
+  @if (error) {
+    <span class="product-lookup__message product-lookup__message--error">{{ error }}</span>
+  }
+</div>

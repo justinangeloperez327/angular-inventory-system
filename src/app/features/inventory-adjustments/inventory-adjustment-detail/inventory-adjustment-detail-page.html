@@ -1,0 +1,95 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Adjustment unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.item()) {
+    <app-skeleton height="26rem" />
+  } @else if (store.item(); as item) {
+    <app-page-header [title]="item.number" [description]="'Inventory adjustment · ' + item.productName">
+      <a actions routerLink="/adjustments" class="adjustment-detail__action">All adjustments</a>
+
+      @if (item.status === 'draft') {
+        <a
+          actions
+          [routerLink]="['edit']"
+          class="adjustment-detail__action"
+          *appHasPermission="permissions.inventoryAdjust"
+        >
+          Edit
+        </a>
+        <app-button
+          actions
+          *appHasPermission="permissions.inventoryAdjust"
+          [loading]="store.posting()"
+          (click)="confirmPost.set(true)"
+        >
+          Post adjustment
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="adjustment-detail__summary">
+      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+      <app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge>
+      <strong>
+        {{ item.quantity }}
+        @if (item.unitSymbol) {
+          <span>{{ item.unitSymbol }}</span>
+        }
+      </strong>
+    </div>
+
+    <div class="adjustment-detail__grid">
+      <section class="adjustment-detail__panel">
+        <h2>Inventory</h2>
+        <dl>
+          <div><dt>Product</dt><dd><a [routerLink]="['/products', item.productId]">{{ item.productName }}</a><span>{{ item.sku }}</span></dd></div>
+          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
+          <div><dt>Direction</dt><dd>{{ item.direction }}</dd></div>
+          <div><dt>Quantity</dt><dd>{{ item.quantity }}</dd></div>
+          <div><dt>Reason</dt><dd>{{ item.reasonLabel }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="adjustment-detail__panel">
+        <h2>Posting</h2>
+        <dl>
+          <div><dt>Status</dt><dd>{{ item.status }}</dd></div>
+          <div><dt>Balance before</dt><dd>{{ item.balanceBefore ?? '—' }}</dd></div>
+          <div><dt>Balance after</dt><dd>{{ item.balanceAfter ?? '—' }}</dd></div>
+          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Posted</dt><dd>{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Posted by</dt><dd>{{ item.postedBy?.name || '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="adjustment-detail__panel adjustment-detail__panel--wide">
+        <h2>Notes</h2>
+        <p>{{ item.notes || 'No notes recorded.' }}</p>
+      </section>
+
+      @if (item.movement) {
+        <section class="adjustment-detail__panel adjustment-detail__panel--wide">
+          <h2>Resulting movement</h2>
+          <p>
+            Posting created an immutable stock movement.
+            <a [routerLink]="['/stock-movements', item.movement.id]">
+              {{ item.movement.number || 'View stock movement' }}
+            </a>
+          </p>
+        </section>
+      }
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmPost()"
+      title="Post adjustment"
+      [message]="'Post ' + item.number + '? This will change inventory and create an immutable stock movement.'"
+      confirmLabel="Post adjustment"
+      (confirmed)="post()"
+      (cancelled)="confirmPost.set(false)"
+    />
+  }
+</app-content-container>

@@ -60,6 +60,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: ROUTE_PATHS.adjustments,
+        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        loadChildren: () =>
+          import('./features/inventory-adjustments/inventory-adjustments.routes').then(
+            (routes) => routes.INVENTORY_ADJUSTMENTS_ROUTES,
+          ),
+      },
+      {
         path: ROUTE_PATHS.purchasing,
         canActivate: [permissionGuard(PERMISSIONS.purchaseView)],
         loadChildren: () =>

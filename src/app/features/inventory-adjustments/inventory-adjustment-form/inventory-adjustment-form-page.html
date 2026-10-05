@@ -1,0 +1,81 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="28rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit adjustment' : 'New adjustment'"
+      description="Save as draft first. Posting is a separate irreversible inventory action."
+    />
+
+    @if (error()) {
+      <div class="adjustment-form__alert"><app-alert variant="danger" title="Unable to save adjustment">{{ error() }}</app-alert></div>
+    }
+
+    <form class="adjustment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="adjustment-form__section">
+        <div class="adjustment-form__heading">
+          <h2>Inventory correction</h2>
+          <p>Select the product, warehouse, direction, quantity, and controlled reason.</p>
+        </div>
+
+        <div class="adjustment-form__grid">
+          <app-adjustment-product-lookup
+            class="adjustment-form__wide"
+            [selectedLabel]="selectedProductLabel()"
+            [error]="fieldError('productId')"
+            (selected)="selectProduct($event)"
+            (cleared)="clearProduct()"
+          />
+
+          <app-select
+            label="Warehouse"
+            placeholder="Select warehouse"
+            [options]="warehouseOptions()"
+            formControlName="warehouseId"
+            [error]="fieldError('warehouseId')"
+          />
+
+          <app-select
+            label="Direction"
+            [options]="[
+              { label: 'Increase stock', value: 'increase' },
+              { label: 'Decrease stock', value: 'decrease' }
+            ]"
+            formControlName="direction"
+            [error]="fieldError('direction')"
+          />
+
+          <app-input
+            type="number"
+            label="Quantity"
+            [min]="0.000001"
+            step="any"
+            formControlName="quantity"
+            [error]="fieldError('quantity')"
+          />
+
+          <app-select
+            label="Reason"
+            placeholder="Select reason"
+            [options]="reasonOptions()"
+            formControlName="reasonCode"
+            [error]="fieldError('reasonCode')"
+          />
+
+          <app-textarea
+            class="adjustment-form__wide"
+            label="Notes"
+            hint="Explain the business reason and evidence for the correction."
+            formControlName="notes"
+            [error]="fieldError('notes')"
+          />
+        </div>
+      </section>
+
+      <div class="adjustment-form__actions">
+        <a [routerLink]="id ? ['/adjustments', id] : ['/adjustments']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

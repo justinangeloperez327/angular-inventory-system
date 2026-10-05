@@ -1,0 +1,99 @@
+<app-content-container>
+  <app-page-header
+    title="Adjustments"
+    description="Controlled inventory corrections. Posted adjustments are immutable and create stock movements."
+  >
+    <a
+      actions
+      routerLink="new"
+      class="adjustments__primary-action"
+      *appHasPermission="permissions.inventoryAdjust"
+    >
+      New adjustment
+    </a>
+  </app-page-header>
+
+  <form class="adjustments__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Number, SKU, product, reason" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
+    <app-select label="Direction" placeholder="All directions" [options]="[
+      { label: 'Increase', value: 'increase' },
+      { label: 'Decrease', value: 'decrease' }
+    ]" formControlName="direction" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Posted', value: 'posted' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="adjustments__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="adjustments__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+  }
+
+  @if (store.error()) {
+    <div class="adjustments__alert"><app-alert variant="danger" title="Adjustments unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="adjustments__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="adjustments__table">
+      <app-table>
+        <thead>
+          <tr>
+            <th>Number</th><th>Product</th><th>Warehouse</th><th>Direction</th>
+            <th>Quantity</th><th>Reason</th><th>Status</th><th>Created</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id" class="adjustments__number">{{ item.number }}</a></td>
+              <td>{{ item.productName }}<span class="adjustments__secondary">{{ item.sku }}</span></td>
+              <td>{{ item.warehouseName }}<span class="adjustments__secondary">{{ item.warehouseCode }}</span></td>
+              <td><app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge></td>
+              <td class="adjustments__quantity">
+                {{ item.quantity }}
+                @if (item.unitSymbol) {
+                  <span>{{ item.unitSymbol }}</span>
+                }
+              </td>
+              <td>{{ item.reasonLabel }}</td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>{{ item.createdAt | date: 'short' }}</td>
+              <td>
+                @if (item.status === 'draft') {
+                  <a
+                    [routerLink]="[item.id, 'edit']"
+                    class="adjustments__action"
+                    *appHasPermission="permissions.inventoryAdjust"
+                  >
+                    Edit
+                  </a>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="adjustments__pagination">
+        <span>{{ store.pagination().totalItems }} adjustments</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No adjustments found" description="No inventory adjustments match the current filters." />
+  }
+</app-content-container>
