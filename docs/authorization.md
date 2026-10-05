@@ -18,6 +18,7 @@ inventory.view
 inventory.adjust
 inventory.transfer
 inventory.count
+inventory.count.approve
 
 purchase.view
 purchase.create

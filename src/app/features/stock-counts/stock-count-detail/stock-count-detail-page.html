@@ -1,0 +1,170 @@
+<app-content-container>
+  @if (store.error()) {
+    <app-alert variant="danger" title="Stock count unavailable">{{ store.error() }}</app-alert>
+  }
+
+  @if (store.loading() && !store.count()) {
+    <app-skeleton height="30rem" />
+  } @else if (store.count(); as count) {
+    <app-page-header [title]="count.number" [description]="'Stock count · ' + count.warehouseName">
+      <a actions routerLink="/stock-counts" class="count-detail__action">All counts</a>
+
+      @if (count.status === 'draft') {
+        <app-button actions [loading]="store.action() === 'start'" (click)="confirmAction.set('start')">
+          Start count
+        </app-button>
+      }
+
+      @if (count.status === 'counting') {
+        <app-button
+          actions
+          [disabled]="!store.allCounted()"
+          [loading]="store.action() === 'submit'"
+          (click)="confirmAction.set('submit')"
+        >
+          Submit for review
+        </app-button>
+      }
+
+      @if (count.status === 'submitted') {
+        <app-button
+          actions
+          *appHasPermission="permissions.inventoryCountApprove"
+          [loading]="store.action() === 'post'"
+          (click)="confirmAction.set('post')"
+        >
+          Approve & post
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="count-detail__summary">
+      <app-badge [variant]="statusVariant(count.status)">{{ count.status }}</app-badge>
+      <span>{{ count.countedLineCount }} / {{ count.lineCount }} counted</span>
+      <span>{{ count.varianceLineCount }} variance lines</span>
+    </div>
+
+    <div class="count-detail__grid">
+      <section class="count-detail__panel">
+        <h2>Session</h2>
+        <dl>
+          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', count.warehouseId]">{{ count.warehouseName }}</a><span>{{ count.warehouseCode }}</span></dd></div>
+          <div><dt>Created</dt><dd>{{ count.createdAt | date: 'medium' }}</dd></div>
+          <div><dt>Started</dt><dd>{{ count.startedAt ? (count.startedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Submitted</dt><dd>{{ count.submittedAt ? (count.submittedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Approved</dt><dd>{{ count.approvedAt ? (count.approvedAt | date: 'medium') : '—' }}</dd></div>
+          <div><dt>Posted</dt><dd>{{ count.postedAt ? (count.postedAt | date: 'medium') : '—' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="count-detail__panel">
+        <h2>Audit</h2>
+        <dl>
+          <div><dt>Created by</dt><dd>{{ count.createdBy?.name || 'System' }}</dd></div>
+          <div><dt>Started by</dt><dd>{{ count.startedBy?.name || '—' }}</dd></div>
+          <div><dt>Submitted by</dt><dd>{{ count.submittedBy?.name || '—' }}</dd></div>
+          <div><dt>Approved by</dt><dd>{{ count.approvedBy?.name || '—' }}</dd></div>
+        </dl>
+        <p>{{ count.notes || 'No notes recorded.' }}</p>
+      </section>
+
+      <section class="count-detail__panel count-detail__panel--wide">
+        <div class="count-detail__line-heading">
+          <div>
+            <h2>Count lines</h2>
+            <p>Lines are paginated so large warehouses do not require one giant browser form.</p>
+          </div>
+          <form (ngSubmit)="applyLineFilter()" class="count-detail__line-filter">
+            <app-input type="search" placeholder="SKU or product" [formControl]="search" />
+            <label><input type="checkbox" [formControl]="varianceOnly" /> Variances only</label>
+            <app-button type="submit" variant="secondary">Filter</app-button>
+          </form>
+        </div>
+
+        @if (lineMessage()) {
+          <div class="count-detail__line-message">
+            <app-alert variant="warning" title="Unsaved count page">{{ lineMessage() }}</app-alert>
+          </div>
+        }
+
+        @if (store.lines().length > 0) {
+          <app-table>
+            <thead>
+              <tr><th>SKU</th><th>Product</th><th>Expected</th><th>Counted</th><th>Variance</th><th>Movement</th></tr>
+            </thead>
+            <tbody>
+              @for (line of store.lines(); track line.id; let index = $index) {
+                <tr>
+                  <td class="count-detail__mono">{{ line.sku }}</td>
+                  <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
+                  <td>{{ line.expectedQuantity }} {{ line.unitSymbol || '' }}</td>
+                  <td>
+                    @if (count.status === 'counting') {
+                      <app-input
+                        type="number"
+                        [min]="0"
+                        step="any"
+                        [formControl]="lineForm(index).controls.countedQuantity"
+                        [error]="quantityError(lineForm(index))"
+                      />
+                    } @else {
+                      {{ line.countedQuantity ?? '—' }} {{ line.unitSymbol || '' }}
+                    }
+                  </td>
+                  <td [class.count-detail__variance]="line.varianceQuantity !== null && line.varianceQuantity !== 0">
+                    {{ line.varianceQuantity ?? '—' }}
+                  </td>
+                  <td>
+                    @if (line.movement) {
+                      <a [routerLink]="['/stock-movements', line.movement.id]">{{ line.movement.number || 'Stock count movement' }}</a>
+                    } @else {
+                      —
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </app-table>
+
+          @if (count.status === 'counting') {
+            <div class="count-detail__save-lines">
+              <app-button [loading]="store.saving()" (click)="savePage()">Save this page</app-button>
+            </div>
+          }
+
+          <div class="count-detail__pagination">
+            <span>{{ store.linePagination().totalItems }} lines</span>
+            <app-pagination
+              [page]="store.linePagination().page"
+              [totalPages]="store.linePagination().totalPages"
+              (pageChange)="changeLinePage($event)"
+            />
+          </div>
+        } @else {
+          <p class="count-detail__empty">No count lines match the current filter.</p>
+        }
+      </section>
+    </div>
+
+    <app-confirmation-dialog
+      [open]="confirmAction() !== null"
+      [title]="
+        confirmAction() === 'start'
+          ? 'Start stock count'
+          : confirmAction() === 'submit'
+            ? 'Submit stock count'
+            : 'Approve and post stock count'
+      "
+      [message]="
+        confirmAction() === 'start'
+          ? 'Start ' + count.number + '? The backend will capture the expected warehouse snapshot.'
+          : confirmAction() === 'submit'
+            ? 'Submit ' + count.number + ' for review? Counted quantities will be locked.'
+            : 'Approve and post ' + count.number + '? Variances will adjust inventory and create immutable stock-count movements.'
+      "
+      [confirmLabel]="confirmAction() === 'post' ? 'Approve & post' : confirmAction() === 'submit' ? 'Submit' : 'Start'"
+      (confirmed)="confirm()"
+      (cancelled)="confirmAction.set(null)"
+    />
+  }
+</app-content-container>

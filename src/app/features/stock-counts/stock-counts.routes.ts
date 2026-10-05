@@ -1,14 +1,28 @@
 import { Routes } from '@angular/router';
 
-import { FeaturePlaceholderPage } from '../../shared/pages/feature-placeholder/feature-placeholder';
-
 export const STOCK_COUNTS_ROUTES: Routes = [
   {
     path: '',
-    component: FeaturePlaceholderPage,
-    data: {
-      title: 'Stock Counts',
-      description: 'Physical stock counting and variance workflows will be implemented in Group 16.',
-    },
+    loadComponent: () =>
+      import('./stock-count-list/stock-count-list-page').then(
+        (component) => component.StockCountListPage,
+      ),
+    title: 'Stock Counts | Inventory System',
+  },
+  {
+    path: 'new',
+    loadComponent: () =>
+      import('./stock-count-create/stock-count-create-page').then(
+        (component) => component.StockCountCreatePage,
+      ),
+    title: 'New stock count | Inventory System',
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./stock-count-detail/stock-count-detail-page').then(
+        (component) => component.StockCountDetailPage,
+      ),
+    title: 'Stock Count | Inventory System',
   },
 ];

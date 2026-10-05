@@ -12,6 +12,7 @@ export const PERMISSIONS = {
   inventoryAdjust: 'inventory.adjust',
   inventoryTransfer: 'inventory.transfer',
   inventoryCount: 'inventory.count',
+  inventoryCountApprove: 'inventory.count.approve',
   purchaseView: 'purchase.view',
   purchaseCreate: 'purchase.create',
   purchaseApprove: 'purchase.approve',

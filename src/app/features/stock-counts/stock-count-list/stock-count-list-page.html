@@ -1,0 +1,67 @@
+<app-content-container>
+  <app-page-header
+    title="Stock Counts"
+    description="Warehouse physical counts, variance review, and auditable inventory reconciliation."
+  >
+    <a actions routerLink="new" class="count-list__primary-action">New stock count</a>
+  </app-page-header>
+
+  <form class="count-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Count number or warehouse" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
+    <app-select label="Status" placeholder="All statuses" [options]="[
+      { label: 'Draft', value: 'draft' },
+      { label: 'Counting', value: 'counting' },
+      { label: 'Submitted', value: 'submitted' },
+      { label: 'Posted', value: 'posted' },
+      { label: 'Cancelled', value: 'cancelled' }
+    ]" formControlName="status" />
+    <app-input type="date" label="From" formControlName="dateFrom" />
+    <app-input type="date" label="To" formControlName="dateTo" />
+    <div class="count-list__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (filterError()) {
+    <div class="count-list__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+  }
+
+  @if (store.error()) {
+    <div class="count-list__alert"><app-alert variant="danger" title="Stock counts unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="count-list__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="count-list__table">
+      <app-table>
+        <thead>
+          <tr><th>Count</th><th>Warehouse</th><th>Status</th><th>Progress</th><th>Variance lines</th><th>Created</th><th>Started</th><th>Posted</th></tr>
+        </thead>
+        <tbody>
+          @for (item of store.items(); track item.id) {
+            <tr>
+              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
+              <td>{{ item.warehouseName }}<span class="count-list__secondary">{{ item.warehouseCode }}</span></td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
+              <td>{{ item.countedLineCount }} / {{ item.lineCount }}</td>
+              <td>{{ item.varianceLineCount }}</td>
+              <td>{{ item.createdAt | date: 'short' }}</td>
+              <td>{{ item.startedAt ? (item.startedAt | date: 'short') : '—' }}</td>
+              <td>{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="count-list__pagination">
+        <span>{{ store.pagination().totalItems }} counts</span>
+        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No stock counts found" description="No stock-count sessions match the current filters." />
+  }
+</app-content-container>

@@ -1,0 +1,34 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="18rem" />
+  } @else {
+    <app-page-header
+      title="New stock count"
+      description="Create the session first. Starting it captures the backend's expected warehouse snapshot."
+    />
+
+    @if (error()) {
+      <div class="count-create__alert"><app-alert variant="danger" title="Stock count error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="count-create" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <app-select
+        label="Warehouse"
+        placeholder="Select warehouse"
+        [options]="warehouseOptions()"
+        formControlName="warehouseId"
+        [error]="fieldError('warehouseId')"
+      />
+      <app-textarea
+        label="Notes"
+        hint="Optional instructions or scope notes for the count."
+        formControlName="notes"
+        [error]="fieldError('notes')"
+      />
+      <div class="count-create__actions">
+        <a routerLink="/stock-counts">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Create draft</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>
