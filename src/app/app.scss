@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 3rem;
+}
+
+.starter {
+  max-width: 48rem;
+  margin: 6rem auto;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.05;
+}
+
+.starter > p:last-child {
+  max-width: 38rem;
+  margin-top: 1rem;
+  color: #5c667a;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
