@@ -1,10 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { ContentContainerComponent } from '../../ui/content-container/content-container';
+import { PageHeaderComponent } from '../../ui/page-header/page-header';
+
 @Component({
   selector: 'app-feature-placeholder',
+  imports: [ContentContainerComponent, PageHeaderComponent],
   templateUrl: './feature-placeholder.html',
-  styleUrl: './feature-placeholder.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeaturePlaceholderPage {

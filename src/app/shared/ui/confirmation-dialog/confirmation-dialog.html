@@ -1,0 +1,9 @@
+<app-dialog [open]="open" [title]="title" (closed)="cancelled.emit()">
+  <p class="confirmation-dialog__message">{{ message }}</p>
+  <div class="confirmation-dialog__actions">
+    <app-button variant="secondary" (click)="cancelled.emit()">Cancel</app-button>
+    <app-button [variant]="destructive ? 'danger' : 'primary'" (click)="confirmed.emit()">
+      {{ confirmLabel }}
+    </app-button>
+  </div>
+</app-dialog>

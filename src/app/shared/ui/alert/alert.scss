@@ -1,0 +1,22 @@
+.alert {
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  padding: 0.75rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+.alert strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.alert__content {
+  color: var(--color-text-muted);
+}
+
+.alert--info { border-left-color: #3976b8; }
+.alert--success { border-left-color: #278154; }
+.alert--warning { border-left-color: #b97700; }
+.alert--danger { border-left-color: var(--color-danger); }

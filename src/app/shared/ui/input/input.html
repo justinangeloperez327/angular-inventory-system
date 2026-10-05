@@ -1,0 +1,25 @@
+<label class="field" [for]="id || fallbackId">
+  @if (label) {
+    <span class="field__label">{{ label }}</span>
+  }
+
+  <input
+    class="field__control"
+    [class.is-invalid]="error"
+    [id]="id || fallbackId"
+    [type]="type"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [value]="value"
+    [attr.aria-invalid]="error ? 'true' : null"
+    [attr.aria-describedby]="error ? (id || fallbackId) + '-error' : hint ? (id || fallbackId) + '-hint' : null"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+
+  @if (error) {
+    <span class="field__message field__message--error" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
+  } @else if (hint) {
+    <span class="field__message" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
+  }
+</label>

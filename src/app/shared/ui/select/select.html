@@ -1,0 +1,25 @@
+<label class="field" [for]="id || fallbackId">
+  @if (label) {
+    <span class="field__label">{{ label }}</span>
+  }
+
+  <select
+    class="field__control"
+    [class.is-invalid]="error"
+    [id]="id || fallbackId"
+    [disabled]="disabled"
+    [value]="value"
+    [attr.aria-invalid]="error ? 'true' : null"
+    (change)="handleChange($event)"
+    (blur)="handleBlur()"
+  >
+    <option value="">{{ placeholder }}</option>
+    @for (option of options; track option.value) {
+      <option [value]="option.value" [disabled]="option.disabled">{{ option.label }}</option>
+    }
+  </select>
+
+  @if (error) {
+    <span class="field__message field__message--error">{{ error }}</span>
+  }
+</label>

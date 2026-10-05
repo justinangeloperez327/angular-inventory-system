@@ -1,0 +1,33 @@
+<div class="sidebar-backdrop" [class.is-open]="open" (click)="closed.emit()" aria-hidden="true"></div>
+
+<aside class="sidebar" [class.is-open]="open" aria-label="Primary navigation">
+  <div class="sidebar__brand">
+    <div class="sidebar__brand-mark" aria-hidden="true">IS</div>
+    <div>
+      <strong>Inventory</strong>
+      <span>Management System</span>
+    </div>
+    <button class="sidebar__close" type="button" aria-label="Close navigation" (click)="closed.emit()">
+      ×
+    </button>
+  </div>
+
+  <nav class="sidebar__nav">
+    @for (section of sections; track section.label) {
+      <section class="sidebar__section">
+        <p class="sidebar__section-label">{{ section.label }}</p>
+        @for (item of section.items; track item.route) {
+          <a
+            class="sidebar__link"
+            [routerLink]="item.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="closed.emit()"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </section>
+    }
+  </nav>
+</aside>

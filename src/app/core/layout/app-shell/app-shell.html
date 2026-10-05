@@ -1,0 +1,16 @@
+<div class="shell">
+  <app-sidebar
+    [open]="mobileNavigationOpen()"
+    (closed)="mobileNavigationOpen.set(false)"
+  />
+
+  <div class="shell__workspace">
+    <app-header (menuRequested)="mobileNavigationOpen.set(true)" />
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <app-toast-outlet />
+</div>
