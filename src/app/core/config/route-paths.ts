@@ -1,0 +1,14 @@
+export const ROUTE_PATHS = {
+  auth: 'auth',
+  dashboard: 'dashboard',
+  products: 'products',
+  masterData: 'master-data',
+  suppliers: 'suppliers',
+  inventory: 'inventory',
+  purchasing: 'purchasing',
+  receiving: 'receiving',
+  stockCounts: 'stock-counts',
+  sales: 'sales',
+  reports: 'reports',
+  administration: 'administration',
+} as const;
