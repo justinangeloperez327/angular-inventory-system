@@ -15,7 +15,6 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header/page-header'
     PageHeaderComponent,
   ],
   templateUrl: './administration-home-page.html',
-  styleUrl: './administration-home-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdministrationHomePage {
