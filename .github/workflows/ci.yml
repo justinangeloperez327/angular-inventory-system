@@ -27,9 +27,17 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24.15.0
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+
+      - name: Dependency contract
+        run: npm run check:dependencies
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium

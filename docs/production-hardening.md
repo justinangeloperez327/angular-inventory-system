@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 21 hardens the frontend release gate for the Angular inventory system.
+Group 22 adds reproducible dependency and supply-chain enforcement to the frontend release gate.
 
 ## Verification commands
 
@@ -15,7 +15,7 @@ The repository pins the CI runtime to Node 24.15.0.
 Run:
 
 ```bash
-npm install
+npm ci
 npm run check
 ```
 
@@ -27,18 +27,40 @@ GitHub Actions runs on pushes to `main` and pull requests.
 
 The workflow performs:
 
-1. dependency installation
-2. Playwright Chromium installation
-3. design-system guard
-4. accessibility guard
-5. production-configuration guard
-6. Vitest unit tests
-7. Angular production build
-8. Playwright critical-flow browser E2E
-9. Docker image build
-10. Docker container health smoke test
+1. deterministic `npm ci` installation from the committed lockfile
+2. dependency-contract validation
+3. high/critical npm vulnerability audit
+4. Playwright Chromium installation
+5. design-system guard
+6. accessibility guard
+7. production-configuration guard
+8. Vitest unit tests
+9. Angular production build
+10. Playwright critical-flow browser E2E
+11. Docker image build
+12. Docker container health smoke test
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
+
+
+
+## Dependency reproducibility and supply chain
+
+The repository commits `package-lock.json` and records `npm@11.12.1` as the package manager.
+
+CI and Docker use `npm ci`; neither is allowed to resolve a fresh dependency graph with `npm install`.
+
+`npm run check:dependencies` verifies the lockfile/package manifest contract and the deterministic install configuration.
+
+CI separately runs:
+
+```bash
+npm audit --audit-level=high
+```
+
+High and critical npm advisories therefore block the frontend release gate.
+
+See `docs/dependencies.md`.
 
 ## Build cleanliness and performance
 
@@ -182,6 +204,8 @@ These are privacy/search-engine hints, not access controls.
 
 Frontend release readiness requires:
 
+- committed lockfile and deterministic dependency contract green
+- high/critical npm vulnerability audit green
 - design-system guard green
 - accessibility guard green
 - production configuration guard green

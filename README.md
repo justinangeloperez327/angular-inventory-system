@@ -30,7 +30,7 @@ The repository CI uses Node 24.15.0.
 ## Development
 
 ```bash
-npm install
+npm ci
 npm start
 ```
 
@@ -51,6 +51,7 @@ Configure the development reverse proxy/hosting path to the NestJS backend as ap
 ## Verification
 
 ```bash
+npm run check:dependencies
 npm run check:design
 npm run check:accessibility
 npm run check:production
@@ -136,6 +137,7 @@ See:
 - `docs/accessibility.md`
 - `docs/browser-testing.md`
 - `docs/performance.md`
+- `docs/dependencies.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`
