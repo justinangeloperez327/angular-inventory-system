@@ -152,3 +152,52 @@ The API is the security boundary.
 Angular never directly writes balances or reservations.
 
 All reservation, cancellation, dispatch, completion, and return transitions are backend commands with transactional validation.
+
+## Group 14 design migration
+
+Sales and Returns use one transaction-document visual model from draft through inventory movement.
+
+### Sales order list
+
+The list is compact and table-first:
+
+- order number uses monospace treatment
+- customer and warehouse identifiers remain secondary to their names
+- line counts and monetary totals are right-aligned with tabular numerals
+- workflow status is the only prominent state color
+- edit remains available only for draft orders
+- customer-context filtering is visible and explicitly clearable
+
+### Draft editor
+
+The draft form separates order context, product lines, and notes using whitespace and horizontal rules instead of card stacks.
+
+Product lines remain horizontally tabular at narrow widths rather than converting into disconnected cards. Warehouse changes still clear incompatible draft lines.
+
+Availability shown by product search is advisory. Confirmation remains the server-authoritative reservation boundary.
+
+### Detail and workflow actions
+
+The detail page presents:
+
+```text
+Order context
+Workflow audit
+Ordered / Reserved / Dispatched / Returned
+Movement links
+Returns
+Notes
+```
+
+Confirm, cancel, dispatch, complete, and return actions remain permission- and status-gated. Cancellation is presented as a destructive state transition but still releases reservation without changing on-hand inventory.
+
+### Returns
+
+Returns remain separate immutable transactions against dispatched or completed orders.
+
+The return editor shows returnable quantity beside the new quantity in one horizontal line-entry workspace. Posting still validates the current remaining returnable quantity on the backend before increasing inventory and creating `return-in` movements.
+
+### Styling
+
+Sales feature pages and lookup controls no longer depend on feature-level SCSS. Layout and visual behavior are expressed through the shared Tailwind design system and shared UI primitives.
+
