@@ -1,0 +1,91 @@
+<app-content-container>
+  <app-page-header
+    title="Application Settings"
+    description="Backend-enforced organization and inventory operating policies."
+  />
+
+  @if (error()) {
+    <div class="admin-settings__alert"><app-alert variant="danger" title="Settings unavailable">{{ error() }}</app-alert></div>
+  }
+
+  @if (saved()) {
+    <div class="admin-settings__alert"><app-alert variant="success" title="Settings saved">Application settings were updated.</app-alert></div>
+  }
+
+  @if (loading()) {
+    <div class="admin-settings__loading"><app-skeleton height="28rem" /></div>
+  } @else {
+    <form class="admin-settings" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="admin-settings__section">
+        <h2>Organization</h2>
+        <div class="admin-settings__grid">
+          <app-input
+            label="Organization name"
+            formControlName="organizationName"
+            [error]="fieldError('organizationName')"
+          />
+          <app-select
+            label="Timezone"
+            [options]="timezoneOptions()"
+            formControlName="timezone"
+            [error]="fieldError('timezone')"
+          />
+          <app-select
+            label="Currency"
+            [options]="currencyOptions()"
+            formControlName="currencyCode"
+            [error]="fieldError('currencyCode')"
+          />
+          <app-input
+            type="number"
+            label="Default page size"
+            [min]="10"
+            [max]="100"
+            step="1"
+            formControlName="defaultPageSize"
+            [error]="fieldError('defaultPageSize')"
+          />
+        </div>
+      </section>
+
+      <section class="admin-settings__section">
+        <h2>Inventory policy</h2>
+
+        <div class="admin-settings__policy">
+          <label>
+            <input type="checkbox" formControlName="allowNegativeStock" />
+            <span>
+              <strong>Allow negative stock</strong>
+              <small>The backend decides whether issue/dispatch transactions may take on-hand quantity below zero.</small>
+            </span>
+          </label>
+
+          <app-select
+            label="Stock count concurrency policy"
+            [options]="[
+              { label: 'Freeze affected warehouse transactions', value: 'freeze' },
+              { label: 'Reconcile intervening movements', value: 'reconcile' }
+            ]"
+            formControlName="stockCountConcurrencyPolicy"
+            [error]="fieldError('stockCountConcurrencyPolicy')"
+          />
+        </div>
+      </section>
+
+      @if (settings(); as current) {
+        <div class="admin-settings__audit">
+          @if (current.updatedAt) {
+            Last updated {{ current.updatedAt }}
+          }
+          @if (current.updatedBy) {
+            by {{ current.updatedBy.name }}
+          }
+        </div>
+      }
+
+      <div class="admin-settings__actions">
+        <app-button type="submit" [loading]="saving()">Save settings</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

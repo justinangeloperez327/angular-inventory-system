@@ -1,0 +1,53 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="26rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit user' : 'New user'"
+      description="Manage identity and role membership. Authentication credentials remain backend-managed."
+    />
+
+    @if (error()) {
+      <div class="admin-user-form__alert"><app-alert variant="danger" title="User administration error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="admin-user-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="admin-user-form__section">
+        <h2>Identity</h2>
+        <div class="admin-user-form__grid">
+          <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+          <app-input type="email" label="Email" formControlName="email" [error]="fieldError('email')" />
+        </div>
+        @if (!editing) {
+          <p class="admin-user-form__hint">
+            No password is generated in the browser. The backend or identity provider owns account invitation and credential setup.
+          </p>
+        }
+      </section>
+
+      <section class="admin-user-form__section">
+        <h2>Roles</h2>
+        <div class="admin-user-form__roles">
+          @for (role of roles(); track role.id) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="roleSelected(role.id)"
+                (change)="toggleRole(role.id, $event)"
+              />
+              <span>{{ role.name }}</span>
+            </label>
+          }
+        </div>
+        @if (roleError()) {
+          <p class="admin-user-form__error">{{ roleError() }}</p>
+        }
+      </section>
+
+      <div class="admin-user-form__actions">
+        <a [routerLink]="id ? ['/administration/users', id] : ['/administration/users']">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save user</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>

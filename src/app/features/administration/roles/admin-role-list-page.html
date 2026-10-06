@@ -1,0 +1,39 @@
+<app-content-container>
+  <app-page-header
+    title="Roles & Permissions"
+    description="Role definitions map users to backend-authorized application permissions."
+  >
+    <a actions routerLink="new" class="admin-roles__primary-action">New role</a>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="admin-roles__alert"><app-alert variant="danger" title="Roles unavailable">{{ error() }}</app-alert></div>
+  }
+
+  @if (loading() && items().length === 0) {
+    <div class="admin-roles__loading"><app-skeleton height="18rem" /></div>
+  } @else if (items().length > 0) {
+    <div class="admin-roles__table">
+      <app-table>
+        <thead>
+          <tr><th>Role</th><th>Description</th><th>Permissions</th><th>Users</th><th>Type</th><th>Updated</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          @for (role of items(); track role.id) {
+            <tr>
+              <td>{{ role.name }}</td>
+              <td>{{ role.description || '—' }}</td>
+              <td>{{ role.permissionCount }}</td>
+              <td>{{ role.userCount }}</td>
+              <td><app-badge [variant]="role.builtIn ? 'info' : 'neutral'">{{ role.builtIn ? 'built-in' : 'custom' }}</app-badge></td>
+              <td>{{ role.updatedAt | date: 'short' }}</td>
+              <td><a [routerLink]="[role.id, 'edit']" class="admin-roles__action">Edit</a></td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+    </div>
+  } @else if (!loading()) {
+    <app-empty-state title="No roles found" description="Create a role to assign application permissions." />
+  }
+</app-content-container>

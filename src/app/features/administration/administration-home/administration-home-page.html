@@ -1,0 +1,28 @@
+<app-content-container>
+  <app-page-header
+    title="Administration"
+    description="Users, roles, application settings, and the administrative audit trail."
+  />
+
+  <div class="admin-home__grid">
+    <a routerLink="users" class="admin-home__card" *appHasPermission="permissions.userManage">
+      <strong>Users</strong>
+      <span>Manage account profiles, role membership, and activation state.</span>
+    </a>
+
+    <a routerLink="roles" class="admin-home__card" *appHasPermission="permissions.roleManage">
+      <strong>Roles & Permissions</strong>
+      <span>Define role permissions using the backend authorization catalog.</span>
+    </a>
+
+    <a routerLink="settings" class="admin-home__card" *appHasPermission="permissions.settingsManage">
+      <strong>Application Settings</strong>
+      <span>Organization, timezone, currency, pagination, and inventory policies.</span>
+    </a>
+
+    <a routerLink="audit-log" class="admin-home__card" *appHasPermission="permissions.auditView">
+      <strong>Audit Log</strong>
+      <span>Read the immutable administrative and operational audit trail.</span>
+    </a>
+  </div>
+</app-content-container>

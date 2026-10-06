@@ -1,0 +1,23 @@
+:host { display: block; }
+.admin-role-form__alert { margin-top: 1rem; }
+.admin-role-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.admin-role-form__section { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); padding: 1rem; }
+.admin-role-form__section h2 { margin: 0 0 1rem; font-size: 0.9375rem; }
+.admin-role-form__grid { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(18rem, 2fr); gap: 0.875rem; align-items: start; }
+.admin-role-form__hint { margin: 0.75rem 0 0; color: var(--color-text-muted); font-size: 0.75rem; }
+.admin-role-form__permission-group { border-top: 1px solid var(--color-border); padding: 0.875rem 0; }
+.admin-role-form__permission-group:first-of-type { border-top: 0; padding-top: 0; }
+.admin-role-form__group-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.625rem; }
+.admin-role-form__group-heading strong { font-size: 0.8125rem; }
+.admin-role-form__group-heading label { display: flex; align-items: center; gap: 0.35rem; color: var(--color-text-muted); font-size: 0.75rem; }
+.admin-role-form__permissions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+.admin-role-form__permissions > label { display: flex; align-items: flex-start; gap: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.625rem; cursor: pointer; }
+.admin-role-form__permissions span, .admin-role-form__permissions strong, .admin-role-form__permissions small { display: block; }
+.admin-role-form__permissions strong { font-size: 0.8125rem; }
+.admin-role-form__permissions small { margin-top: 0.15rem; color: var(--color-text-muted); font-size: 0.6875rem; }
+.admin-role-form__error { margin: 0.5rem 0 0; color: var(--color-danger); font-size: 0.75rem; }
+.admin-role-form__actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; }
+.admin-role-form__actions a { color: var(--color-text-muted); font-size: 0.875rem; text-decoration: none; }
+@media (max-width: 700px) {
+  .admin-role-form__grid, .admin-role-form__permissions { grid-template-columns: 1fr; }
+}

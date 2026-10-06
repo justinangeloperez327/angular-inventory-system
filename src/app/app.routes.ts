@@ -115,7 +115,15 @@ export const routes: Routes = [
       {
         path: ROUTE_PATHS.administration,
         canActivate: [
-          permissionGuard([PERMISSIONS.userManage, PERMISSIONS.settingsManage], 'any'),
+          permissionGuard(
+            [
+              PERMISSIONS.userManage,
+              PERMISSIONS.roleManage,
+              PERMISSIONS.settingsManage,
+              PERMISSIONS.auditView,
+            ],
+            'any',
+          ),
         ],
         loadChildren: () =>
           import('./features/administration/administration.routes').then(

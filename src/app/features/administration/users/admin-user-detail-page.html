@@ -1,0 +1,66 @@
+<app-content-container>
+  @if (error()) {
+    <app-alert variant="danger" title="User unavailable">{{ error() }}</app-alert>
+  }
+
+  @if (loading() && !user()) {
+    <app-skeleton height="22rem" />
+  } @else if (user(); as item) {
+    <app-page-header [title]="item.name" [description]="item.email">
+      <a actions routerLink="/administration/users" class="admin-user-detail__action">All users</a>
+      <a actions [routerLink]="['edit']" class="admin-user-detail__action">Edit</a>
+
+      @if (item.active) {
+        <app-button actions variant="secondary" [loading]="updating()" (click)="confirmStatus.set(true)">
+          Deactivate
+        </app-button>
+      } @else {
+        <app-button actions variant="secondary" [loading]="updating()" (click)="setActive(true)">
+          Activate
+        </app-button>
+      }
+    </app-page-header>
+
+    <div class="admin-user-detail__summary">
+      <app-badge [variant]="item.active ? 'success' : 'neutral'">{{ item.active ? 'active' : 'inactive' }}</app-badge>
+      <span>Created {{ item.createdAt | date: 'medium' }}</span>
+    </div>
+
+    <div class="admin-user-detail__grid">
+      <section class="admin-user-detail__panel">
+        <h2>Account</h2>
+        <dl>
+          <div><dt>Name</dt><dd>{{ item.name }}</dd></div>
+          <div><dt>Email</dt><dd>{{ item.email }}</dd></div>
+          <div><dt>Last login</dt><dd>{{ item.lastLoginAt ? (item.lastLoginAt | date: 'medium') : 'Never' }}</dd></div>
+          <div><dt>Updated</dt><dd>{{ item.updatedAt | date: 'medium' }}</dd></div>
+        </dl>
+      </section>
+
+      <section class="admin-user-detail__panel">
+        <h2>Roles</h2>
+        @if (item.roles.length > 0) {
+          <div class="admin-user-detail__roles">
+            @for (role of item.roles; track role.id) {
+              <span>{{ role.name }}</span>
+            }
+          </div>
+        } @else {
+          <p>No roles assigned.</p>
+        }
+      </section>
+    </div>
+
+    @if (item.active) {
+      <app-confirmation-dialog
+        [open]="confirmStatus()"
+        title="Deactivate user"
+        [message]="'Deactivate ' + item.name + '? Historical activity remains preserved.'"
+        confirmLabel="Deactivate"
+        [destructive]="true"
+        (confirmed)="setActive(false)"
+        (cancelled)="confirmStatus.set(false)"
+      />
+    }
+  }
+</app-content-container>

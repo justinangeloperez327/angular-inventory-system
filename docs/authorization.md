@@ -35,7 +35,9 @@ sales.return
 
 reports.view
 user.manage
+role.manage
 settings.manage
+audit.view
 ```
 
 This prevents feature code from becoming coupled to backend role names such as "admin", "manager", or "warehouse-user".
@@ -119,4 +121,4 @@ The default mode requires all supplied permissions. Use `mode: 'any'` when any l
 
 Angular authorization must never replace backend authorization.
 
-The REST API must validate the authenticated user's permission for every protected operation, including reads, creates, updates, approvals, stock adjustments, transfers, receiving, sales reservations/dispatch/returns, and administrative changes.
+The REST API must validate the authenticated user's permission for every protected operation, including reads, creates, updates, approvals, stock adjustments, transfers, receiving, sales reservations/dispatch/returns, user/role administration, settings changes, audit-log access, and other administrative operations.

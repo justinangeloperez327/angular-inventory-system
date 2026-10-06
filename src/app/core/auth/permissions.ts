@@ -25,7 +25,9 @@ export const PERMISSIONS = {
   salesReturn: 'sales.return',
   reportsView: 'reports.view',
   userManage: 'user.manage',
+  roleManage: 'role.manage',
   settingsManage: 'settings.manage',
+  auditView: 'audit.view',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

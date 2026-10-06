@@ -106,7 +106,12 @@ export const NAVIGATION_SECTIONS: readonly NavigationSection[] = [
       {
         label: 'Administration',
         route: `/${ROUTE_PATHS.administration}`,
-        permissions: [PERMISSIONS.userManage, PERMISSIONS.settingsManage],
+        permissions: [
+          PERMISSIONS.userManage,
+          PERMISSIONS.roleManage,
+          PERMISSIONS.settingsManage,
+          PERMISSIONS.auditView,
+        ],
         permissionMode: 'any',
       },
     ],

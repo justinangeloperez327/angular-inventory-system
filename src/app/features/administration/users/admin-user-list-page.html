@@ -1,0 +1,98 @@
+<app-content-container>
+  <app-page-header
+    title="Users"
+    description="Manage account identity, role membership, and activation state."
+  >
+    <a actions routerLink="new" class="admin-users__primary-action">New user</a>
+  </app-page-header>
+
+  <form class="admin-users__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <app-input type="search" label="Search" placeholder="Name or email" formControlName="search" />
+    <app-select label="Role" placeholder="All roles" [options]="roleOptions()" formControlName="roleId" />
+    <app-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'Active', value: 'active' },
+        { label: 'Inactive', value: 'inactive' }
+      ]"
+      formControlName="status"
+    />
+    <div class="admin-users__filter-actions">
+      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    </div>
+  </form>
+
+  @if (store.error()) {
+    <div class="admin-users__alert"><app-alert variant="danger" title="Users unavailable">{{ store.error() }}</app-alert></div>
+  }
+
+  @if (store.loading() && !store.hasItems()) {
+    <div class="admin-users__loading"><app-skeleton height="22rem" /></div>
+  } @else if (store.hasItems()) {
+    <div class="admin-users__table">
+      <app-table>
+        <thead>
+          <tr><th>User</th><th>Email</th><th>Roles</th><th>Status</th><th>Last login</th><th>Updated</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          @for (user of store.items(); track user.id) {
+            <tr>
+              <td><a [routerLink]="user.id">{{ user.name }}</a></td>
+              <td>{{ user.email }}</td>
+              <td>
+                @if (user.roles.length > 0) {
+                  {{ user.roles[0].name }}
+                  @if (user.roles.length > 1) {
+                    <span class="admin-users__secondary">+{{ user.roles.length - 1 }} more</span>
+                  }
+                } @else {
+                  —
+                }
+              </td>
+              <td><app-badge [variant]="user.active ? 'success' : 'neutral'">{{ user.active ? 'active' : 'inactive' }}</app-badge></td>
+              <td>{{ user.lastLoginAt ? (user.lastLoginAt | date: 'short') : 'Never' }}</td>
+              <td>{{ user.updatedAt | date: 'short' }}</td>
+              <td>
+                <div class="admin-users__actions">
+                  <a [routerLink]="[user.id, 'edit']">Edit</a>
+                  <button type="button" (click)="pendingStatusUser.set(user)">
+                    {{ user.active ? 'Deactivate' : 'Activate' }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+
+      <div class="admin-users__pagination">
+        <span>{{ store.pagination().totalItems }} users</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
+      </div>
+    </div>
+  } @else if (!store.loading()) {
+    <app-empty-state title="No users found" description="No users match the current filters." />
+  }
+
+  @if (pendingStatusUser(); as user) {
+    <app-confirmation-dialog
+      [open]="true"
+      [title]="user.active ? 'Deactivate user' : 'Activate user'"
+      [message]="
+        user.active
+          ? 'Deactivate ' + user.name + '? Their historical activity remains preserved.'
+          : 'Activate ' + user.name + '? They may sign in again subject to authentication policy.'
+      "
+      [confirmLabel]="user.active ? 'Deactivate' : 'Activate'"
+      [destructive]="user.active"
+      (confirmed)="confirmStatusChange()"
+      (cancelled)="pendingStatusUser.set(null)"
+    />
+  }
+</app-content-container>

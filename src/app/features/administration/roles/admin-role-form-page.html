@@ -1,0 +1,84 @@
+<app-content-container>
+  @if (loading()) {
+    <app-skeleton height="32rem" />
+  } @else {
+    <app-page-header
+      [title]="editing ? 'Edit role' : 'New role'"
+      description="Permissions come from the backend catalog and remain authoritative at the API boundary."
+    />
+
+    @if (error()) {
+      <div class="admin-role-form__alert"><app-alert variant="danger" title="Role administration error">{{ error() }}</app-alert></div>
+    }
+
+    <form class="admin-role-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="admin-role-form__section">
+        <h2>Role</h2>
+        <div class="admin-role-form__grid">
+          <app-input
+            label="Name"
+            formControlName="name"
+            [disabled]="builtIn()"
+            [error]="fieldError('name')"
+          />
+          <app-textarea
+            label="Description"
+            formControlName="description"
+            [error]="fieldError('description')"
+          />
+        </div>
+        @if (builtIn()) {
+          <p class="admin-role-form__hint">Built-in role names are protected. Permission changes are still subject to backend policy.</p>
+        }
+      </section>
+
+      <section class="admin-role-form__section">
+        <h2>Permissions</h2>
+
+        @for (group of permissionGroups(); track group.name) {
+          <div class="admin-role-form__permission-group">
+            <div class="admin-role-form__group-heading">
+              <strong>{{ group.name }}</strong>
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="groupSelected(group)"
+                  (change)="toggleGroup(group, $any($event.target).checked)"
+                />
+                All
+              </label>
+            </div>
+
+            <div class="admin-role-form__permissions">
+              @for (permission of group.permissions; track permission.key) {
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="permissionSelected(permission.key)"
+                    (change)="togglePermission(permission.key, $event)"
+                  />
+                  <span>
+                    <strong>{{ permission.label }}</strong>
+                    <small>{{ permission.key }}</small>
+                    @if (permission.description) {
+                      <small>{{ permission.description }}</small>
+                    }
+                  </span>
+                </label>
+              }
+            </div>
+          </div>
+        }
+
+        @if (permissionError()) {
+          <p class="admin-role-form__error">{{ permissionError() }}</p>
+        }
+      </section>
+
+      <div class="admin-role-form__actions">
+        <a routerLink="/administration/roles">Cancel</a>
+        <app-button type="submit" [loading]="saving()">Save role</app-button>
+      </div>
+    </form>
+  }
+</app-content-container>
