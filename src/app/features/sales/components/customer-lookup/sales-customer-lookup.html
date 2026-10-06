@@ -1,29 +1,49 @@
-<div class="sales-lookup">
-  <span class="sales-lookup__label">Customer</span>
+<div class="grid gap-1.5">
+  <span class="text-sm font-semibold text-foreground">Customer</span>
+
   @if (selectedLabel) {
-    <div class="sales-lookup__selected">
-      <strong>{{ selectedLabel }}</strong>
-      <button type="button" (click)="clear()">Change</button>
+    <div class="flex min-h-control items-center justify-between gap-3 rounded-sm border border-border bg-surface px-3">
+      <strong class="text-sm font-semibold">{{ selectedLabel }}</strong>
+      <button
+        type="button"
+        class="border-0 bg-transparent p-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
+        (click)="clear()"
+      >
+        Change
+      </button>
     </div>
   } @else {
-    <div class="sales-lookup__search">
-      <app-input type="search" placeholder="Search customer code or name" [formControl]="search" (keyup.enter)="find()" />
+    <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <app-input
+        type="search"
+        placeholder="Search customer code or name"
+        [formControl]="search"
+        (keyup.enter)="find()"
+      />
       <app-button type="button" variant="secondary" [loading]="loading()" (click)="find()">Search</app-button>
     </div>
+
     @if (searchError()) {
-      <span class="sales-lookup__message sales-lookup__message--error">{{ searchError() }}</span>
+      <span class="text-xs text-danger">{{ searchError() }}</span>
     }
+
     @if (results().length > 0) {
-      <div class="sales-lookup__results">
+      <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
         @for (item of results(); track item.id) {
-          <button type="button" (click)="choose(item)">
-            <span>{{ item.code }}</span><strong>{{ item.name }}</strong>
+          <button
+            type="button"
+            class="grid w-full grid-cols-[7rem_minmax(0,1fr)] gap-3 border-0 border-b border-border bg-transparent px-3 py-2.5 text-left text-foreground last:border-b-0 hover:bg-surface-muted"
+            (click)="choose(item)"
+          >
+            <span class="font-mono text-xs text-muted-foreground">{{ item.code }}</span>
+            <strong class="text-sm font-semibold">{{ item.name }}</strong>
           </button>
         }
       </div>
     }
   }
+
   @if (error) {
-    <span class="sales-lookup__message sales-lookup__message--error">{{ error }}</span>
+    <span class="text-xs text-danger">{{ error }}</span>
   }
 </div>
