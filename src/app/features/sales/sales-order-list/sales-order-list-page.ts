@@ -41,7 +41,6 @@ import { SalesOrderStatus } from '../models/sales-order.model';
   ],
   providers: [SalesOrderListStore],
   templateUrl: './sales-order-list-page.html',
-  styleUrl: './sales-order-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesOrderListPage implements OnInit {
