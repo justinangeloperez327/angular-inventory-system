@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 20 is the frontend release gate for the Angular inventory system.
+Group 21 hardens the frontend release gate for the Angular inventory system.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm install
 npm run check
 ```
 
-`npm run check` executes the unit tests and a production build.
+`npm run check` executes the design-system, accessibility, and production guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
 
 ## CI
 
@@ -28,12 +28,32 @@ GitHub Actions runs on pushes to `main` and pull requests.
 The workflow performs:
 
 1. dependency installation
-2. Vitest unit tests
-3. Angular production build
-4. Docker image build
-5. Docker container health smoke test
+2. Playwright Chromium installation
+3. design-system guard
+4. accessibility guard
+5. production-configuration guard
+6. Vitest unit tests
+7. Angular production build
+8. Playwright critical-flow browser E2E
+9. Docker image build
+10. Docker container health smoke test
 
-Production bundle budgets remain enforced by the Angular builder.
+Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
+
+## Build cleanliness and performance
+
+Angular extended diagnostics are promoted to errors, so compiler-detectable template issues cannot remain as accepted production warnings.
+
+The production build currently uses these primary bundle ceilings:
+
+```text
+initial   warning 360 kB / error 400 kB
+anyScript warning 170 kB / error 200 kB
+```
+
+`npm run check:production` also protects source-map, output-hashing, automatic-CSP, diagnostic, and bundle-budget configuration from being silently loosened.
+
+See `docs/performance.md`.
 
 ## Unit testing
 
@@ -162,11 +182,15 @@ These are privacy/search-engine hints, not access controls.
 
 Frontend release readiness requires:
 
-- CI green
-- production build within configured budgets
+- design-system guard green
+- accessibility guard green
+- production configuration guard green
+- Vitest unit tests green
+- warning-clean Angular production build within configured bundle ceilings
+- Playwright critical-flow browser E2E green
+- Docker image build and container health smoke test green
 - no unresolved critical/high dependency vulnerabilities after review
 - backend contracts implemented and integration-tested
 - authentication/authorization verified end-to-end
 - production security headers verified at the deployed origin
-- core keyboard/accessibility smoke test completed
 - API/Angular versions and deployment configuration documented

@@ -40,6 +40,9 @@ jobs:
       - name: Accessibility guard
         run: npm run check:accessibility
 
+      - name: Production guard
+        run: npm run check:production
+
       - name: Unit tests
         run: npm test
 

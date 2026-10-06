@@ -131,7 +131,7 @@
             <dd class="m-0 text-sm">
               {{ item.confirmedAt ? (item.confirmedAt | date: 'medium') : '—' }}
               @if (item.confirmedBy?.name) {
-                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.confirmedBy?.name }}</span>
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.confirmedBy.name }}</span>
               }
             </dd>
           </div>
@@ -140,7 +140,7 @@
             <dd class="m-0 text-sm">
               {{ item.dispatchedAt ? (item.dispatchedAt | date: 'medium') : '—' }}
               @if (item.dispatchedBy?.name) {
-                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.dispatchedBy?.name }}</span>
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.dispatchedBy.name }}</span>
               }
             </dd>
           </div>
@@ -149,7 +149,7 @@
             <dd class="m-0 text-sm">
               {{ item.completedAt ? (item.completedAt | date: 'medium') : '—' }}
               @if (item.completedBy?.name) {
-                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.completedBy?.name }}</span>
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.completedBy.name }}</span>
               }
             </dd>
           </div>

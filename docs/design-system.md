@@ -1041,3 +1041,45 @@ E2E coverage stays intentionally narrow.
 
 Backend transaction correctness, inventory accounting, authorization enforcement, and data validation belong to the NestJS backend test suite. Angular browser tests verify that frontend orchestration presents and routes those contracts correctly.
 
+## Group 21 — production build and performance hardening
+
+The UI release gate now protects build cleanliness and client payload growth in addition to design, accessibility, and browser behavior.
+
+### Compiler diagnostics
+
+Angular extended diagnostics are build-breaking.
+
+The Sales order detail workflow was cleaned of the remaining NG8107 optional-chain diagnostics before this policy was enabled.
+
+New template diagnostics should be fixed at source rather than accepted as permanent production warnings.
+
+### Bundle ceilings
+
+The Group 20 production baseline was:
+
+```text
+Initial raw bundle          333.13 kB
+Estimated initial transfer   90.82 kB
+Largest JavaScript chunk    155.38 kB
+```
+
+Production budgets now enforce:
+
+```text
+Initial
+  warning 360 kB
+  error   400 kB
+
+Any JavaScript file
+  warning 170 kB
+  error   200 kB
+```
+
+These limits provide controlled headroom without allowing accidental large eager dependencies.
+
+### Production guard
+
+`npm run check:production` verifies that source maps stay disabled, output hashing and Angular automatic CSP stay enabled, extended diagnostics stay fatal, and bundle ceilings are not silently loosened.
+
+The actual production build remains authoritative for generated bundle-size enforcement.
+
