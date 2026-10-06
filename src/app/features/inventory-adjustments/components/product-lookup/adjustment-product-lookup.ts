@@ -19,7 +19,6 @@ import { InventoryAdjustmentProductOption } from '../../models/inventory-adjustm
   selector: 'app-adjustment-product-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './adjustment-product-lookup.html',
-  styleUrl: './adjustment-product-lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdjustmentProductLookupComponent {

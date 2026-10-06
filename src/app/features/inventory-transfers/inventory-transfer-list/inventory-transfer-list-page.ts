@@ -46,7 +46,6 @@ import { InventoryTransferStatus } from '../models/inventory-transfer.model';
   ],
   providers: [InventoryTransferListStore],
   templateUrl: './inventory-transfer-list-page.html',
-  styleUrl: './inventory-transfer-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryTransferListPage implements OnInit {

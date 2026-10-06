@@ -8,25 +8,28 @@
     />
 
     @if (error()) {
-      <div class="adjustment-form__alert"><app-alert variant="danger" title="Unable to save adjustment">{{ error() }}</app-alert></div>
+      <div class="mt-4">
+        <app-alert variant="danger" title="Unable to save adjustment">{{ error() }}</app-alert>
+      </div>
     }
 
-    <form class="adjustment-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="adjustment-form__section">
-        <div class="adjustment-form__heading">
-          <h2>Inventory correction</h2>
-          <p>Select the product, warehouse, direction, quantity, and controlled reason.</p>
+    <form class="mt-6 max-w-4xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Inventory correction</h2>
+          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
+            Select the product, warehouse, direction, positive quantity, and controlled reason.
+          </p>
         </div>
 
-        <div class="adjustment-form__grid">
+        <div class="grid gap-3 md:grid-cols-2">
           <app-adjustment-product-lookup
-            class="adjustment-form__wide"
+            class="md:col-span-2"
             [selectedLabel]="selectedProductLabel()"
             [error]="fieldError('productId')"
             (selected)="selectProduct($event)"
             (cleared)="clearProduct()"
           />
-
           <app-select
             label="Warehouse"
             placeholder="Select warehouse"
@@ -34,7 +37,6 @@
             formControlName="warehouseId"
             [error]="fieldError('warehouseId')"
           />
-
           <app-select
             label="Direction"
             [options]="[
@@ -44,7 +46,6 @@
             formControlName="direction"
             [error]="fieldError('direction')"
           />
-
           <app-input
             type="number"
             label="Quantity"
@@ -53,7 +54,6 @@
             formControlName="quantity"
             [error]="fieldError('quantity')"
           />
-
           <app-select
             label="Reason"
             placeholder="Select reason"
@@ -61,9 +61,8 @@
             formControlName="reasonCode"
             [error]="fieldError('reasonCode')"
           />
-
           <app-textarea
-            class="adjustment-form__wide"
+            class="md:col-span-2"
             label="Notes"
             hint="Explain the business reason and evidence for the correction."
             formControlName="notes"
@@ -72,8 +71,13 @@
         </div>
       </section>
 
-      <div class="adjustment-form__actions">
-        <a [routerLink]="id ? ['/adjustments', id] : ['/adjustments']">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          [routerLink]="id ? ['/adjustments', id] : ['/adjustments']"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Save draft</app-button>
       </div>
     </form>

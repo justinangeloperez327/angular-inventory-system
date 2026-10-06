@@ -8,19 +8,20 @@
     />
 
     @if (error()) {
-      <div class="transfer-form__alert">
+      <div class="mt-4">
         <app-alert variant="danger" title="Unable to save transfer">{{ error() }}</app-alert>
       </div>
     }
 
-    <form class="transfer-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="transfer-form__section">
-        <div class="transfer-form__heading">
-          <h2>Warehouses</h2>
-          <p>Source and destination must be different. Changing the source clears product lines selected for the previous source.</p>
+    <form class="mt-6" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="max-w-4xl">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Transfer route</h2>
+          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
+            Source and destination must be different. Changing the source clears lines selected for the previous source.
+          </p>
         </div>
-
-        <div class="transfer-form__grid">
+        <div class="grid gap-3 md:grid-cols-2">
           <app-select
             label="Source warehouse"
             placeholder="Select source"
@@ -38,67 +39,88 @@
         </div>
       </section>
 
-      <section class="transfer-form__section">
-        <div class="transfer-form__heading">
-          <h2>Products</h2>
-          <p>Search products from the source warehouse and enter the quantity to move.</p>
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Products</h2>
+          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
+            Product availability is advisory. Posting revalidates current source stock.
+          </p>
         </div>
 
-        <app-transfer-product-lookup
-          [sourceWarehouseId]="form.controls.sourceWarehouseId.value"
-          (selected)="addProduct($event)"
-        />
+        <div class="max-w-4xl">
+          <app-transfer-product-lookup
+            [sourceWarehouseId]="form.controls.sourceWarehouseId.value"
+            (selected)="addProduct($event)"
+          />
+        </div>
 
         @if (lineError()) {
-          <div class="transfer-form__line-error">{{ lineError() }}</div>
+          <p class="mb-0 mt-2 text-xs text-danger">{{ lineError() }}</p>
         }
 
         @if (lines.length > 0) {
-          <div class="transfer-form__lines" formArrayName="lines">
-            <div class="transfer-form__line transfer-form__line--header" aria-hidden="true">
-              <span>SKU</span>
-              <span>Product</span>
-              <span>Available</span>
-              <span>Quantity</span>
-              <span></span>
-            </div>
-
-            @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
-              <div class="transfer-form__line" [formGroupName]="index">
-                <span class="transfer-form__mono">{{ line.controls.sku.value }}</span>
-                <strong>{{ line.controls.productName.value }}</strong>
-                <span>
-                  {{ line.controls.quantityAvailable.value || '—' }}
-                  {{ line.controls.unitSymbol.value }}
-                </span>
-                <app-input
-                  type="number"
-                  [min]="0.000001"
-                  step="any"
-                  formControlName="quantity"
-                  [error]="quantityError(index)"
-                />
-                <button type="button" class="transfer-form__remove" (click)="removeLine(index)">
-                  Remove
-                </button>
+          <div class="mt-4 overflow-x-auto rounded-md border border-border bg-surface" formArrayName="lines">
+            <div class="min-w-[48rem]">
+              <div
+                class="grid grid-cols-[7rem_minmax(12rem,2fr)_8rem_11rem_5rem] items-center gap-3 border-b border-border bg-surface-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
+                aria-hidden="true"
+              >
+                <span>SKU</span>
+                <span>Product</span>
+                <span class="text-right">Available</span>
+                <span>Quantity</span>
+                <span></span>
               </div>
-            }
+
+              @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
+                <div
+                  class="grid grid-cols-[7rem_minmax(12rem,2fr)_8rem_11rem_5rem] items-center gap-3 border-b border-border px-3 py-2 last:border-b-0"
+                  [formGroupName]="index"
+                >
+                  <span class="font-mono text-xs">{{ line.controls.sku.value }}</span>
+                  <strong class="text-sm font-semibold">{{ line.controls.productName.value }}</strong>
+                  <span class="text-right text-sm tabular-nums text-muted-foreground">
+                    {{ line.controls.quantityAvailable.value || '—' }}
+                    {{ line.controls.unitSymbol.value }}
+                  </span>
+                  <app-input
+                    type="number"
+                    [min]="0.000001"
+                    step="any"
+                    formControlName="quantity"
+                    [error]="quantityError(index)"
+                  />
+                  <button
+                    type="button"
+                    class="border-0 bg-transparent p-0 text-sm font-medium text-danger hover:underline"
+                    (click)="removeLine(index)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              }
+            </div>
           </div>
         } @else {
-          <p class="transfer-form__empty-lines">No products added yet.</p>
+          <p class="mb-0 mt-3 text-sm text-muted-foreground">No products added yet.</p>
         }
       </section>
 
-      <section class="transfer-form__section">
-        <div class="transfer-form__heading">
-          <h2>Notes</h2>
-          <p>Optional operational context for the transfer.</p>
+      <section class="mt-5 max-w-4xl border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">Optional operational context for this transfer.</p>
         </div>
         <app-textarea formControlName="notes" [error]="fieldError('notes')" />
       </section>
 
-      <div class="transfer-form__actions">
-        <a [routerLink]="id ? ['/transfers', id] : ['/transfers']">Cancel</a>
+      <div class="mt-5 flex max-w-4xl items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          [routerLink]="id ? ['/transfers', id] : ['/transfers']"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Save draft</app-button>
       </div>
     </form>

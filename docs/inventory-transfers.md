@@ -140,3 +140,23 @@ The API remains the security boundary.
 Posted transfers have no edit or delete path.
 
 A correction must be represented by a separate authorized transaction so both warehouse ledgers remain auditable.
+
+
+## Group 10 design migration
+
+Transfer screens now use the transaction-document design system.
+
+The list makes source and destination warehouses the primary routing context.
+
+Create/edit presents:
+
+- source and destination route
+- source-scoped product lookup
+- horizontally scrollable line-entry workspace
+- advisory available quantity
+- positive transfer quantity
+- optional notes
+
+The detail screen makes Source → Destination visually explicit, followed by a product table with quantity, source balance transition, destination balance transition, and paired movement links.
+
+There is still no aggregate transfer quantity because mixed units make such a total semantically invalid.

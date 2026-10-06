@@ -47,7 +47,6 @@ type AdjustmentField =
     TextareaComponent,
   ],
   templateUrl: './inventory-adjustment-form-page.html',
-  styleUrl: './inventory-adjustment-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryAdjustmentFormPage implements OnInit {

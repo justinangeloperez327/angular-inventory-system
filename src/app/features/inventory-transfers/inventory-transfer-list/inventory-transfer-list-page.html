@@ -6,7 +6,7 @@
     <a
       actions
       routerLink="new"
-      class="transfers__primary-action"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
       *appHasPermission="permissions.inventoryTransfer"
     >
       New transfer
@@ -17,63 +17,77 @@
     <app-input type="search" label="Search" placeholder="Transfer number or product" formControlName="search" />
     <app-select label="Source" placeholder="All sources" [options]="warehouseOptions()" formControlName="sourceWarehouseId" />
     <app-select label="Destination" placeholder="All destinations" [options]="warehouseOptions()" formControlName="destinationWarehouseId" />
-    <app-select label="Status" placeholder="All statuses" [options]="[
-      { label: 'Draft', value: 'draft' },
-      { label: 'Posted', value: 'posted' },
-      { label: 'Cancelled', value: 'cancelled' }
-    ]" formControlName="status" />
+    <app-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'Draft', value: 'draft' },
+        { label: 'Posted', value: 'posted' },
+        { label: 'Cancelled', value: 'cancelled' }
+      ]"
+      formControlName="status"
+    />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
+
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (filterError()) {
-    <div class="transfers__alert">
+    <div class="mt-4">
       <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
     </div>
   }
 
   @if (store.error()) {
-    <div class="transfers__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Transfers unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasItems()) {
-    <div class="transfers__loading"><app-skeleton height="22rem" /></div>
+    <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="transfers__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
             <th>Number</th>
             <th>Source</th>
             <th>Destination</th>
-            <th>Lines</th>
+            <th class="text-right">Lines</th>
             <th>Status</th>
             <th>Created</th>
             <th>Posted</th>
-            <th>Actions</th>
+            <th><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
-              <td>{{ item.sourceWarehouseName }}<span class="transfers__secondary">{{ item.sourceWarehouseCode }}</span></td>
-              <td>{{ item.destinationWarehouseName }}<span class="transfers__secondary">{{ item.destinationWarehouseCode }}</span></td>
-              <td>{{ item.lineCount }}</td>
+              <td>
+                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">{{ item.number }}</a>
+              </td>
+              <td>
+                {{ item.sourceWarehouseName }}
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.sourceWarehouseCode }}</span>
+              </td>
+              <td>
+                {{ item.destinationWarehouseName }}
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.destinationWarehouseCode }}</span>
+              </td>
+              <td class="text-right tabular-nums">{{ item.lineCount }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td>{{ item.createdAt | date: 'short' }}</td>
-              <td>{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td class="whitespace-nowrap">{{ item.createdAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
               <td>
                 @if (item.status === 'draft') {
                   <a
                     [routerLink]="[item.id, 'edit']"
-                    class="transfers__action"
+                    class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
                     *appHasPermission="permissions.inventoryTransfer"
                   >
                     Edit
@@ -84,17 +98,19 @@
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} transfers</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} transfers</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state title="No transfers found" description="No inventory transfers match the current filters." />
+    <div class="mt-4">
+      <app-empty-state title="No transfers found" description="No inventory transfers match the current filters." />
+    </div>
   }
 </app-content-container>

@@ -19,7 +19,6 @@ import { InventoryTransferProductOption } from '../../models/inventory-transfer.
   selector: 'app-transfer-product-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './transfer-product-lookup.html',
-  styleUrl: './transfer-product-lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferProductLookupComponent {

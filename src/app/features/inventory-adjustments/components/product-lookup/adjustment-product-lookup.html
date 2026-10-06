@@ -1,13 +1,19 @@
-<div class="product-lookup">
-  <span class="product-lookup__label">Product</span>
+<div class="grid gap-1.5">
+  <span class="text-sm font-semibold text-foreground">Product</span>
 
   @if (selectedLabel) {
-    <div class="product-lookup__selected">
-      <strong>{{ selectedLabel }}</strong>
-      <button type="button" (click)="clear()">Change</button>
+    <div class="flex min-h-control items-center justify-between gap-4 rounded-sm border border-border bg-surface px-2.5">
+      <strong class="min-w-0 truncate text-sm font-semibold text-foreground">{{ selectedLabel }}</strong>
+      <button
+        type="button"
+        class="shrink-0 border-0 bg-transparent p-0 text-sm font-medium text-muted-foreground hover:text-foreground"
+        (click)="clear()"
+      >
+        Change
+      </button>
     </div>
   } @else {
-    <div class="product-lookup__search">
+    <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
       <app-input
         type="search"
         placeholder="Search SKU or product name"
@@ -20,17 +26,21 @@
     </div>
 
     @if (searchError()) {
-      <span class="product-lookup__message">{{ searchError() }}</span>
+      <span class="text-xs text-danger">{{ searchError() }}</span>
     }
 
     @if (results().length > 0) {
-      <div class="product-lookup__results">
+      <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
         @for (product of results(); track product.id) {
-          <button type="button" (click)="choose(product)">
-            <span>{{ product.sku }}</span>
-            <strong>{{ product.name }}</strong>
+          <button
+            type="button"
+            class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-2.5 py-2 text-left text-foreground last:border-b-0 hover:bg-surface-muted sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+            (click)="choose(product)"
+          >
+            <span class="font-mono text-xs text-muted-foreground">{{ product.sku }}</span>
+            <strong class="text-sm font-semibold">{{ product.name }}</strong>
             @if (product.unitSymbol) {
-              <small>{{ product.unitSymbol }}</small>
+              <small class="text-xs text-muted-foreground">{{ product.unitSymbol }}</small>
             }
           </button>
         }
@@ -39,6 +49,6 @@
   }
 
   @if (error) {
-    <span class="product-lookup__message product-lookup__message--error">{{ error }}</span>
+    <span class="text-xs text-danger">{{ error }}</span>
   }
 </div>

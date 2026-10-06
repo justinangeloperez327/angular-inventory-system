@@ -49,7 +49,6 @@ import {
   ],
   providers: [InventoryAdjustmentListStore],
   templateUrl: './inventory-adjustment-list-page.html',
-  styleUrl: './inventory-adjustment-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryAdjustmentListPage implements OnInit {
@@ -89,6 +88,10 @@ export class InventoryAdjustmentListPage implements OnInit {
 
   directionVariant(direction: InventoryAdjustmentDirection): BadgeVariant {
     return direction === 'increase' ? 'success' : 'neutral';
+  }
+
+  signedQuantity(direction: InventoryAdjustmentDirection, quantity: number): string {
+    return `${direction === 'increase' ? '+' : '−'}${quantity}`;
   }
 
   applyFilters(): void {

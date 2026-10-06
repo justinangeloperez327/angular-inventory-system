@@ -7,13 +7,13 @@
     <app-skeleton height="28rem" />
   } @else if (store.item(); as item) {
     <app-page-header [title]="item.number" description="Warehouse inventory transfer">
-      <a actions routerLink="/transfers" class="transfer-detail__action">All transfers</a>
+      <a actions routerLink="/transfers" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All transfers</a>
 
       @if (item.status === 'draft') {
         <a
           actions
           [routerLink]="['edit']"
-          class="transfer-detail__action"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
           *appHasPermission="permissions.inventoryTransfer"
         >
           Edit
@@ -29,70 +29,74 @@
       }
     </app-page-header>
 
-    <div class="transfer-detail__summary">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
-      <span>{{ item.lineCount }} lines</span>
+      <span class="tabular-nums">{{ item.lineCount }} lines</span>
+      @if (item.status === 'posted') {
+        <span>Immutable posted transaction</span>
+      }
     </div>
 
-    <div class="transfer-detail__grid">
-      <section class="transfer-detail__panel">
-        <h2>Route</h2>
-        <dl>
-          <div>
-            <dt>Source</dt>
-            <dd>
-              <a [routerLink]="['/inventory/warehouses', item.sourceWarehouseId]">{{ item.sourceWarehouseName }}</a>
-              <span>{{ item.sourceWarehouseCode }}</span>
-            </dd>
-          </div>
-          <div>
-            <dt>Destination</dt>
-            <dd>
-              <a [routerLink]="['/inventory/warehouses', item.destinationWarehouseId]">{{ item.destinationWarehouseName }}</a>
-              <span>{{ item.destinationWarehouseCode }}</span>
-            </dd>
-          </div>
-        </dl>
-      </section>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Transfer route</h2>
+      <div class="mt-3 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
+        <a
+          [routerLink]="['/inventory/warehouses', item.sourceWarehouseId]"
+          class="border border-border bg-surface p-3 text-foreground no-underline hover:bg-surface-muted"
+        >
+          <span class="block text-xs text-muted-foreground">Source</span>
+          <strong class="mt-1 block text-base font-semibold">{{ item.sourceWarehouseName }}</strong>
+          <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.sourceWarehouseCode }}</span>
+        </a>
+        <span class="hidden text-xl text-subtle-foreground md:block" aria-hidden="true">→</span>
+        <a
+          [routerLink]="['/inventory/warehouses', item.destinationWarehouseId]"
+          class="border border-border bg-surface p-3 text-foreground no-underline hover:bg-surface-muted"
+        >
+          <span class="block text-xs text-muted-foreground">Destination</span>
+          <strong class="mt-1 block text-base font-semibold">{{ item.destinationWarehouseName }}</strong>
+          <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.destinationWarehouseCode }}</span>
+        </a>
+      </div>
+    </section>
 
-      <section class="transfer-detail__panel">
-        <h2>Audit</h2>
-        <dl>
-          <div><dt>Status</dt><dd>{{ item.status }}</dd></div>
-          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
-          <div><dt>Posted</dt><dd>{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Posted by</dt><dd>{{ item.postedBy?.name || '—' }}</dd></div>
-        </dl>
-      </section>
-
-      <section class="transfer-detail__panel transfer-detail__panel--wide">
-        <h2>Products</h2>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Products</h2>
+      <div class="mt-3">
         <app-table>
           <thead>
             <tr>
               <th>SKU</th>
               <th>Product</th>
-              <th>Quantity</th>
-              <th>Source balance</th>
-              <th>Destination balance</th>
+              <th class="text-right">Quantity</th>
+              <th class="text-right">Source balance</th>
+              <th class="text-right">Destination balance</th>
               <th>Movements</th>
             </tr>
           </thead>
           <tbody>
             @for (line of item.lines; track line.id) {
               <tr>
-                <td class="transfer-detail__mono">{{ line.sku }}</td>
-                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
-                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+                <td class="font-mono text-xs">{{ line.sku }}</td>
                 <td>
+                  <a [routerLink]="['/products', line.productId]" class="font-semibold text-foreground no-underline hover:underline">
+                    {{ line.productName }}
+                  </a>
+                </td>
+                <td class="text-right font-semibold tabular-nums">
+                  {{ line.quantity }}
+                  @if (line.unitSymbol) {
+                    <span class="ml-1 text-xs font-normal text-muted-foreground">{{ line.unitSymbol }}</span>
+                  }
+                </td>
+                <td class="text-right tabular-nums">
                   @if (line.sourceBalanceBefore !== undefined && line.sourceBalanceAfter !== undefined) {
                     {{ line.sourceBalanceBefore }} → {{ line.sourceBalanceAfter }}
                   } @else {
                     —
                   }
                 </td>
-                <td>
+                <td class="text-right tabular-nums">
                   @if (line.destinationBalanceBefore !== undefined && line.destinationBalanceAfter !== undefined) {
                     {{ line.destinationBalanceBefore }} → {{ line.destinationBalanceAfter }}
                   } @else {
@@ -100,14 +104,20 @@
                   }
                 </td>
                 <td>
-                  <div class="transfer-detail__movement-links">
+                  <div class="grid gap-1">
                     @if (line.outboundMovement) {
-                      <a [routerLink]="['/stock-movements', line.outboundMovement.id]">
+                      <a
+                        [routerLink]="['/stock-movements', line.outboundMovement.id]"
+                        class="text-sm font-medium text-foreground no-underline hover:underline"
+                      >
                         {{ line.outboundMovement.number || 'Transfer out' }}
                       </a>
                     }
                     @if (line.inboundMovement) {
-                      <a [routerLink]="['/stock-movements', line.inboundMovement.id]">
+                      <a
+                        [routerLink]="['/stock-movements', line.inboundMovement.id]"
+                        class="text-sm font-medium text-foreground no-underline hover:underline"
+                      >
                         {{ line.inboundMovement.number || 'Transfer in' }}
                       </a>
                     }
@@ -120,11 +130,35 @@
             }
           </tbody>
         </app-table>
+      </div>
+    </section>
+
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Audit</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created</dt>
+            <dd class="m-0 text-sm">{{ item.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created by</dt>
+            <dd class="m-0 text-sm">{{ item.createdBy?.name || 'System' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Posted</dt>
+            <dd class="m-0 text-sm">{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Posted by</dt>
+            <dd class="m-0 text-sm">{{ item.postedBy?.name || '—' }}</dd>
+          </div>
+        </dl>
       </section>
 
-      <section class="transfer-detail__panel transfer-detail__panel--wide">
-        <h2>Notes</h2>
-        <p>{{ item.notes || 'No notes recorded.' }}</p>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+        <p class="mb-0 mt-3 text-base leading-6 text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</p>
       </section>
     </div>
 

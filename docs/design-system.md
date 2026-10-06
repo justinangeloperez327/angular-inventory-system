@@ -603,3 +603,28 @@ Stock Movements communicates historical causality rather than current state.
 The movement list is a ledger with signed quantity delta and resulting balance as the primary numeric fields. Negative deltas receive semantic danger emphasis while other values remain neutral.
 
 The movement detail view is intentionally read-only and audit-oriented. Inventory, audit metadata, source reference, and notes are separated by simple horizontal rules rather than independent cards.
+
+
+## Group 10 — adjustments and transfers
+
+Adjustments and Transfers are fully migrated from feature SCSS to Tailwind utilities, including their server-backed product lookup components.
+
+### Adjustments
+
+Adjustment pages use a controlled correction-document pattern.
+
+The list uses signed presentation quantities for rapid scanning while preserving the domain contract of positive quantity + direction.
+
+The draft form keeps product, warehouse, direction, quantity, reason, and notes in one restrained workspace. Posting remains a separate confirmed command.
+
+The detail view separates correction facts from posting audit and resulting stock movement.
+
+### Transfers
+
+Transfer pages emphasize warehouse route and product lines.
+
+The form uses a source/destination header followed by a horizontal line-entry workspace. Large line sets retain tabular structure through horizontal scrolling rather than collapsing each row into a card.
+
+The posted detail emphasizes Source → Destination, then shows per-line quantity, balance-before/after values, and paired outbound/inbound movement links.
+
+Neither workflow introduces edit/delete behavior after posting.

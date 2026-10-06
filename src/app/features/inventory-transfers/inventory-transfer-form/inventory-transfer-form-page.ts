@@ -54,7 +54,6 @@ type TransferLineForm = FormGroup<{
     TransferProductLookupComponent,
   ],
   templateUrl: './inventory-transfer-form-page.html',
-  styleUrl: './inventory-transfer-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryTransferFormPage implements OnInit {

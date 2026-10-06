@@ -1,6 +1,6 @@
-<div class="transfer-lookup">
-  <span class="transfer-lookup__label">Add product</span>
-  <div class="transfer-lookup__search">
+<div class="grid gap-1.5">
+  <span class="text-sm font-semibold text-foreground">Add product</span>
+  <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
     <app-input
       type="search"
       placeholder="Search SKU or product name"
@@ -20,18 +20,24 @@
   </div>
 
   @if (!sourceWarehouseId) {
-    <span class="transfer-lookup__message">Select the source warehouse before adding products.</span>
+    <span class="text-xs text-muted-foreground">Select the source warehouse before adding products.</span>
   } @else if (error()) {
-    <span class="transfer-lookup__message transfer-lookup__message--error">{{ error() }}</span>
+    <span class="text-xs text-danger">{{ error() }}</span>
   }
 
   @if (results().length > 0) {
-    <div class="transfer-lookup__results">
+    <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
       @for (product of results(); track product.id) {
-        <button type="button" (click)="choose(product)">
-          <span>{{ product.sku }}</span>
-          <strong>{{ product.name }}</strong>
-          <small>Available {{ product.quantityAvailable }} {{ product.unitSymbol || '' }}</small>
+        <button
+          type="button"
+          class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-2.5 py-2 text-left text-foreground last:border-b-0 hover:bg-surface-muted sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+          (click)="choose(product)"
+        >
+          <span class="font-mono text-xs text-muted-foreground">{{ product.sku }}</span>
+          <strong class="text-sm font-semibold">{{ product.name }}</strong>
+          <small class="text-xs tabular-nums text-muted-foreground">
+            Available {{ product.quantityAvailable }} {{ product.unitSymbol || '' }}
+          </small>
         </button>
       }
     </div>

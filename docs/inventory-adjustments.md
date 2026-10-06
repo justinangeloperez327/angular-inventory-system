@@ -107,3 +107,21 @@ Frontend controls are not the security boundary. The API must enforce these rule
 There is no edit or delete path after posting.
 
 A correction to a posted adjustment must be represented by another authorized adjustment so the stock ledger remains auditable.
+
+
+## Group 10 design migration
+
+Adjustment screens now use the transaction-document design system.
+
+The list displays quantity as a signed presentation value:
+
+```text
+increase  +quantity
+decrease  −quantity
+```
+
+This does not change the API contract: requests still send a positive `quantity` plus the separate `direction`.
+
+Create/edit uses one compact correction workspace with server-backed product lookup and no card-per-field layout.
+
+Detail separates Inventory Correction, Posting Audit, Notes, and the resulting immutable movement with simple rules. Draft actions remain editable/postable; posted transactions remain immutable.
