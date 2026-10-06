@@ -44,7 +44,6 @@ type ReturnLineForm = FormGroup<{
     TextareaComponent,
   ],
   templateUrl: './sales-return-page.html',
-  styleUrl: './sales-return-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesReturnPage implements OnInit {
