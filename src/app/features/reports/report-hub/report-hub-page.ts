@@ -10,7 +10,6 @@ import { ReportCategory } from '../models/report.model';
   selector: 'app-report-hub-page',
   imports: [RouterLink, ContentContainerComponent, PageHeaderComponent],
   templateUrl: './report-hub-page.html',
-  styleUrl: './report-hub-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportHubPage {
