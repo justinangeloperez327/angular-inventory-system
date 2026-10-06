@@ -7,7 +7,7 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: angular-inventory-${{ github.workflow }}-${{ github.ref }}
@@ -27,25 +27,17 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24.15.0
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
-      - name: Commit generated lockfile
-        if: github.event_name == 'pull_request' && github.head_ref == 'group-22-reproducible-dependencies'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin group-22-reproducible-dependencies
-          git checkout -B group-22-reproducible-dependencies origin/group-22-reproducible-dependencies
-          git add package-lock.json
+      - name: Dependency contract
+        run: npm run check:dependencies
 
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-
-          git commit -m "build: commit npm lockfile"
-          git push origin HEAD:${{ github.head_ref }}
+      - name: Dependency audit
+        run: npm audit --audit-level=high
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
