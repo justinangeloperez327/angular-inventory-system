@@ -895,6 +895,17 @@ Feature-level legacy SCSS has been removed from the migrated application surface
 
 The visual migration is now enforced by repository tooling rather than documentation alone.
 
+### Final legacy cleanup
+
+The enforcement pass found and removed the last component stylesheets that were outside the feature migrations:
+
+- application root host styling
+- Badge
+- Breadcrumb
+- Drawer
+
+Their layout and variant styling now use Tailwind utilities or component class maps, so the application no longer depends on component-level CSS/SCSS under `src/app`.
+
 ### Component scaffolding
 
 Angular component generation is configured with:
