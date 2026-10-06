@@ -19,7 +19,6 @@ import { SalesOrderProductOption } from '../../models/sales-order.model';
   selector: 'app-sales-product-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './sales-product-lookup.html',
-  styleUrl: '../lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesProductLookupComponent {
