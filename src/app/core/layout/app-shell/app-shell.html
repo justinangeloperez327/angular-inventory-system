@@ -8,11 +8,14 @@
 
   <app-sidebar
     [open]="mobileNavigationOpen()"
-    (closed)="mobileNavigationOpen.set(false)"
+    (closed)="closeNavigation()"
   />
 
   <div class="min-h-screen min-w-0 lg:ml-sidebar">
-    <app-header (menuRequested)="mobileNavigationOpen.set(true)" />
+    <app-header
+      [navigationOpen]="mobileNavigationOpen()"
+      (menuRequested)="openNavigation()"
+    />
 
     <main
       id="main-content"

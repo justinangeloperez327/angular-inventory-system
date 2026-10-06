@@ -1,15 +1,25 @@
 @if (open) {
-  <div
-    class="fixed inset-0 z-20 bg-black/40 lg:hidden"
+  <button
+    class="fixed inset-0 z-20 border-0 bg-black/35 p-0 lg:hidden"
+    type="button"
+    tabindex="-1"
+    aria-label="Close navigation"
     (click)="closed.emit()"
-    aria-hidden="true"
-  ></div>
+  ></button>
 }
 
 <aside
-  class="fixed inset-y-0 left-0 z-30 w-sidebar -translate-x-full border-r border-border bg-surface transition-transform duration-150 lg:translate-x-0"
+  id="primary-navigation"
+  class="fixed inset-y-0 left-0 z-30 w-sidebar border-r border-border bg-surface transition-transform duration-150 lg:visible lg:translate-x-0"
+  [class.invisible]="!open"
+  [class.-translate-x-full]="!open"
+  [class.visible]="open"
   [class.translate-x-0]="open"
+  [attr.role]="open ? 'dialog' : null"
+  [attr.aria-modal]="open ? 'true' : null"
   aria-label="Primary navigation"
+  [cdkTrapFocus]="open"
+  [cdkTrapFocusAutoCapture]="open"
 >
   <div class="flex h-header items-center gap-3 border-b border-border px-4">
     <div
@@ -34,7 +44,7 @@
     </button>
   </div>
 
-  <nav class="h-[calc(100vh-var(--spacing-header))] overflow-y-auto px-3 py-4">
+  <nav class="h-[calc(100vh-var(--spacing-header))] overflow-y-auto px-3 py-4" aria-label="Application">
     @for (section of sections(); track section.label) {
       <section class="mt-5 first:mt-0">
         <p
@@ -46,7 +56,7 @@
         <div class="grid gap-0.5">
           @for (item of section.items; track item.route) {
             <a
-              class="border-l-2 border-transparent px-2.5 py-2 text-base font-normal text-muted-foreground no-underline transition-colors hover:bg-surface-muted hover:text-foreground"
+              class="flex min-h-9 items-center gap-2.5 border-l-2 border-transparent px-2.5 py-1.5 text-base font-normal text-muted-foreground no-underline transition-colors hover:bg-surface-muted hover:text-foreground"
               [routerLink]="item.route"
               [routerLinkActive]="[
                 'border-primary',
@@ -54,10 +64,12 @@
                 'font-medium',
                 'text-foreground'
               ]"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closed.emit()"
+              [routerLinkActiveOptions]="{ exact: false }"
+              ariaCurrentWhenActive="page"
+              (click)="closeAfterNavigation()"
             >
-              {{ item.label }}
+              <app-navigation-icon [name]="item.icon" />
+              <span class="truncate">{{ item.label }}</span>
             </a>
           }
         </div>

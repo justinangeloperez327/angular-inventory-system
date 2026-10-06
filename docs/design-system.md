@@ -363,3 +363,78 @@ for the result count + pagination row.
 ### Pagination
 
 `app-pagination` uses compact 32px Previous/Next controls and tabular page numbering. Large numbered-page button sets are intentionally avoided because operational lists may have very large page counts.
+
+
+## Group 5 — navigation and responsive shell
+
+The navigation hierarchy is now organized around the user's operational mental model:
+
+```text
+Overview
+  Dashboard
+
+Inventory
+  Products
+  Inventory
+  Movements
+  Adjustments
+  Transfers
+  Stock Counts
+
+Purchasing
+  Purchase Orders
+  Receiving
+  Suppliers
+
+Sales
+  Sales Orders
+  Customers
+
+Management
+  Reports
+  Master Data
+  Administration
+```
+
+Routes and permission requirements are unchanged; only their presentation hierarchy is improved.
+
+### Navigation icons
+
+Navigation uses an internal 16px line-icon component backed by inline SVG. No additional icon runtime/package is introduced.
+
+Icons are decorative and hidden from assistive technology; link text remains the accessible name.
+
+### Active state
+
+Sidebar links use prefix-aware route matching so child/detail routes retain the correct active navigation item.
+
+For example:
+
+```text
+/products
+/products/new
+/products/:id
+/products/:id/edit
+```
+
+all keep Products active.
+
+The active link also exposes `aria-current="page"`.
+
+### Mobile drawer
+
+Below the 1024px shell breakpoint:
+
+- sidebar is off-canvas
+- closed sidebar uses CSS visibility so its links are not keyboard reachable
+- the menu button exposes `aria-controls` and `aria-expanded`
+- opening moves focus to the drawer close button
+- Escape closes the drawer
+- closing returns focus to the menu button
+- clicking the backdrop closes the drawer
+
+Desktop navigation remains fixed and does not close/focus-jump when selecting a route.
+
+### Header
+
+The header remains 56px high and is sticky. The global application name is visually secondary so page-specific titles remain the dominant hierarchy.

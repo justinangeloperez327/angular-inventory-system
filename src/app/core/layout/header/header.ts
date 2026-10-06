@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   inject,
+  Input,
   Output,
   signal,
+  ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -20,8 +23,17 @@ export class HeaderComponent {
   private readonly router = inject(Router);
   readonly session = inject(AuthSessionService);
 
-  readonly loggingOut = signal(false);
+  @Input() navigationOpen = false;
   @Output() readonly menuRequested = new EventEmitter<void>();
+
+  @ViewChild('menuButton')
+  private menuButton?: ElementRef<HTMLButtonElement>;
+
+  readonly loggingOut = signal(false);
+
+  focusMenuButton(): void {
+    this.menuButton?.nativeElement.focus();
+  }
 
   logout(): void {
     if (this.loggingOut()) {

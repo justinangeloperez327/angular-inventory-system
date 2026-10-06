@@ -1,8 +1,11 @@
-<header class="flex h-header items-center gap-3 border-b border-border bg-surface px-4 md:px-6">
+<header class="sticky top-0 z-10 flex h-header items-center gap-3 border-b border-border bg-surface px-4 md:px-6">
   <button
+    #menuButton
     class="grid size-9 place-content-center gap-1 rounded-sm border border-border bg-surface text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50 lg:hidden"
     type="button"
     aria-label="Open navigation"
+    aria-controls="primary-navigation"
+    [attr.aria-expanded]="navigationOpen"
     (click)="menuRequested.emit()"
   >
     <span class="block h-px w-4 bg-current"></span>
@@ -10,12 +13,12 @@
     <span class="block h-px w-4 bg-current"></span>
   </button>
 
-  <span class="text-base font-semibold">Inventory System</span>
+  <span class="text-sm font-medium text-muted-foreground">Inventory System</span>
 
   <div class="ml-auto flex items-center gap-3">
     @if (session.currentUser(); as user) {
       <div class="hidden text-right sm:block">
-        <strong class="block text-sm font-semibold">{{ user.name }}</strong>
+        <strong class="block text-sm font-semibold text-foreground">{{ user.name }}</strong>
         <span class="mt-0.5 block text-xs text-muted-foreground">{{ user.email }}</span>
       </div>
     }
