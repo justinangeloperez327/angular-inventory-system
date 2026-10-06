@@ -28,7 +28,6 @@ import { AdminUserDetail } from '../models/admin-user.model';
     SkeletonComponent,
   ],
   templateUrl: './admin-user-detail-page.html',
-  styleUrl: './admin-user-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUserDetailPage implements OnInit {
