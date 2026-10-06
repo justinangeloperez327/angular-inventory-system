@@ -105,3 +105,25 @@ inventory.view
 ```
 
 The backend remains authoritative and must scope movement records to the authenticated user's allowed inventory data.
+
+
+## Group 9 design migration
+
+The movement feature now uses a ledger-first Tailwind layout.
+
+The list emphasizes:
+
+- occurred timestamp
+- product/SKU
+- warehouse/code
+- movement type
+- signed quantity change
+- resulting balance
+- source reference
+- actor
+
+Quantity and balance columns are right-aligned with tabular numerals. Negative quantity changes use semantic danger text; positive/zero values remain neutral.
+
+The detail page is a compact immutable record with Inventory, Audit, Source Reference, and Notes sections separated by rules rather than card panels.
+
+No create/edit/delete affordances are introduced.

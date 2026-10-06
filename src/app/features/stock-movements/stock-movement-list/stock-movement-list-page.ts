@@ -49,7 +49,6 @@ import {
   ],
   providers: [StockMovementListStore],
   templateUrl: './stock-movement-list-page.html',
-  styleUrl: './stock-movement-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockMovementListPage implements OnInit {

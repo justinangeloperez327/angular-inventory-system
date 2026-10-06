@@ -5,7 +5,6 @@ import { InventoryTotals } from '../../models/inventory.model';
 @Component({
   selector: 'app-inventory-totals',
   templateUrl: './inventory-totals.html',
-  styleUrl: './inventory-totals.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryTotalsComponent {

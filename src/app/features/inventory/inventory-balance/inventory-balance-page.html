@@ -1,9 +1,15 @@
 <app-content-container>
   <app-page-header
     title="Inventory"
-    description="Current product balances by warehouse. Quantities are transaction-derived and cannot be edited here."
+    description="Current product balances by warehouse. Quantities are transaction-derived and read-only."
   >
-    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+    <app-button
+      actions
+      variant="secondary"
+      size="sm"
+      [loading]="store.loading()"
+      (click)="store.refresh()"
+    >
       Refresh
     </app-button>
   </app-page-header>
@@ -15,14 +21,12 @@
       placeholder="SKU or product name"
       formControlName="search"
     />
-
     <app-select
       label="Warehouse"
       placeholder="All warehouses"
       [options]="warehouseOptions()"
       formControlName="warehouseId"
     />
-
     <app-select
       label="Stock status"
       placeholder="All statuses"
@@ -35,31 +39,35 @@
     />
 
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">
+        Apply
+      </app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">
+        Clear
+      </app-button>
     </div>
   </form>
 
   @if (store.error()) {
-    <div class="inventory__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Inventory unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasBalances()) {
-    <div class="inventory__loading"><app-skeleton height="22rem" /></div>
+    <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasBalances()) {
-    <div class="inventory__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
             <th>SKU</th>
             <th>Product</th>
             <th>Warehouse</th>
-            <th>On hand</th>
-            <th>Reserved</th>
-            <th>Available</th>
-            <th>Reorder</th>
+            <th class="text-right">On hand</th>
+            <th class="text-right">Reserved</th>
+            <th class="text-right">Available</th>
+            <th class="text-right">Reorder</th>
             <th>Status</th>
             <th>Updated</th>
           </tr>
@@ -67,45 +75,61 @@
         <tbody>
           @for (balance of store.balances(); track balance.id) {
             <tr>
-              <td class="inventory__mono">{{ balance.sku }}</td>
+              <td class="font-mono text-xs">{{ balance.sku }}</td>
               <td>
-                <a [routerLink]="['products', balance.productId]">{{ balance.productName }}</a>
+                <a
+                  [routerLink]="['products', balance.productId]"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ balance.productName }}
+                </a>
                 @if (balance.unitSymbol || balance.unitName) {
-                  <span class="inventory__secondary">{{ balance.unitSymbol || balance.unitName }}</span>
+                  <span class="mt-0.5 block text-xs text-subtle-foreground">
+                    {{ balance.unitSymbol || balance.unitName }}
+                  </span>
                 }
               </td>
               <td>
-                <a [routerLink]="['warehouses', balance.warehouseId]">{{ balance.warehouseName }}</a>
-                <span class="inventory__secondary">{{ balance.warehouseCode }}</span>
+                <a
+                  [routerLink]="['warehouses', balance.warehouseId]"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ balance.warehouseName }}
+                </a>
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                  {{ balance.warehouseCode }}
+                </span>
               </td>
-              <td class="inventory__number">{{ balance.quantityOnHand }}</td>
-              <td class="inventory__number">{{ balance.quantityReserved }}</td>
-              <td class="inventory__number">{{ balance.quantityAvailable }}</td>
-              <td class="inventory__number">{{ balance.reorderLevel }}</td>
+              <td class="text-right tabular-nums">{{ balance.quantityOnHand }}</td>
+              <td class="text-right tabular-nums">{{ balance.quantityReserved }}</td>
+              <td class="text-right font-medium tabular-nums">{{ balance.quantityAvailable }}</td>
+              <td class="text-right tabular-nums">{{ balance.reorderLevel }}</td>
               <td>
                 <app-badge [variant]="statusVariant(balance.status)">
                   {{ statusLabel(balance.status) }}
                 </app-badge>
               </td>
-              <td>{{ balance.updatedAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap">{{ balance.updatedAt | date: 'short' }}</td>
             </tr>
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} balance lines</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} balance lines</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state
-      title="No inventory balances found"
-      description="No product/warehouse balances match the current filters."
-    />
+    <div class="mt-4">
+      <app-empty-state
+        title="No inventory balances found"
+        description="No product/warehouse balances match the current filters."
+      />
+    </div>
   }
 </app-content-container>

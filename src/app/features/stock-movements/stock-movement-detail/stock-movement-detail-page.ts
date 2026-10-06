@@ -28,7 +28,6 @@ import {
   ],
   providers: [StockMovementDetailStore],
   templateUrl: './stock-movement-detail-page.html',
-  styleUrl: './stock-movement-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockMovementDetailPage implements OnInit {

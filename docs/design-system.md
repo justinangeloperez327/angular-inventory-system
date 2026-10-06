@@ -582,3 +582,24 @@ Categories, Units, and Warehouses share the same maintenance model:
 - no feature-specific list/form stylesheet
 
 The Master Data landing page is a small three-destination navigation surface rather than a decorative dashboard.
+
+
+## Group 9 — inventory and stock movements
+
+Inventory and Stock Movements are now fully migrated from feature SCSS to Tailwind utilities.
+
+### Inventory
+
+Inventory screens communicate current stock position.
+
+The main balance table right-aligns on-hand, reserved, available, and reorder values. SKU and warehouse codes use monospace styling.
+
+Product/warehouse drill-down pages use a compact five-value summary strip followed by a single operational balance table.
+
+### Stock Movements
+
+Stock Movements communicates historical causality rather than current state.
+
+The movement list is a ledger with signed quantity delta and resulting balance as the primary numeric fields. Negative deltas receive semantic danger emphasis while other values remain neutral.
+
+The movement detail view is intentionally read-only and audit-oriented. Inventory, audit metadata, source reference, and notes are separated by simple horizontal rules rather than independent cards.

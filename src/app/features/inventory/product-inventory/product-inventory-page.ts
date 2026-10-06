@@ -31,7 +31,6 @@ import { InventoryStockStatus } from '../models/inventory.model';
   ],
   providers: [ProductInventoryStore],
   templateUrl: './product-inventory-page.html',
-  styleUrl: '../inventory-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductInventoryPage implements OnInit {

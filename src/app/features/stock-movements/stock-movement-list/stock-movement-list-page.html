@@ -1,28 +1,27 @@
 <app-content-container>
   <app-page-header
     title="Stock Movements"
-    description="Immutable inventory transaction history explaining changes to warehouse balances."
+    description="Immutable transaction ledger explaining every posted change to warehouse stock."
   >
-    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+    <app-button
+      actions
+      variant="secondary"
+      size="sm"
+      [loading]="store.loading()"
+      (click)="store.refresh()"
+    >
       Refresh
     </app-button>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input
-      type="search"
-      label="Product"
-      placeholder="SKU or product name"
-      formControlName="search"
-    />
-
+    <app-input type="search" label="Product" placeholder="SKU or product name" formControlName="search" />
     <app-select
       label="Warehouse"
       placeholder="All warehouses"
       [options]="warehouseOptions()"
       formControlName="warehouseId"
     />
-
     <app-select
       label="Movement type"
       placeholder="All types"
@@ -39,38 +38,36 @@
       ]"
       formControlName="type"
     />
-
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
-    <app-input
-      label="Reference"
-      placeholder="PO, GRN, transfer, adjustment…"
-      formControlName="reference"
-    />
+    <app-input label="Reference" placeholder="PO, GRN, transfer, adjustment…" formControlName="reference" />
 
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">
+        Apply
+      </app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">
+        Clear
+      </app-button>
     </div>
   </form>
 
   @if (filterError()) {
-    <div class="movements__alert">
+    <div class="mt-4">
       <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
     </div>
   }
 
   @if (store.error()) {
-    <div class="movements__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Stock movements unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasMovements()) {
-    <div class="movements__loading"><app-skeleton height="24rem" /></div>
+    <div class="mt-4"><app-skeleton height="24rem" /></div>
   } @else if (store.hasMovements()) {
-    <div class="movements__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
@@ -78,8 +75,8 @@
             <th>Product</th>
             <th>Warehouse</th>
             <th>Type</th>
-            <th>Change</th>
-            <th>Balance after</th>
+            <th class="text-right">Change</th>
+            <th class="text-right">Balance after</th>
             <th>Reference</th>
             <th>Performed by</th>
           </tr>
@@ -87,18 +84,35 @@
         <tbody>
           @for (movement of store.movements(); track movement.id) {
             <tr>
-              <td>
-                <a [routerLink]="movement.id">{{ movement.occurredAt | date: 'short' }}</a>
+              <td class="whitespace-nowrap">
+                <a
+                  [routerLink]="movement.id"
+                  class="font-medium text-foreground no-underline hover:underline"
+                >
+                  {{ movement.occurredAt | date: 'short' }}
+                </a>
               </td>
               <td>
-                <a [routerLink]="['/products', movement.productId]">{{ movement.productName }}</a>
-                <span class="movements__secondary">{{ movement.sku }}</span>
+                <a
+                  [routerLink]="['/products', movement.productId]"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ movement.productName }}
+                </a>
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                  {{ movement.sku }}
+                </span>
               </td>
               <td>
-                <a [routerLink]="['/inventory/warehouses', movement.warehouseId]">
+                <a
+                  [routerLink]="['/inventory/warehouses', movement.warehouseId]"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
                   {{ movement.warehouseName }}
                 </a>
-                <span class="movements__secondary">{{ movement.warehouseCode }}</span>
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                  {{ movement.warehouseCode }}
+                </span>
               </td>
               <td>
                 <app-badge [variant]="movementTypeVariant(movement.type)">
@@ -106,23 +120,27 @@
                 </app-badge>
               </td>
               <td
-                class="movements__quantity"
-                [class.is-negative]="movement.quantityChange < 0"
+                class="text-right font-semibold tabular-nums"
+                [class.text-danger]="movement.quantityChange < 0"
               >
                 {{ quantityLabel(movement.quantityChange) }}
                 @if (movement.unitSymbol) {
-                  <span>{{ movement.unitSymbol }}</span>
+                  <span class="ml-1 text-xs font-normal text-muted-foreground">
+                    {{ movement.unitSymbol }}
+                  </span>
                 }
               </td>
-              <td>{{ movement.balanceAfter ?? '—' }}</td>
+              <td class="text-right tabular-nums">{{ movement.balanceAfter ?? '—' }}</td>
               <td>
                 @if (movement.reference; as reference) {
                   @if (referencePath(reference); as path) {
-                    <a [routerLink]="path">{{ reference.number }}</a>
+                    <a [routerLink]="path" class="font-medium text-foreground no-underline hover:underline">
+                      {{ reference.number }}
+                    </a>
                   } @else {
                     {{ reference.number }}
                   }
-                  <span class="movements__secondary">{{ reference.type }}</span>
+                  <span class="mt-0.5 block text-xs text-subtle-foreground">{{ reference.type }}</span>
                 } @else {
                   —
                 }
@@ -132,20 +150,22 @@
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} movements</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} movements</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state
-      title="No stock movements found"
-      description="No immutable inventory movements match the current filters."
-    />
+    <div class="mt-4">
+      <app-empty-state
+        title="No stock movements found"
+        description="No immutable inventory movements match the current filters."
+      />
+    </div>
   }
 </app-content-container>

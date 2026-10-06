@@ -1,22 +1,25 @@
-<section class="inventory-totals" aria-label="Inventory totals">
-  <article>
-    <span>On hand</span>
-    <strong>{{ totals.quantityOnHand }}</strong>
+<section
+  class="mt-4 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
+  aria-label="Inventory totals"
+>
+  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
+    <span class="block text-xs font-medium text-muted-foreground">On hand</span>
+    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityOnHand }}</strong>
   </article>
-  <article>
-    <span>Reserved</span>
-    <strong>{{ totals.quantityReserved }}</strong>
+  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
+    <span class="block text-xs font-medium text-muted-foreground">Reserved</span>
+    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityReserved }}</strong>
   </article>
-  <article>
-    <span>Available</span>
-    <strong>{{ totals.quantityAvailable }}</strong>
+  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
+    <span class="block text-xs font-medium text-muted-foreground">Available</span>
+    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityAvailable }}</strong>
   </article>
-  <article class="inventory-totals__warning">
-    <span>Low-stock lines</span>
-    <strong>{{ totals.lowStockLines }}</strong>
+  <article class="min-h-20 border border-border border-l-[3px] border-l-warning bg-surface px-3 py-2.5">
+    <span class="block text-xs font-medium text-muted-foreground">Low-stock lines</span>
+    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.lowStockLines }}</strong>
   </article>
-  <article class="inventory-totals__danger">
-    <span>Out-of-stock lines</span>
-    <strong>{{ totals.outOfStockLines }}</strong>
+  <article class="min-h-20 border border-border border-l-[3px] border-l-danger bg-surface px-3 py-2.5">
+    <span class="block text-xs font-medium text-muted-foreground">Out-of-stock lines</span>
+    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.outOfStockLines }}</strong>
   </article>
 </section>

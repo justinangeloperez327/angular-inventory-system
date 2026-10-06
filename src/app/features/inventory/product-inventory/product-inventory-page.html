@@ -10,33 +10,35 @@
       [title]="snapshot.product.name"
       [description]="'Inventory by warehouse · SKU ' + snapshot.product.sku"
     >
-      <a actions routerLink="/inventory" class="inventory-detail__back">All inventory</a>
+      <a actions routerLink="/inventory" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All inventory</a>
       <a
         actions
         routerLink="/stock-movements"
         [queryParams]="{ search: snapshot.product.sku }"
-        class="inventory-detail__back"
+        class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
       >
         Movements
       </a>
     </app-page-header>
 
-    <div class="inventory-detail__status">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="snapshot.product.active ? 'success' : 'neutral'">
         {{ snapshot.product.active ? 'Active product' : 'Inactive product' }}
       </app-badge>
       @if (snapshot.product.unitSymbol || snapshot.product.unitName) {
         <span>{{ snapshot.product.unitSymbol || snapshot.product.unitName }}</span>
       }
-      <span>Reorder level {{ snapshot.product.reorderLevel }}</span>
+      <span class="tabular-nums">Reorder level {{ snapshot.product.reorderLevel }}</span>
     </div>
 
     <app-inventory-totals [totals]="snapshot.totals" />
 
-    <section class="inventory-detail__panel">
-      <div class="inventory-detail__heading">
-        <h2>Warehouse balances</h2>
-        <p>Current stock position for this product across warehouses.</p>
+    <section class="mt-5 border-t border-border pt-4">
+      <div class="mb-3">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Warehouse balances</h2>
+        <p class="mb-0 mt-1 text-xs text-muted-foreground">
+          Current stock position for this product across warehouses.
+        </p>
       </div>
 
       @if (snapshot.balances.data.length > 0) {
@@ -44,9 +46,9 @@
           <thead>
             <tr>
               <th>Warehouse</th>
-              <th>On hand</th>
-              <th>Reserved</th>
-              <th>Available</th>
+              <th class="text-right">On hand</th>
+              <th class="text-right">Reserved</th>
+              <th class="text-right">Available</th>
               <th>Status</th>
               <th>Updated</th>
             </tr>
@@ -55,26 +57,31 @@
             @for (balance of snapshot.balances.data; track balance.id) {
               <tr>
                 <td>
-                  <a [routerLink]="['/inventory/warehouses', balance.warehouseId]">
+                  <a
+                    [routerLink]="['/inventory/warehouses', balance.warehouseId]"
+                    class="font-semibold text-foreground no-underline hover:underline"
+                  >
                     {{ balance.warehouseName }}
                   </a>
-                  <span class="inventory-detail__secondary">{{ balance.warehouseCode }}</span>
+                  <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                    {{ balance.warehouseCode }}
+                  </span>
                 </td>
-                <td>{{ balance.quantityOnHand }}</td>
-                <td>{{ balance.quantityReserved }}</td>
-                <td>{{ balance.quantityAvailable }}</td>
+                <td class="text-right tabular-nums">{{ balance.quantityOnHand }}</td>
+                <td class="text-right tabular-nums">{{ balance.quantityReserved }}</td>
+                <td class="text-right font-medium tabular-nums">{{ balance.quantityAvailable }}</td>
                 <td>
                   <app-badge [variant]="statusVariant(balance.status)">
                     {{ statusLabel(balance.status) }}
                   </app-badge>
                 </td>
-                <td>{{ balance.updatedAt | date: 'short' }}</td>
+                <td class="whitespace-nowrap">{{ balance.updatedAt | date: 'short' }}</td>
               </tr>
             }
           </tbody>
         </app-table>
 
-        <div class="inventory-detail__pagination">
+        <div class="data-footer">
           <span>{{ snapshot.balances.pagination.totalItems }} warehouses</span>
           <app-pagination
             [page]="snapshot.balances.pagination.page"

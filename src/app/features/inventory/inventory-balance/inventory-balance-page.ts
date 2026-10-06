@@ -37,7 +37,6 @@ import { InventoryStockStatus } from '../models/inventory.model';
   ],
   providers: [InventoryBalanceStore],
   templateUrl: './inventory-balance-page.html',
-  styleUrl: './inventory-balance-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InventoryBalancePage implements OnInit {

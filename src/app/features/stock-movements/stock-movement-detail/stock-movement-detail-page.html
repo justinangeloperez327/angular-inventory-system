@@ -10,16 +10,16 @@
       title="Stock Movement"
       [description]="(movement.occurredAt | date: 'medium') ?? ''"
     >
-      <a actions routerLink="/stock-movements" class="movement-detail__back">All movements</a>
+      <a actions routerLink="/stock-movements" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All movements</a>
     </app-page-header>
 
-    <div class="movement-detail__summary">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="movementTypeVariant(movement.type)">
         {{ movementTypeLabel(movement.type) }}
       </app-badge>
       <strong
-        class="movement-detail__quantity"
-        [class.is-negative]="movement.quantityChange < 0"
+        class="text-lg font-semibold text-foreground tabular-nums"
+        [class.text-danger]="movement.quantityChange < 0"
       >
         {{ quantityLabel(movement.quantityChange) }}
         @if (movement.unitSymbol) {
@@ -29,51 +29,78 @@
       <span>Immutable record</span>
     </div>
 
-    <div class="movement-detail__grid">
-      <section class="movement-detail__panel">
-        <h2>Inventory</h2>
-        <dl>
-          <div>
-            <dt>Product</dt>
-            <dd>
-              <a [routerLink]="['/products', movement.productId]">{{ movement.productName }}</a>
-              <span>{{ movement.sku }}</span>
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Inventory</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 border-t border-border py-2.5 first:border-t-0 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Product</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/products', movement.productId]" class="font-semibold text-foreground no-underline hover:underline">
+                {{ movement.productName }}
+              </a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ movement.sku }}</span>
             </dd>
           </div>
-          <div>
-            <dt>Warehouse</dt>
-            <dd>
-              <a [routerLink]="['/inventory/warehouses', movement.warehouseId]">
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Warehouse</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/inventory/warehouses', movement.warehouseId]" class="font-semibold text-foreground no-underline hover:underline">
                 {{ movement.warehouseName }}
               </a>
-              <span>{{ movement.warehouseCode }}</span>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ movement.warehouseCode }}</span>
             </dd>
           </div>
-          <div><dt>Quantity change</dt><dd>{{ quantityLabel(movement.quantityChange) }}</dd></div>
-          <div><dt>Balance after</dt><dd>{{ movement.balanceAfter ?? '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Quantity change</dt>
+            <dd class="m-0 text-right text-sm font-semibold tabular-nums" [class.text-danger]="movement.quantityChange < 0">
+              {{ quantityLabel(movement.quantityChange) }}
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Balance after</dt>
+            <dd class="m-0 text-right text-sm tabular-nums">{{ movement.balanceAfter ?? '—' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="movement-detail__panel">
-        <h2>Audit</h2>
-        <dl>
-          <div><dt>Occurred</dt><dd>{{ movement.occurredAt | date: 'medium' }}</dd></div>
-          <div><dt>Recorded</dt><dd>{{ movement.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Performed by</dt><dd>{{ movement.performedBy?.name || 'System' }}</dd></div>
-          <div><dt>Movement ID</dt><dd class="movement-detail__mono">{{ movement.id }}</dd></div>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Audit</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 border-t border-border py-2.5 first:border-t-0 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Occurred</dt>
+            <dd class="m-0 text-sm">{{ movement.occurredAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Recorded</dt>
+            <dd class="m-0 text-sm">{{ movement.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Performed by</dt>
+            <dd class="m-0 text-sm">{{ movement.performedBy?.name || 'System' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Movement ID</dt>
+            <dd class="m-0 [overflow-wrap:anywhere] font-mono text-xs">{{ movement.id }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="movement-detail__panel movement-detail__panel--wide">
-        <h2>Source reference</h2>
+      <section class="border-t border-border pt-4 lg:col-span-2">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Source reference</h2>
         @if (movement.reference; as reference) {
-          <dl>
-            <div><dt>Type</dt><dd>{{ reference.type }}</dd></div>
-            <div>
-              <dt>Reference</dt>
-              <dd>
+          <dl class="mt-3 max-w-2xl">
+            <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+              <dt class="text-xs text-muted-foreground">Type</dt>
+              <dd class="m-0 text-sm">{{ reference.type }}</dd>
+            </div>
+            <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+              <dt class="text-xs text-muted-foreground">Reference</dt>
+              <dd class="m-0 text-sm">
                 @if (referencePath(reference); as path) {
-                  <a [routerLink]="path">{{ reference.number }}</a>
+                  <a [routerLink]="path" class="font-semibold text-foreground no-underline hover:underline">
+                    {{ reference.number }}
+                  </a>
                 } @else {
                   {{ reference.number }}
                 }
@@ -81,13 +108,17 @@
             </div>
           </dl>
         } @else {
-          <p>No source reference was supplied for this movement.</p>
+          <p class="mb-0 mt-3 text-base text-muted-foreground">
+            No source reference was supplied for this movement.
+          </p>
         }
       </section>
 
-      <section class="movement-detail__panel movement-detail__panel--wide">
-        <h2>Notes</h2>
-        <p>{{ movement.notes || 'No notes recorded.' }}</p>
+      <section class="border-t border-border pt-4 lg:col-span-2">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+        <p class="mb-0 mt-3 max-w-4xl text-base leading-6 text-muted-foreground">
+          {{ movement.notes || 'No notes recorded.' }}
+        </p>
       </section>
     </div>
   }
