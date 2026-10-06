@@ -765,3 +765,36 @@ Returns are separate inventory transactions and use the same line-oriented docum
 
 Returnable and return-now quantities remain side by side. Posted return movements stay visible from the original sales order, preserving the audit trail rather than rewriting sale movements.
 
+## Group 15 — reports
+
+Reports are fully migrated from feature SCSS to Tailwind utilities.
+
+### Catalog
+
+The Reports landing page is a compact domain-grouped index instead of a card dashboard.
+
+Inventory, Purchasing, and Sales reports are separated into clear sections with low-noise navigation rows. The description remains visible so users can choose the correct report without opening several pages.
+
+### Viewer
+
+All report definitions share one viewer pattern:
+
+```text
+Report heading
+Filter bar
+Summary strip
+Generated timestamp
+Dense data table
+Pagination
+```
+
+Summary metrics use a restrained bordered strip rather than independent cards.
+
+Numeric and currency columns are right-aligned with tabular numerals. Operational identifiers use monospace treatment where applicable.
+
+### Data authority
+
+The visual migration does not move reporting calculations into Angular.
+
+Valuation, historical balances, transaction totals, summary aggregates, pagination, filtering, and CSV generation remain backend-authoritative.
+

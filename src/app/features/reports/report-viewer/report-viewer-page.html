@@ -1,7 +1,13 @@
 <app-content-container>
   @if (store.definition(); as report) {
     <app-page-header [title]="report.title" [description]="report.description">
-      <a actions routerLink="/reports" class="report-viewer__back">All reports</a>
+      <a
+        actions
+        routerLink="/reports"
+        class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
+      >
+        All reports
+      </a>
       <app-button actions variant="secondary" [loading]="store.exporting()" (click)="exportCsv()">
         Export CSV
       </app-button>
@@ -44,49 +50,54 @@
       }
 
       <div class="filter-bar__actions">
-        <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-        <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+        <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+        <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
       </div>
     </form>
 
     @if (filterError()) {
-      <div class="report-viewer__alert">
+      <div class="mt-4">
         <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
       </div>
     }
 
     @if (store.error()) {
-      <div class="report-viewer__alert">
+      <div class="mt-4">
         <app-alert variant="danger" title="Report unavailable">{{ store.error() }}</app-alert>
       </div>
     }
 
     @if (store.response(); as response) {
       @if (report.metrics.length > 0) {
-        <div class="report-viewer__metrics">
-          @for (metric of report.metrics; track metric.key) {
-            <div class="report-viewer__metric">
-              <span>{{ metric.label }}</span>
-              <strong>{{ formatValue(response.summary[metric.key], metric.type) }}</strong>
-            </div>
-          }
-        </div>
+        <section class="mt-5">
+          <h2 class="sr-only">Report summary</h2>
+          <div class="grid border-y border-border sm:grid-cols-2 lg:grid-cols-4">
+            @for (metric of report.metrics; track metric.key) {
+              <div class="min-w-0 border-b border-border px-3 py-3 last:border-b-0 sm:[&:nth-child(odd)]:border-r sm:[&:nth-last-child(-n+2)]:border-b-0 lg:border-b-0 lg:border-r lg:last:border-r-0">
+                <span class="block text-xs text-muted-foreground">{{ metric.label }}</span>
+                <strong class="mt-1 block truncate text-lg font-semibold text-foreground tabular-nums">
+                  {{ formatValue(response.summary[metric.key], metric.type) }}
+                </strong>
+              </div>
+            }
+          </div>
+        </section>
       }
 
-      <div class="report-viewer__generated">
+      <div class="mt-2 text-right text-xs text-subtle-foreground">
         Generated {{ formatValue(response.generatedAt, 'datetime') }}
       </div>
     }
 
     @if (store.loading() && store.rows().length === 0) {
-      <div class="report-viewer__loading"><app-skeleton height="24rem" /></div>
+      <div class="mt-4"><app-skeleton height="24rem" /></div>
     } @else if (store.rows().length > 0) {
-      <div class="report-viewer__table">
+      <div class="mt-4">
         <app-table>
           <thead>
             <tr>
               @for (column of report.columns; track column.key) {
-                <th>{{ column.label }}</th>
+                <th [class.text-right]="isNumericType(column.type)">{{ column.label }}</th>
               }
             </tr>
           </thead>
@@ -94,24 +105,33 @@
             @for (row of store.rows(); track $index) {
               <tr>
                 @for (column of report.columns; track column.key) {
-                  <td>{{ formatValue(row[column.key], column.type) }}</td>
+                  <td
+                    [class.text-right]="isNumericType(column.type)"
+                    [class.tabular-nums]="isNumericType(column.type)"
+                    [class.font-mono]="isIdentifierColumn(column.key)"
+                    [class.text-xs]="isIdentifierColumn(column.key)"
+                  >
+                    {{ formatValue(row[column.key], column.type) }}
+                  </td>
                 }
               </tr>
             }
           </tbody>
         </app-table>
+      </div>
 
-        <div class="data-footer">
-          <span>{{ store.pagination().totalItems }} rows</span>
-          <app-pagination
-            [page]="store.pagination().page"
-            [totalPages]="store.pagination().totalPages"
-            (pageChange)="store.setPage($event)"
-          />
-        </div>
+      <div class="data-footer">
+        <span>{{ store.pagination().totalItems }} rows</span>
+        <app-pagination
+          [page]="store.pagination().page"
+          [totalPages]="store.pagination().totalPages"
+          (pageChange)="store.setPage($event)"
+        />
       </div>
     } @else if (!store.loading()) {
-      <app-empty-state title="No report data" description="No rows match the current report filters." />
+      <div class="mt-4">
+        <app-empty-state title="No report data" description="No rows match the current report filters." />
+      </div>
     }
   }
 </app-content-container>

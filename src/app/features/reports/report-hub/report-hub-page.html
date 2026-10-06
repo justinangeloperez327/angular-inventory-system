@@ -1,22 +1,28 @@
 <app-content-container>
   <app-page-header
     title="Reports"
-    description="Operational inventory, purchasing, and sales reporting from backend-authoritative data."
+    description="Read-only operational reporting across inventory, purchasing, and sales."
   />
 
-  <div class="report-hub">
+  <div class="mt-6 grid gap-8 xl:grid-cols-3">
     @for (category of categories; track category) {
-      <section class="report-hub__section">
-        <div class="report-hub__heading">
-          <h2>{{ category }}</h2>
-          <span>{{ reportsFor(category).length }} reports</span>
+      <section>
+        <div class="flex items-baseline justify-between gap-4 border-b border-border pb-2">
+          <h2 class="m-0 text-lg font-semibold text-foreground">{{ category }}</h2>
+          <span class="text-xs text-muted-foreground">{{ reportsFor(category).length }} reports</span>
         </div>
 
-        <div class="report-hub__grid">
+        <div class="divide-y divide-border">
           @for (report of reportsFor(category); track report.id) {
-            <a class="report-hub__card" [routerLink]="report.id">
-              <strong>{{ report.title }}</strong>
-              <span>{{ report.description }}</span>
+            <a
+              class="group grid gap-1 py-3 text-foreground no-underline"
+              [routerLink]="report.id"
+            >
+              <span class="flex items-center justify-between gap-3">
+                <strong class="text-sm font-semibold group-hover:underline">{{ report.title }}</strong>
+                <span aria-hidden="true" class="text-muted-foreground">→</span>
+              </span>
+              <span class="text-xs leading-5 text-muted-foreground">{{ report.description }}</span>
             </a>
           }
         </div>
