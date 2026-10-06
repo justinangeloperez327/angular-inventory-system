@@ -839,3 +839,57 @@ Audit history is presented as a read-only ledger.
 
 Timestamps, actors, areas, actions, entity references, and summaries remain dense and searchable. Audit events are never generated or rewritten by the frontend.
 
+## Group 17 — authentication and migration completion
+
+Authentication is migrated to Tailwind and the visual-system migration is complete across the application.
+
+### Sign-in
+
+The sign-in page is intentionally minimal:
+
+```text
+Product identity
+Sign-in heading
+Email
+Password
+Primary submit action
+Access note
+```
+
+It uses the same semantic colors, spacing, radius, typography, focus behavior, and shared controls as the authenticated shell.
+
+### Global reset decision
+
+Tailwind Preflight remains disabled intentionally.
+
+The application already owns a small explicit base reset for:
+
+- box sizing
+- body defaults
+- typography
+- form-font inheritance
+- focus visibility
+- reduced-motion handling
+
+Keeping that controlled reset avoids introducing broad native-element changes after the migration is complete.
+
+### Migration status
+
+The following surfaces are now Tailwind-based:
+
+- application shell and navigation
+- shared controls and feedback components
+- dashboard
+- products and master data
+- inventory and stock movements
+- adjustments and transfers
+- purchasing and receiving
+- stock counts
+- suppliers and customers
+- sales and returns
+- reports
+- administration
+- authentication
+
+Feature-level legacy SCSS has been removed from the migrated application surfaces.
+
