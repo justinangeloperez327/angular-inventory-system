@@ -36,3 +36,29 @@ jobs:
 
       - name: Production build
         run: npm run build:production
+
+      - name: Build Docker image
+        run: docker build --tag angular-inventory-system:ci .
+
+      - name: Smoke-test Docker image
+        run: |
+          docker run --detach \
+            --name angular-inventory-system-ci \
+            --publish 8080:8080 \
+            --env API_UPSTREAM=http://127.0.0.1:3000 \
+            angular-inventory-system:ci
+
+          cleanup() {
+            docker logs angular-inventory-system-ci || true
+            docker rm --force angular-inventory-system-ci || true
+          }
+          trap cleanup EXIT
+
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error http://127.0.0.1:8080/healthz; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          exit 1

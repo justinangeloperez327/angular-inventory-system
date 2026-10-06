@@ -30,6 +30,8 @@ The workflow performs:
 1. dependency installation
 2. Vitest unit tests
 3. Angular production build
+4. Docker image build
+5. Docker container health smoke test
 
 Production bundle budgets remain enforced by the Angular builder.
 
@@ -137,7 +139,9 @@ Never include access tokens, passwords, authorization headers, or sensitive busi
 
 ## Deployment requirements
 
-The hosting platform must:
+The repository includes a production Docker/Nginx runtime. See `docs/docker.md`.
+
+Whether containerized or hosted directly, the hosting platform must:
 
 - serve the production `dist` output
 - route non-file application paths back to `index.html`

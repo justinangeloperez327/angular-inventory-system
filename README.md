@@ -89,10 +89,23 @@ src/app/
 
 Inventory balances are consequences of authoritative backend transactions. Angular does not directly mutate inventory state.
 
+## Docker
+
+Build and run the production container:
+
+```bash
+docker compose up --build
+```
+
+The frontend is available at `http://localhost:8080` and proxies `/api` to the runtime `API_UPSTREAM`.
+
+See `docs/docker.md` for standalone Docker, Compose, health checks, caching, reverse-proxy behavior, and backend-network configuration.
+
 ## Production
 
 See:
 
+- `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`
 - `docs/authentication.md`
