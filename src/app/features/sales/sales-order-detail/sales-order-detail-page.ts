@@ -35,7 +35,6 @@ type SalesOrderAction = 'confirm' | 'cancel' | 'dispatch' | 'complete';
   ],
   providers: [SalesOrderDetailStore],
   templateUrl: './sales-order-detail-page.html',
-  styleUrl: './sales-order-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesOrderDetailPage implements OnInit {
