@@ -50,7 +50,11 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "sourceMap": false,
+              "security": {
+                "autoCsp": true
+              }
             },
             "development": {
               "optimization": false,
@@ -71,6 +75,14 @@
             }
           },
           "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json",
+            "runner": "vitest",
+            "buildTarget": "angular-inventory-system:build:development"
+          }
         }
       }
     }

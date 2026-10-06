@@ -1,4 +1,6 @@
 <div class="shell">
+  <a class="shell__skip-link" href="#main-content">Skip to main content</a>
+
   <app-sidebar
     [open]="mobileNavigationOpen()"
     (closed)="mobileNavigationOpen.set(false)"
@@ -7,7 +9,7 @@
   <div class="shell__workspace">
     <app-header (menuRequested)="mobileNavigationOpen.set(true)" />
 
-    <main class="shell__content">
+    <main id="main-content" class="shell__content" tabindex="-1">
       <router-outlet />
     </main>
   </div>

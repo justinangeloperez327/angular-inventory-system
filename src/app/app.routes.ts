@@ -138,7 +138,14 @@ export const routes: Routes = [
           ),
         title: 'Access denied | Inventory System',
       },
-      { path: '**', redirectTo: ROUTE_PATHS.dashboard },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./shared/pages/not-found/not-found').then(
+            (component) => component.NotFoundPage,
+          ),
+        title: 'Page not found | Inventory System',
+      },
     ],
   },
 ];

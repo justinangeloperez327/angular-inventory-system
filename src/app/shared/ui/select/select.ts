@@ -34,6 +34,7 @@ export class SelectComponent implements ControlValueAccessor {
   @Input() label = '';
   @Input() placeholder = 'Select an option';
   @Input() options: readonly SelectOption[] = [];
+  @Input() hint = '';
   @Input() error = '';
   @Input() disabled = false;
 

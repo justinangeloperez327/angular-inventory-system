@@ -10,6 +10,7 @@
     [disabled]="disabled"
     [value]="value"
     [attr.aria-invalid]="error ? 'true' : null"
+    [attr.aria-describedby]="error ? (id || fallbackId) + '-error' : hint ? (id || fallbackId) + '-hint' : null"
     (change)="handleChange($event)"
     (blur)="handleBlur()"
   >
@@ -20,6 +21,8 @@
   </select>
 
   @if (error) {
-    <span class="field__message field__message--error">{{ error }}</span>
+    <span class="field__message field__message--error" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
+  } @else if (hint) {
+    <span class="field__message" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
   }
 </label>

@@ -1,4 +1,9 @@
-<div class="alert" [class]="'alert alert--' + variant" role="status">
+<div
+  class="alert"
+  [class]="'alert alert--' + variant"
+  [attr.role]="variant === 'danger' ? 'alert' : 'status'"
+  [attr.aria-live]="variant === 'danger' ? 'assertive' : 'polite'"
+>
   @if (title) {
     <strong>{{ title }}</strong>
   }
