@@ -688,3 +688,42 @@ negative    −N, danger emphasis
 ```
 
 The server remains authoritative for variance and posting. Posted counts are immutable and link to the resulting stock-count movements.
+
+
+## Group 13 — suppliers and customers
+
+Suppliers and Customers now share one Tailwind business-partner master pattern.
+
+### Lists
+
+Partner lists use:
+
+- monospace partner codes
+- prominent partner name
+- contact, email, and phone
+- compact active/inactive status
+- shared filter bar
+- shared data footer
+- restrained row-level maintenance actions
+
+### Forms
+
+Both partner forms are bounded master-data forms divided into:
+
+```text
+Identity
+Contact
+Address
+```
+
+Sections use whitespace and horizontal rules rather than independent cards.
+
+### Profiles
+
+Profiles use definition-list sections for Contact, Address, and Record metadata.
+
+Supplier Purchase History remains a separate permission-gated panel because purchasing is a separate transactional domain. Its failure cannot make Supplier identity unavailable.
+
+Customer Sales activity remains a handoff into the Sales domain via `customerId` filtering rather than duplicating sales history inside Customer Management.
+
+Deactivation preserves historical transaction references for both partner types.

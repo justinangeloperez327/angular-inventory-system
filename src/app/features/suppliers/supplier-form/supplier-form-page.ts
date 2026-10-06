@@ -40,7 +40,6 @@ type SupplierField =
     SkeletonComponent,
   ],
   templateUrl: './supplier-form-page.html',
-  styleUrl: './supplier-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierFormPage implements OnInit {

@@ -10,7 +10,7 @@
       <a
         actions
         [routerLink]="['edit']"
-        class="supplier-detail__edit"
+        class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
         *appHasPermission="permissions.supplierManage"
       >
         Edit
@@ -39,50 +39,100 @@
       }
     </app-page-header>
 
-    <div class="supplier-detail__status">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="supplier.active ? 'success' : 'neutral'">
         {{ supplier.active ? 'Active' : 'Inactive' }}
       </app-badge>
+      <span>Updated {{ supplier.updatedAt | date: 'medium' }}</span>
     </div>
 
-    <div class="supplier-detail__grid">
-      <section class="supplier-detail__panel">
-        <h2>Contact</h2>
-        <dl>
-          <div><dt>Contact</dt><dd>{{ supplier.contactName || '—' }}</dd></div>
-          <div><dt>Email</dt><dd>{{ supplier.email || '—' }}</dd></div>
-          <div><dt>Phone</dt><dd>{{ supplier.phone || '—' }}</dd></div>
-          <div><dt>Tax number</dt><dd>{{ supplier.taxNumber || '—' }}</dd></div>
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Contact</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Contact</dt>
+            <dd class="m-0 text-sm">{{ supplier.contactName || '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Email</dt>
+            <dd class="m-0 text-sm">
+              @if (supplier.email) {
+                <a [href]="'mailto:' + supplier.email" class="text-foreground no-underline hover:underline">{{ supplier.email }}</a>
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Phone</dt>
+            <dd class="m-0 text-sm">
+              @if (supplier.phone) {
+                <a [href]="'tel:' + supplier.phone" class="text-foreground no-underline hover:underline">{{ supplier.phone }}</a>
+              } @else {
+                —
+              }
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Tax number</dt>
+            <dd class="m-0 text-sm">{{ supplier.taxNumber || '—' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="supplier-detail__panel">
-        <h2>Address</h2>
-        <dl>
-          <div><dt>Address 1</dt><dd>{{ supplier.addressLine1 || '—' }}</dd></div>
-          <div><dt>Address 2</dt><dd>{{ supplier.addressLine2 || '—' }}</dd></div>
-          <div><dt>City</dt><dd>{{ supplier.city || '—' }}</dd></div>
-          <div><dt>State / Province</dt><dd>{{ supplier.stateProvince || '—' }}</dd></div>
-          <div><dt>Postal code</dt><dd>{{ supplier.postalCode || '—' }}</dd></div>
-          <div><dt>Country</dt><dd>{{ supplier.countryCode || '—' }}</dd></div>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Address</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Address</dt>
+            <dd class="m-0 text-sm">
+              {{ supplier.addressLine1 || '—' }}
+              @if (supplier.addressLine2) {
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ supplier.addressLine2 }}</span>
+              }
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">City</dt>
+            <dd class="m-0 text-sm">{{ supplier.city || '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">State / Province</dt>
+            <dd class="m-0 text-sm">{{ supplier.stateProvince || '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Postal code</dt>
+            <dd class="m-0 text-sm">{{ supplier.postalCode || '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Country</dt>
+            <dd class="m-0 font-mono text-sm">{{ supplier.countryCode || '—' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="supplier-detail__panel supplier-detail__panel--wide">
-        <h2>Record</h2>
-        <dl class="supplier-detail__record">
-          <div><dt>Created</dt><dd>{{ supplier.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Last updated</dt><dd>{{ supplier.updatedAt | date: 'medium' }}</dd></div>
+      <section class="border-t border-border pt-4 lg:col-span-2">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Record</h2>
+        <dl class="mt-3 grid gap-x-8 sm:grid-cols-2">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[7rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created</dt>
+            <dd class="m-0 text-sm">{{ supplier.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[7rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Last updated</dt>
+            <dd class="m-0 text-sm">{{ supplier.updatedAt | date: 'medium' }}</dd>
+          </div>
         </dl>
       </section>
     </div>
 
-    <section class="supplier-detail__history" *appHasPermission="permissions.purchaseView">
-      <div class="supplier-detail__history-header">
-        <div>
-          <h2>Purchase history</h2>
-          <p>Purchase orders issued to this supplier.</p>
-        </div>
+    <section class="mt-5 border-t border-border pt-4" *appHasPermission="permissions.purchaseView">
+      <div class="mb-3">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Purchase history</h2>
+        <p class="mb-0 mt-1 text-xs text-muted-foreground">
+          Purchase orders issued to this supplier. History failure does not block the supplier profile.
+        </p>
       </div>
 
       @if (store.historyError()) {
@@ -98,31 +148,40 @@
           <app-table>
             <thead>
               <tr>
-                <th>PO Number</th>
+                <th>PO number</th>
                 <th>Order date</th>
                 <th>Expected</th>
                 <th>Status</th>
-                <th>Total</th>
+                <th class="text-right">Total</th>
               </tr>
             </thead>
             <tbody>
               @for (order of history.data; track order.id) {
                 <tr>
-                  <td class="supplier-detail__mono">{{ order.number }}</td>
-                  <td>{{ order.orderDate | date: 'mediumDate' }}</td>
-                  <td>{{ order.expectedDate ? (order.expectedDate | date: 'mediumDate') : '—' }}</td>
+                  <td class="font-mono text-xs">
+                    <a
+                      [routerLink]="['/purchasing', order.id]"
+                      class="font-semibold text-foreground no-underline hover:underline"
+                    >
+                      {{ order.number }}
+                    </a>
+                  </td>
+                  <td class="whitespace-nowrap">{{ order.orderDate | date: 'mediumDate' }}</td>
+                  <td class="whitespace-nowrap">{{ order.expectedDate ? (order.expectedDate | date: 'mediumDate') : '—' }}</td>
                   <td>
                     <app-badge [variant]="purchaseStatusVariant(order.status)">
                       {{ order.status }}
                     </app-badge>
                   </td>
-                  <td>{{ order.totalAmount | currency: history.currencyCode : 'symbol' : '1.2-2' }}</td>
+                  <td class="text-right font-medium tabular-nums">
+                    {{ order.totalAmount | currency: history.currencyCode : 'symbol' : '1.2-2' }}
+                  </td>
                 </tr>
               }
             </tbody>
           </app-table>
 
-          <div class="supplier-detail__pagination">
+          <div class="data-footer">
             <span>{{ history.pagination.totalItems }} purchase orders</span>
             <app-pagination
               [page]="history.pagination.page"

@@ -39,7 +39,6 @@ import { CustomerListStore } from '../data-access/customer-list.store';
   ],
   providers: [CustomerListStore],
   templateUrl: './customer-list-page.html',
-  styleUrl: './customer-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerListPage implements OnInit {

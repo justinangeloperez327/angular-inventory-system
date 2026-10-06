@@ -42,7 +42,6 @@ import { SupplierSummary } from '../models/supplier.model';
   ],
   providers: [SupplierListStore],
   templateUrl: './supplier-list-page.html',
-  styleUrl: './supplier-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierListPage implements OnInit {
@@ -68,7 +67,7 @@ export class SupplierListPage implements OnInit {
   clearFilters(): void {
     this.filters.reset({
       search: '',
-      status: 'active',
+      status: '',
     });
     this.applyFilters();
   }

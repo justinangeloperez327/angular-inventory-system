@@ -31,7 +31,6 @@ import { CustomerDetail } from '../models/customer.model';
     SkeletonComponent,
   ],
   templateUrl: './customer-detail-page.html',
-  styleUrl: './customer-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerDetailPage implements OnInit {

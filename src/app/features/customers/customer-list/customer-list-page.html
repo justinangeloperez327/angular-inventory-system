@@ -1,12 +1,25 @@
 <app-content-container>
-  <app-page-header title="Customers" description="Customer master data used by sales orders and returns.">
-    <a actions routerLink="new" class="customer-list__primary-action" *appHasPermission="permissions.customerManage">
+  <app-page-header
+    title="Customers"
+    description="Customer identity and contact data used by sales orders."
+  >
+    <a
+      actions
+      routerLink="new"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      *appHasPermission="permissions.customerManage"
+    >
       New customer
     </a>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input type="search" label="Search" placeholder="Code, name, email, phone" formControlName="search" />
+    <app-input
+      type="search"
+      label="Search"
+      placeholder="Code, name, contact, email, or phone"
+      formControlName="search"
+    />
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -16,38 +29,75 @@
       ]"
       formControlName="status"
     />
+
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (store.error()) {
-    <div class="customer-list__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Customers unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasItems()) {
-    <div class="customer-list__loading"><app-skeleton height="20rem" /></div>
+    <div class="mt-4"><app-skeleton height="20rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="customer-list__table">
+    <div class="mt-4">
       <app-table>
         <thead>
-          <tr><th>Code</th><th>Customer</th><th>Contact</th><th>Email</th><th>Phone</th><th>Status</th><th>Updated</th><th>Actions</th></tr>
+          <tr>
+            <th>Code</th>
+            <th>Customer</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Updated</th>
+            <th><span class="sr-only">Actions</span></th>
+          </tr>
         </thead>
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td><a [routerLink]="item.id">{{ item.code }}</a></td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.contactName || '—' }}</td>
-              <td>{{ item.email || '—' }}</td>
-              <td>{{ item.phone || '—' }}</td>
-              <td><app-badge [variant]="item.active ? 'success' : 'neutral'">{{ item.active ? 'active' : 'inactive' }}</app-badge></td>
-              <td>{{ item.updatedAt | date: 'short' }}</td>
+              <td class="font-mono text-xs">{{ item.code }}</td>
               <td>
-                <a [routerLink]="[item.id, 'edit']" class="customer-list__action" *appHasPermission="permissions.customerManage">
+                <a
+                  [routerLink]="item.id"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ item.name }}
+                </a>
+              </td>
+              <td>{{ item.contactName || '—' }}</td>
+              <td>
+                @if (item.email) {
+                  <a [href]="'mailto:' + item.email" class="text-foreground no-underline hover:underline">{{ item.email }}</a>
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                @if (item.phone) {
+                  <a [href]="'tel:' + item.phone" class="text-foreground no-underline hover:underline">{{ item.phone }}</a>
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                <app-badge [variant]="item.active ? 'success' : 'neutral'">
+                  {{ item.active ? 'Active' : 'Inactive' }}
+                </app-badge>
+              </td>
+              <td class="whitespace-nowrap">{{ item.updatedAt | date: 'mediumDate' }}</td>
+              <td>
+                <a
+                  [routerLink]="[item.id, 'edit']"
+                  class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+                  *appHasPermission="permissions.customerManage"
+                >
                   Edit
                 </a>
               </td>
@@ -55,17 +105,30 @@
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} customers</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} customers</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state title="No customers found" description="No customers match the current filters." />
+    <div class="mt-4">
+      <app-empty-state
+        title="No customers found"
+        description="No customers match the current filters."
+      >
+        <a
+          routerLink="new"
+          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+          *appHasPermission="permissions.customerManage"
+        >
+          New customer
+        </a>
+      </app-empty-state>
+    </div>
   }
 </app-content-container>

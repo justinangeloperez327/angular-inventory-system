@@ -82,3 +82,22 @@ The parent application route already requires `supplier.view`. Create/edit route
 The Angular form validates required code/name, email shape, two-letter country code, and practical maximum lengths.
 
 Backend validation remains authoritative for uniqueness, tax/business rules, referential integrity, and lifecycle constraints.
+
+
+## Group 13 design migration
+
+Supplier Management now uses the business-partner master design.
+
+The list uses:
+
+- monospace supplier codes
+- direct mail/phone actions when present
+- compact lifecycle status
+- text-level Edit / Deactivate / Reactivate actions
+- shared filter and pagination primitives
+
+The form separates Supplier, Contact, and Address data using whitespace and rules instead of card panels.
+
+The profile keeps supplier identity independent from purchasing. Purchase history remains permission-gated by `purchase.view`, is loaded separately, and failure remains isolated from the supplier profile. Purchase-order numbers now link directly into the Purchasing workflow.
+
+The Clear filter action now clears status as well as search instead of silently retaining the default Active constraint.

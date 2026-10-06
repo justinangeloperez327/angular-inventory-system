@@ -37,7 +37,6 @@ import { SupplierPurchaseOrderStatus } from '../models/supplier-purchase-history
   ],
   providers: [SupplierDetailStore],
   templateUrl: './supplier-detail-page.html',
-  styleUrl: './supplier-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupplierDetailPage implements OnInit {

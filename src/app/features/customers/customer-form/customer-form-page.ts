@@ -30,7 +30,6 @@ type CustomerField =
     SkeletonComponent,
   ],
   templateUrl: './customer-form-page.html',
-  styleUrl: './customer-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerFormPage implements OnInit {

@@ -1,12 +1,12 @@
 <app-content-container>
   <app-page-header
     title="Suppliers"
-    description="Manage supplier profiles and purchasing relationships."
+    description="Supplier identity and contact data used by purchasing and receiving."
   >
     <a
       actions
       routerLink="new"
-      class="supplier-list__primary-action"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
       *appHasPermission="permissions.supplierManage"
     >
       Add supplier
@@ -20,7 +20,6 @@
       placeholder="Code, supplier, contact, email, or phone"
       formControlName="search"
     />
-
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -32,21 +31,21 @@
     />
 
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (store.error()) {
-    <div class="supplier-list__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Suppliers unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasSuppliers()) {
-    <div class="supplier-list__loading"><app-skeleton height="20rem" /></div>
+    <div class="mt-4"><app-skeleton height="20rem" /></div>
   } @else if (store.hasSuppliers()) {
-    <div class="supplier-list__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
@@ -58,28 +57,55 @@
             <th>Country</th>
             <th>Status</th>
             <th>Updated</th>
-            <th>Actions</th>
+            <th><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           @for (supplier of store.suppliers(); track supplier.id) {
             <tr>
-              <td class="supplier-list__mono">{{ supplier.code }}</td>
+              <td class="font-mono text-xs">{{ supplier.code }}</td>
               <td>
-                <a [routerLink]="supplier.id" class="supplier-list__name">{{ supplier.name }}</a>
+                <a
+                  [routerLink]="supplier.id"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ supplier.name }}
+                </a>
               </td>
               <td>{{ supplier.contactName || '—' }}</td>
-              <td>{{ supplier.email || '—' }}</td>
-              <td>{{ supplier.phone || '—' }}</td>
-              <td>{{ supplier.countryCode || '—' }}</td>
+              <td>
+                @if (supplier.email) {
+                  <a
+                    [href]="'mailto:' + supplier.email"
+                    class="text-foreground no-underline hover:underline"
+                  >
+                    {{ supplier.email }}
+                  </a>
+                } @else {
+                  —
+                }
+              </td>
+              <td>
+                @if (supplier.phone) {
+                  <a
+                    [href]="'tel:' + supplier.phone"
+                    class="text-foreground no-underline hover:underline"
+                  >
+                    {{ supplier.phone }}
+                  </a>
+                } @else {
+                  —
+                }
+              </td>
+              <td class="font-mono text-xs">{{ supplier.countryCode || '—' }}</td>
               <td>
                 <app-badge [variant]="supplier.active ? 'success' : 'neutral'">
                   {{ supplier.active ? 'Active' : 'Inactive' }}
                 </app-badge>
               </td>
-              <td>{{ supplier.updatedAt | date: 'mediumDate' }}</td>
+              <td class="whitespace-nowrap">{{ supplier.updatedAt | date: 'mediumDate' }}</td>
               <td>
-                <div class="supplier-list__row-actions" *appHasPermission="permissions.supplierManage">
+                <div class="flex items-center gap-3 [&_a]:text-sm [&_a]:font-medium [&_a]:text-muted-foreground [&_a]:no-underline [&_a:hover]:text-foreground [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-sm [&_button]:font-medium [&_button]:text-muted-foreground [&_button]:transition-colors [&_button:hover:not(:disabled)]:text-foreground [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-40" *appHasPermission="permissions.supplierManage">
                   <a [routerLink]="[supplier.id, 'edit']">Edit</a>
                   @if (supplier.active) {
                     <button type="button" (click)="selectedForDeactivation.set(supplier)">Deactivate</button>
@@ -98,21 +124,31 @@
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} suppliers</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} suppliers</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state
-      title="No suppliers found"
-      description="No suppliers match the current filters."
-    />
+    <div class="mt-4">
+      <app-empty-state
+        title="No suppliers found"
+        description="No suppliers match the current filters."
+      >
+        <a
+          routerLink="new"
+          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+          *appHasPermission="permissions.supplierManage"
+        >
+          Add supplier
+        </a>
+      </app-empty-state>
+    </div>
   }
 
   @if (selectedForDeactivation(); as supplier) {

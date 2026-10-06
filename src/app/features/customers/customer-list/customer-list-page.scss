@@ -1,9 +1,0 @@
-:host { display: block; }
-.customer-list__primary-action {
-  display: inline-flex; min-height: 2.5rem; align-items: center; border-radius: var(--radius-sm);
-  background: var(--color-text); color: var(--color-surface); padding: 0.5rem 0.875rem;
-  font-size: 0.875rem; font-weight: 600; text-decoration: none;
-}
-.customer-list__alert, .customer-list__loading, .customer-list__table { margin-top: 1rem; }
-.customer-list__table a { color: var(--color-text); font-weight: 600; text-decoration: none; }
-.customer-list__action { font-size: 0.75rem; }
