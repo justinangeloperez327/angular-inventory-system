@@ -142,3 +142,59 @@ Audit events must be written by the backend as part of or immediately adjacent t
 Every administration endpoint must independently validate authorization.
 
 Hiding an Administration card or route in Angular is UX only. It does not grant or revoke backend access.
+
+## Group 16 design migration
+
+Administration now uses the shared Tailwind operational design system.
+
+### Administration index
+
+The landing page is a compact responsibility index rather than a card dashboard:
+
+```text
+Users
+Roles & Permissions
+Application Settings
+Audit Log
+```
+
+Each destination remains permission-gated. Hiding an unavailable destination is only a UX concern; backend authorization remains authoritative.
+
+### Users
+
+User administration follows the same master-data pattern used elsewhere in the system:
+
+- compact server-backed list
+- role and status filters
+- direct email link
+- active/inactive lifecycle state
+- destructive confirmation for deactivation
+- identity and role assignment separated in the edit form
+- account metadata and assigned roles separated on the detail page
+
+Credential creation, reset, MFA, and password policy remain outside the Angular administration form.
+
+### Roles and permissions
+
+The role list emphasizes role name, permission count, user count, type, and update time.
+
+The role editor presents backend-provided permission groups as a structured capability matrix. Permission keys remain visible in monospace so administrative users can verify the exact authorization capability they are assigning.
+
+Built-in role protection and all privilege-safety rules remain backend-enforced.
+
+### Application settings
+
+Settings are divided into organization defaults and inventory policy.
+
+Policy controls are presented as operational settings rather than generic cards. The UI continues to make clear that changing a form value does not bypass backend inventory rules.
+
+### Audit log
+
+The audit log is a dense read-only ledger with server filtering and pagination.
+
+Actor identity, entity IDs, action, area, timestamp, and human-readable summary remain visible without converting events into cards.
+
+### Styling
+
+Administration pages no longer depend on feature-level SCSS. They use shared Tailwind tokens, filters, tables, form controls, state components, confirmation dialogs, and data-footers.
+
