@@ -9,62 +9,76 @@
     <app-select label="Area" placeholder="All areas" [options]="areaOptions()" formControlName="area" />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
+
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (filterError()) {
-    <div class="admin-audit__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
+    </div>
   }
 
   @if (store.error()) {
-    <div class="admin-audit__alert"><app-alert variant="danger" title="Audit log unavailable">{{ store.error() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="danger" title="Audit log unavailable">{{ store.error() }}</app-alert>
+    </div>
   }
 
   @if (store.loading() && !store.hasItems()) {
-    <div class="admin-audit__loading"><app-skeleton height="22rem" /></div>
+    <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="admin-audit__table">
+    <div class="mt-4">
       <app-table>
         <thead>
-          <tr><th>Occurred</th><th>Actor</th><th>Area</th><th>Action</th><th>Entity</th><th>Summary</th></tr>
+          <tr>
+            <th>Occurred</th>
+            <th>Actor</th>
+            <th>Area</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Summary</th>
+          </tr>
         </thead>
         <tbody>
           @for (entry of store.items(); track entry.id) {
             <tr>
-              <td>{{ entry.occurredAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap">{{ entry.occurredAt | date: 'short' }}</td>
               <td>
-                {{ entry.actor?.name || 'System' }}
+                <span class="font-medium">{{ entry.actor?.name || 'System' }}</span>
                 @if (entry.actor?.email) {
-                  <span class="admin-audit__secondary">{{ entry.actor.email }}</span>
+                  <span class="mt-0.5 block text-xs text-subtle-foreground">{{ entry.actor.email }}</span>
                 }
               </td>
               <td>{{ entry.area }}</td>
-              <td>{{ entry.action }}</td>
+              <td class="font-medium">{{ entry.action }}</td>
               <td>
                 {{ entry.entityLabel || entry.entityType || '—' }}
                 @if (entry.entityId) {
-                  <span class="admin-audit__secondary">{{ entry.entityId }}</span>
+                  <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ entry.entityId }}</span>
                 }
               </td>
-              <td>{{ entry.summary }}</td>
+              <td class="max-w-xl text-muted-foreground">{{ entry.summary }}</td>
             </tr>
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} events</span>
-        <app-pagination
-          [page]="store.pagination().page"
-          [totalPages]="store.pagination().totalPages"
-          (pageChange)="store.setPage($event)"
-        />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} events</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state title="No audit events found" description="No audit events match the current filters." />
+    <div class="mt-4">
+      <app-empty-state title="No audit events found" description="No audit events match the current filters." />
+    </div>
   }
 </app-content-container>
