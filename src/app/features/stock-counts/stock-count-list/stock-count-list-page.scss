@@ -1,9 +1,0 @@
-:host { display: block; }
-.count-list__primary-action {
-  display: inline-flex; min-height: 2.5rem; align-items: center; border-radius: var(--radius-sm);
-  background: var(--color-text); color: var(--color-surface); padding: 0.5rem 0.875rem;
-  font-size: 0.875rem; font-weight: 600; text-decoration: none;
-}
-.count-list__alert, .count-list__loading, .count-list__table { margin-top: 1rem; }
-.count-list__table a { color: var(--color-text); font-weight: 600; text-decoration: none; }
-.count-list__secondary { display: block; margin-top: 0.2rem; color: var(--color-text-subtle); font-size: 0.6875rem; }

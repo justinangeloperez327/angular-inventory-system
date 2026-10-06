@@ -56,7 +56,6 @@ type CountLineForm = FormGroup<{
   ],
   providers: [StockCountDetailStore],
   templateUrl: './stock-count-detail-page.html',
-  styleUrl: './stock-count-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockCountDetailPage implements OnInit {

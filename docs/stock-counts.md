@@ -131,3 +131,31 @@ The API is the security boundary.
 Posted counts cannot be edited.
 
 Corrections after posting require another authorized inventory transaction so the stock ledger remains auditable.
+
+
+## Group 12 design migration
+
+Stock Counts now use the transaction-session design system.
+
+The list emphasizes:
+
+- warehouse
+- lifecycle status
+- counted / total progress
+- variance-line count
+- created / started / posted timestamps
+
+The detail page makes the workflow visible through status-driven actions:
+
+```text
+draft       Start count
+counting    Save page / Submit for review
+submitted   Approve & post
+posted      Read-only
+```
+
+Count lines remain server-paginated. During counting, numeric entry stays in a compact right-aligned column and the operator must save before paging/filtering.
+
+Review/posted views present expected, counted, and variance quantities side by side. Positive variance uses success emphasis and negative variance uses danger emphasis; zero variance remains neutral.
+
+The frontend still never computes or persists authoritative variance.

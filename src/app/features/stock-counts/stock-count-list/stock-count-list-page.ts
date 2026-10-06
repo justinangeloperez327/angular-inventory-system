@@ -37,7 +37,6 @@ import { StockCountStatus } from '../models/stock-count.model';
   ],
   providers: [StockCountListStore],
   templateUrl: './stock-count-list-page.html',
-  styleUrl: './stock-count-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockCountListPage implements OnInit {

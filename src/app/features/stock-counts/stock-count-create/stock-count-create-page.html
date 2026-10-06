@@ -8,25 +8,44 @@
     />
 
     @if (error()) {
-      <div class="count-create__alert"><app-alert variant="danger" title="Stock count error">{{ error() }}</app-alert></div>
+      <div class="mt-4">
+        <app-alert variant="danger" title="Stock count error">{{ error() }}</app-alert>
+      </div>
     }
 
-    <form class="count-create" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <app-select
-        label="Warehouse"
-        placeholder="Select warehouse"
-        [options]="warehouseOptions()"
-        formControlName="warehouseId"
-        [error]="fieldError('warehouseId')"
-      />
-      <app-textarea
-        label="Notes"
-        hint="Optional instructions or scope notes for the count."
-        formControlName="notes"
-        [error]="fieldError('notes')"
-      />
-      <div class="count-create__actions">
-        <a routerLink="/stock-counts">Cancel</a>
+    <form class="mt-6 max-w-3xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Count scope</h2>
+          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
+            The selected warehouse becomes the count boundary. Expected quantities are captured only when the session starts.
+          </p>
+        </div>
+
+        <div class="grid gap-3">
+          <app-select
+            label="Warehouse"
+            placeholder="Select warehouse"
+            [options]="warehouseOptions()"
+            formControlName="warehouseId"
+            [error]="fieldError('warehouseId')"
+          />
+          <app-textarea
+            label="Notes"
+            hint="Optional instructions or scope notes for the count."
+            formControlName="notes"
+            [error]="fieldError('notes')"
+          />
+        </div>
+      </section>
+
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          routerLink="/stock-counts"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Create draft</app-button>
       </div>
     </form>

@@ -653,3 +653,38 @@ ordered → previously received → remaining → receive now
 ```
 
 Posted receipt details expose resulting inventory balance transitions and immutable stock-movement links.
+
+
+## Group 12 — stock counts
+
+Stock Counts are fully migrated from feature SCSS to Tailwind utilities.
+
+### Session workflow
+
+The UI treats a stock count as a warehouse reconciliation session rather than CRUD:
+
+```text
+Draft → Counting → Submitted for review → Posted
+```
+
+Starting captures the backend snapshot. Submission locks physical counts. Approval/posting remains permission-gated and backend-authoritative.
+
+### Count entry
+
+Count lines stay server-paginated and tabular. Large warehouses are never converted into one browser-sized form.
+
+Expected, counted, and variance quantities are right-aligned with tabular numerals. Count-entry controls occupy a fixed compact numeric column.
+
+Unsaved page edits continue to block filtering/pagination so physical counts cannot be silently discarded.
+
+### Variance review
+
+Variance is visualized as a signed delta:
+
+```text
+positive    +N, success emphasis
+zero        0, neutral
+negative    −N, danger emphasis
+```
+
+The server remains authoritative for variance and posting. Posted counts are immutable and link to the resulting stock-count movements.

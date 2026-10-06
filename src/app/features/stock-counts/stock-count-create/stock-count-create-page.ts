@@ -28,7 +28,6 @@ import { StockCountFormOptions } from '../models/stock-count.model';
     TextareaComponent,
   ],
   templateUrl: './stock-count-create-page.html',
-  styleUrl: './stock-count-create-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StockCountCreatePage implements OnInit {
