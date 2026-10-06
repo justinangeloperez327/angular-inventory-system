@@ -1,0 +1,192 @@
+# Design System
+
+The inventory-system visual layer is migrating to Tailwind CSS v4 while remaining Angular-native.
+
+## Stack
+
+```text
+Angular 22
+Tailwind CSS v4
+Angular CDK / Angular Aria
+Custom Angular UI components
+```
+
+Tailwind provides the styling primitives and design-token API. Angular CDK/Aria provides behavior and accessibility primitives where native HTML is not sufficient. The application continues to own its component design rather than adopting a third-party visual component library.
+
+## Group 1 foundation
+
+Group 1 establishes:
+
+- Tailwind v4 through the PostCSS integration supported by Angular
+- a CSS-first semantic theme
+- a deliberately restricted color, radius, typography, weight, and shadow vocabulary
+- compatibility aliases for the existing SCSS component system
+- global base typography/focus/reduced-motion behavior
+- production/CI/Docker build compatibility
+
+Feature pages are not visually migrated in Group 1.
+
+## Tailwind integration
+
+PostCSS configuration:
+
+```text
+@tailwindcss/postcss
+```
+
+Global stylesheet:
+
+```text
+src/styles.css
+```
+
+The project intentionally imports Tailwind's theme and utilities layers without Preflight during the incremental migration.
+
+This prevents Tailwind's reset from unexpectedly changing the existing SCSS-based components before they are migrated.
+
+After the shared components and feature pages have moved to the new design system, the final cleanup group may enable a unified reset if it is still useful.
+
+## Semantic colors
+
+Use semantic utilities rather than Tailwind's generic palette.
+
+Preferred examples:
+
+```text
+bg-background
+bg-surface
+bg-surface-muted
+
+text-foreground
+text-muted-foreground
+text-subtle-foreground
+
+border-border
+border-border-strong
+
+bg-primary
+text-primary
+text-success
+text-warning
+text-danger
+```
+
+Do not introduce feature-specific arbitrary colors unless there is a genuine semantic requirement.
+
+The current light palette is:
+
+```text
+background          #f7f8fa
+surface             #ffffff
+surface-muted       #f1f3f5
+surface-strong      #e9edf1
+foreground          #18212f
+muted-foreground    #5e6877
+subtle-foreground   #8a94a3
+border              #dde1e6
+border-strong       #c8cfd8
+primary             #1f5f99
+primary-hover       #194f80
+success             #287a4b
+warning             #a46912
+danger              #b33a3a
+focus               #315f8d
+```
+
+## Typography
+
+The UI uses a restrained type scale:
+
+```text
+text-xs     12px
+text-sm     13px
+text-base   14px
+text-lg     16px
+text-xl     20px
+text-2xl    24px
+```
+
+Supported design-system weights are:
+
+```text
+normal      400
+medium      500
+semibold    600
+```
+
+Avoid large display typography and excessive bold text. This is operational software, not a marketing site.
+
+## Radius
+
+The visual language is intentionally low-radius:
+
+```text
+rounded-xs   2px
+rounded-sm   4px
+rounded-md   6px
+rounded-lg   8px
+rounded-full badges/special cases only
+```
+
+## Spacing
+
+Tailwind's 4px base spacing scale remains available for layout composition.
+
+Named application dimensions include:
+
+```text
+control-sm   32px
+control      40px
+page         24px
+sidebar      240px
+```
+
+Prefer the common layout rhythm:
+
+```text
+4 / 8 / 12 / 16 / 24px
+```
+
+before introducing unusual spacing values.
+
+## Shadows
+
+Shadows are intentionally limited:
+
+```text
+shadow-sm
+shadow-md
+shadow-lg
+```
+
+Most inventory UI should use borders and spacing rather than elevation.
+
+## Compatibility during migration
+
+Existing components still reference variables such as:
+
+```text
+--color-bg
+--color-surface
+--color-text
+--color-border
+--radius-sm
+--shadow-md
+```
+
+Those remain defined during the migration, so adopting Tailwind does not require a single all-at-once visual rewrite.
+
+Each subsequent group should migrate shared primitives and feature pages toward Tailwind utilities while removing obsolete component SCSS only after the replacement is verified.
+
+## Rules
+
+1. Prefer semantic color utilities.
+2. Do not recreate Bootstrap/Material-style generic cards.
+3. Use tables as the dominant data presentation pattern.
+4. Keep controls compact.
+5. Keep radius restrained.
+6. Use status color only for meaningful state.
+7. Preserve keyboard and screen-reader behavior.
+8. Keep Angular templates readable; extract reusable UI patterns instead of repeating very long utility strings.
+9. Do not use arbitrary values when an existing token communicates the same intent.
+10. Production build, tests, and Docker validation must stay green throughout the migration.

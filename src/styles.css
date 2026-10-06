@@ -1,0 +1,172 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/*
+ * Tailwind Preflight is intentionally disabled during the incremental migration.
+ * Existing Angular components retain their current rendering until they are
+ * migrated onto the shared Tailwind design system.
+ */
+
+:root {
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f3f5;
+  --color-surface-strong: #e9edf1;
+  --color-border: #dde1e6;
+  --color-border-strong: #c8cfd8;
+  --color-text: #18212f;
+  --color-text-muted: #5e6877;
+  --color-text-subtle: #8a94a3;
+  --color-primary: #1f5f99;
+  --color-primary-hover: #194f80;
+  --color-primary-foreground: #ffffff;
+  --color-focus: #315f8d;
+  --color-success: #287a4b;
+  --color-warning: #a46912;
+  --color-danger: #b33a3a;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --shadow-md: 0 8px 24px rgb(15 23 42 / 10%);
+  --shadow-lg: 0 20px 50px rgb(15 23 42 / 16%);
+}
+
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --text-*: initial;
+  --font-weight-*: initial;
+
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.125rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.25rem;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.375rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.625rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.875rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 6%);
+  --shadow-md: 0 8px 24px rgb(15 23 42 / 10%);
+  --shadow-lg: 0 20px 50px rgb(15 23 42 / 16%);
+
+  --spacing-control-sm: 2rem;
+  --spacing-control: 2.5rem;
+  --spacing-page: 1.5rem;
+  --spacing-sidebar: 15rem;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+}
+
+@theme inline {
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-background: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-strong: var(--color-surface-strong);
+  --color-foreground: var(--color-text);
+  --color-muted-foreground: var(--color-text-muted);
+  --color-subtle-foreground: var(--color-text-subtle);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-focus: var(--color-focus);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    background: var(--color-bg);
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    background: var(--color-bg);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: #dbe8f5;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

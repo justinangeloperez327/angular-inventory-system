@@ -9,8 +9,9 @@ Operational inventory-management frontend built with Angular 22.
 - RxJS
 - Standalone Angular APIs
 - Angular Router
+- Tailwind CSS v4 design-system utilities
 - Angular CDK accessibility primitives
-- SCSS design tokens and custom UI components
+- Custom Angular UI components
 - Vitest + jsdom
 
 The frontend consumes the separate NestJS inventory-system REST API.
@@ -89,6 +90,20 @@ src/app/
 
 Inventory balances are consequences of authoritative backend transactions. Angular does not directly mutate inventory state.
 
+## Design system
+
+The visual layer is migrating to:
+
+```text
+Tailwind CSS v4
++
+Angular CDK / Angular Aria
++
+custom Angular UI components
+```
+
+See `docs/design-system.md` for the semantic tokens and migration rules.
+
 ## Docker
 
 Build and run the production container:
@@ -105,6 +120,7 @@ See `docs/docker.md` for standalone Docker, Compose, health checks, caching, rev
 
 See:
 
+- `docs/design-system.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`
