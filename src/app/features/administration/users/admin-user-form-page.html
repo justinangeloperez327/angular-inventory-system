@@ -4,48 +4,69 @@
   } @else {
     <app-page-header
       [title]="editing ? 'Edit user' : 'New user'"
-      description="Manage identity and role membership. Authentication credentials remain backend-managed."
+      description="Manage account identity and role membership. Credentials remain backend-managed."
     />
 
     @if (error()) {
-      <div class="admin-user-form__alert"><app-alert variant="danger" title="User administration error">{{ error() }}</app-alert></div>
+      <div class="mt-4">
+        <app-alert variant="danger" title="User administration error">{{ error() }}</app-alert>
+      </div>
     }
 
-    <form class="admin-user-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="admin-user-form__section">
-        <h2>Identity</h2>
-        <div class="admin-user-form__grid">
-          <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
-          <app-input type="email" label="Email" formControlName="email" [error]="fieldError('email')" />
+    <form class="mt-6 max-w-4xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Identity</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            User profile information used by the application and audit trail.
+          </p>
         </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
+          <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+          <app-input type="email" label="Email" autocomplete="email" formControlName="email" [error]="fieldError('email')" />
+        </div>
+
         @if (!editing) {
-          <p class="admin-user-form__hint">
-            No password is generated in the browser. The backend or identity provider owns account invitation and credential setup.
+          <p class="mb-0 mt-3 text-xs leading-5 text-muted-foreground">
+            No password is generated in the browser. Invitation, credential setup, reset, and MFA remain owned by the authentication backend or identity provider.
           </p>
         }
       </section>
 
-      <section class="admin-user-form__section">
-        <h2>Roles</h2>
-        <div class="admin-user-form__roles">
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Roles</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Assign one or more roles. Authorization is still enforced by the backend.
+          </p>
+        </div>
+
+        <div class="divide-y divide-border border-y border-border">
           @for (role of roles(); track role.id) {
-            <label>
+            <label class="flex cursor-pointer items-center gap-3 py-2.5 text-sm">
               <input
                 type="checkbox"
                 [checked]="roleSelected(role.id)"
                 (change)="toggleRole(role.id, $event)"
               />
-              <span>{{ role.name }}</span>
+              <span class="font-medium">{{ role.name }}</span>
             </label>
           }
         </div>
+
         @if (roleError()) {
-          <p class="admin-user-form__error">{{ roleError() }}</p>
+          <p class="mb-0 mt-2 text-xs font-medium text-danger">{{ roleError() }}</p>
         }
       </section>
 
-      <div class="admin-user-form__actions">
-        <a [routerLink]="id ? ['/administration/users', id] : ['/administration/users']">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          [routerLink]="id ? ['/administration/users', id] : ['/administration/users']"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Save user</app-button>
       </div>
     </form>

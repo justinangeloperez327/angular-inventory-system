@@ -31,7 +31,6 @@ import {
     TextareaComponent,
   ],
   templateUrl: './admin-role-form-page.html',
-  styleUrl: './admin-role-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminRoleFormPage implements OnInit {

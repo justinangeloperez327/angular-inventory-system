@@ -32,7 +32,6 @@ import { AuditLogStore } from '../data-access/audit-log.store';
   ],
   providers: [AuditLogStore],
   templateUrl: './admin-audit-log-page.html',
-  styleUrl: './admin-audit-log-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminAuditLogPage implements OnInit {

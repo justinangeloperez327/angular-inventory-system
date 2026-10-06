@@ -28,7 +28,6 @@ import { AdminRoleSummary } from '../models/admin-role.model';
     TableComponent,
   ],
   templateUrl: './admin-role-list-page.html',
-  styleUrl: './admin-role-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminRoleListPage implements OnInit {

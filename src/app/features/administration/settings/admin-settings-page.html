@@ -5,20 +5,30 @@
   />
 
   @if (error()) {
-    <div class="admin-settings__alert"><app-alert variant="danger" title="Settings unavailable">{{ error() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="danger" title="Settings unavailable">{{ error() }}</app-alert>
+    </div>
   }
 
   @if (saved()) {
-    <div class="admin-settings__alert"><app-alert variant="success" title="Settings saved">Application settings were updated.</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="success" title="Settings saved">Application settings were updated.</app-alert>
+    </div>
   }
 
   @if (loading()) {
-    <div class="admin-settings__loading"><app-skeleton height="28rem" /></div>
+    <div class="mt-4"><app-skeleton height="28rem" /></div>
   } @else {
-    <form class="admin-settings" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="admin-settings__section">
-        <h2>Organization</h2>
-        <div class="admin-settings__grid">
+    <form class="mt-6 max-w-4xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Organization</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Defaults used for display, pagination, and business documents.
+          </p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
           <app-input
             label="Organization name"
             formControlName="organizationName"
@@ -48,32 +58,41 @@
         </div>
       </section>
 
-      <section class="admin-settings__section">
-        <h2>Inventory policy</h2>
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Inventory policy</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            These values express policy in the UI; the backend remains responsible for enforcement.
+          </p>
+        </div>
 
-        <div class="admin-settings__policy">
-          <label>
-            <input type="checkbox" formControlName="allowNegativeStock" />
+        <div class="divide-y divide-border border-y border-border">
+          <label class="flex cursor-pointer items-start gap-3 py-3">
+            <input class="mt-0.5" type="checkbox" formControlName="allowNegativeStock" />
             <span>
-              <strong>Allow negative stock</strong>
-              <small>The backend decides whether issue/dispatch transactions may take on-hand quantity below zero.</small>
+              <strong class="block text-sm font-semibold">Allow negative stock</strong>
+              <small class="mt-1 block text-xs leading-5 text-muted-foreground">
+                Allow issue or dispatch operations to take on-hand quantity below zero when backend policy permits it.
+              </small>
             </span>
           </label>
 
-          <app-select
-            label="Stock count concurrency policy"
-            [options]="[
-              { label: 'Freeze affected warehouse transactions', value: 'freeze' },
-              { label: 'Reconcile intervening movements', value: 'reconcile' }
-            ]"
-            formControlName="stockCountConcurrencyPolicy"
-            [error]="fieldError('stockCountConcurrencyPolicy')"
-          />
+          <div class="py-3">
+            <app-select
+              label="Stock count concurrency policy"
+              [options]="[
+                { label: 'Freeze affected warehouse transactions', value: 'freeze' },
+                { label: 'Reconcile intervening movements', value: 'reconcile' }
+              ]"
+              formControlName="stockCountConcurrencyPolicy"
+              [error]="fieldError('stockCountConcurrencyPolicy')"
+            />
+          </div>
         </div>
       </section>
 
       @if (settings(); as current) {
-        <div class="admin-settings__audit">
+        <div class="mt-3 text-right text-xs text-muted-foreground">
           @if (current.updatedAt) {
             Last updated {{ current.updatedAt }}
           }
@@ -83,7 +102,7 @@
         </div>
       }
 
-      <div class="admin-settings__actions">
+      <div class="mt-5 flex justify-end border-t border-border pt-4">
         <app-button type="submit" [loading]="saving()">Save settings</app-button>
       </div>
     </form>

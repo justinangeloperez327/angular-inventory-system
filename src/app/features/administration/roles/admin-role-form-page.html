@@ -8,13 +8,21 @@
     />
 
     @if (error()) {
-      <div class="admin-role-form__alert"><app-alert variant="danger" title="Role administration error">{{ error() }}</app-alert></div>
+      <div class="mt-4">
+        <app-alert variant="danger" title="Role administration error">{{ error() }}</app-alert>
+      </div>
     }
 
-    <form class="admin-role-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="admin-role-form__section">
-        <h2>Role</h2>
-        <div class="admin-role-form__grid">
+    <form class="mt-6 max-w-5xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Role</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Define the role identity before assigning capabilities.
+          </p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-[minmax(12rem,1fr)_minmax(18rem,2fr)] md:items-start">
           <app-input
             label="Name"
             formControlName="name"
@@ -27,56 +35,72 @@
             [error]="fieldError('description')"
           />
         </div>
+
         @if (builtIn()) {
-          <p class="admin-role-form__hint">Built-in role names are protected. Permission changes are still subject to backend policy.</p>
+          <p class="mb-0 mt-3 text-xs text-muted-foreground">
+            Built-in role names are protected. Permission changes remain subject to backend policy.
+          </p>
         }
       </section>
 
-      <section class="admin-role-form__section">
-        <h2>Permissions</h2>
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Permissions</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Select capabilities from the backend-provided authorization catalog.
+          </p>
+        </div>
 
-        @for (group of permissionGroups(); track group.name) {
-          <div class="admin-role-form__permission-group">
-            <div class="admin-role-form__group-heading">
-              <strong>{{ group.name }}</strong>
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="groupSelected(group)"
-                  (change)="toggleGroup(group, $any($event.target).checked)"
-                />
-                All
-              </label>
-            </div>
-
-            <div class="admin-role-form__permissions">
-              @for (permission of group.permissions; track permission.key) {
-                <label>
+        <div class="divide-y divide-border border-y border-border">
+          @for (group of permissionGroups(); track group.name) {
+            <section class="py-4">
+              <div class="flex items-center justify-between gap-4">
+                <strong class="text-sm font-semibold">{{ group.name }}</strong>
+                <label class="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
                   <input
                     type="checkbox"
-                    [checked]="permissionSelected(permission.key)"
-                    (change)="togglePermission(permission.key, $event)"
+                    [checked]="groupSelected(group)"
+                    (change)="toggleGroup(group, $any($event.target).checked)"
                   />
-                  <span>
-                    <strong>{{ permission.label }}</strong>
-                    <small>{{ permission.key }}</small>
-                    @if (permission.description) {
-                      <small>{{ permission.description }}</small>
-                    }
-                  </span>
+                  Select all
                 </label>
-              }
-            </div>
-          </div>
-        }
+              </div>
+
+              <div class="mt-3 grid divide-y divide-border border-y border-border md:grid-cols-2 md:divide-y-0">
+                @for (permission of group.permissions; track permission.key) {
+                  <label class="flex cursor-pointer items-start gap-3 border-b border-border py-3 last:border-b-0 md:border-b md:odd:border-r md:[&:nth-last-child(-n+2)]:border-b-0 md:px-3">
+                    <input
+                      class="mt-0.5"
+                      type="checkbox"
+                      [checked]="permissionSelected(permission.key)"
+                      (change)="togglePermission(permission.key, $event)"
+                    />
+                    <span class="min-w-0">
+                      <strong class="block text-sm font-semibold">{{ permission.label }}</strong>
+                      <small class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ permission.key }}</small>
+                      @if (permission.description) {
+                        <small class="mt-1 block text-xs leading-5 text-muted-foreground">{{ permission.description }}</small>
+                      }
+                    </span>
+                  </label>
+                }
+              </div>
+            </section>
+          }
+        </div>
 
         @if (permissionError()) {
-          <p class="admin-role-form__error">{{ permissionError() }}</p>
+          <p class="mb-0 mt-2 text-xs font-medium text-danger">{{ permissionError() }}</p>
         }
       </section>
 
-      <div class="admin-role-form__actions">
-        <a routerLink="/administration/roles">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          routerLink="/administration/roles"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Save role</app-button>
       </div>
     </form>
