@@ -4,9 +4,12 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 /*
- * Tailwind Preflight is intentionally disabled during the incremental migration.
- * Existing Angular components retain their current rendering until they are
- * migrated onto the shared Tailwind design system.
+ * Tailwind Preflight is intentionally disabled.
+ *
+ * The application owns a narrow base reset below and relies on explicit
+ * Tailwind utilities plus shared Angular UI primitives. Enabling the broader
+ * Tailwind reset would change native control/table behavior without adding
+ * value to this operational interface.
  */
 
 :root {
