@@ -53,6 +53,7 @@ Configure the development reverse proxy/hosting path to the NestJS backend as ap
 ```bash
 npm run check:design
 npm run check:accessibility
+npm run check:production
 npm test
 npm run build:production
 npm run e2e
@@ -134,6 +135,7 @@ See:
 - `docs/design-system.md`
 - `docs/accessibility.md`
 - `docs/browser-testing.md`
+- `docs/performance.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`
