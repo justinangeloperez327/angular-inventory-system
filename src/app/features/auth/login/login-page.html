@@ -1,25 +1,37 @@
-<main class="login">
-  <section class="login__panel" aria-labelledby="login-title">
-    <div class="login__brand">
-      <span class="login__brand-mark" aria-hidden="true">IS</span>
-      <div>
-        <strong>Inventory</strong>
-        <span>Management System</span>
+<main class="grid min-h-screen place-items-center bg-background px-4 py-8 text-foreground">
+  <section
+    class="w-full max-w-md rounded-md border border-border bg-surface p-6 shadow-sm"
+    aria-labelledby="login-title"
+  >
+    <div class="flex items-center gap-3">
+      <span
+        class="grid size-8 place-items-center rounded-sm border border-border-strong bg-foreground text-xs font-semibold tracking-wide text-surface"
+        aria-hidden="true"
+      >
+        IS
+      </span>
+      <div class="min-w-0">
+        <strong class="block text-base font-semibold">Inventory</strong>
+        <span class="mt-0.5 block text-xs text-muted-foreground">Management System</span>
       </div>
     </div>
 
-    <div class="login__heading">
-      <h1 id="login-title">Sign in</h1>
-      <p>Use your account to access inventory operations.</p>
+    <div class="mb-5 mt-8">
+      <h1 id="login-title" class="m-0 text-2xl font-semibold text-foreground">Sign in</h1>
+      <p class="mb-0 mt-2 text-base leading-5 text-muted-foreground">
+        Use your account to access inventory operations.
+      </p>
     </div>
 
     @if (formError()) {
-      <app-alert variant="danger" title="Sign-in failed">
-        {{ formError() }}
-      </app-alert>
+      <div class="mb-4">
+        <app-alert variant="danger" title="Sign-in failed">
+          {{ formError() }}
+        </app-alert>
+      </div>
     }
 
-    <form class="login__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form class="grid gap-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <app-input
         type="email"
         label="Email"
@@ -37,9 +49,13 @@
         [error]="passwordError()"
       />
 
-      <app-button type="submit" [loading]="submitting()">
+      <app-button class="mt-1 w-full [&>button]:w-full" type="submit" [loading]="submitting()">
         Sign in
       </app-button>
     </form>
+
+    <p class="mb-0 mt-5 border-t border-border pt-4 text-xs leading-5 text-muted-foreground">
+      Access is controlled by your authenticated account and assigned application permissions.
+    </p>
   </section>
 </main>

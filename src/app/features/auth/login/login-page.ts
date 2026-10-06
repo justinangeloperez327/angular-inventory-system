@@ -13,7 +13,6 @@ import { InputComponent } from '../../../shared/ui/input/input';
   selector: 'app-login-page',
   imports: [ReactiveFormsModule, AlertComponent, ButtonComponent, InputComponent],
   templateUrl: './login-page.html',
-  styleUrl: './login-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {

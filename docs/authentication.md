@@ -61,3 +61,27 @@ Logout calls the API when a token exists and clears the local session regardless
 The frontend controls navigation and presentation only. The REST API must authenticate every protected request and must not rely on Angular route guards for security.
 
 For deployments that use secure HTTP-only cookie authentication instead of bearer tokens, the storage/token provider can be replaced without changing feature-level data-access services.
+
+## Group 17 design migration
+
+Authentication is the final feature surface migrated to the shared Tailwind design system.
+
+### Sign-in
+
+The sign-in page uses the same visual language as the authenticated application:
+
+- restrained Inventory System identity
+- compact 448px maximum form width
+- semantic surface, border, and focus tokens
+- shared Input, Button, and Alert components
+- no decorative marketing content
+- no feature-specific stylesheet
+
+The page keeps native email/password semantics, browser autocomplete hints, field-level validation, and the existing safe local `returnUrl` behavior.
+
+### Security boundary
+
+The visual migration does not alter session behavior.
+
+Authentication still uses the existing session service and API contract. A valid Angular route state is never treated as a substitute for backend authentication or authorization.
+
