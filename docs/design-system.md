@@ -798,3 +798,44 @@ The visual migration does not move reporting calculations into Angular.
 
 Valuation, historical balances, transaction totals, summary aggregates, pagination, filtering, and CSV generation remain backend-authoritative.
 
+## Group 16 — administration
+
+Administration is fully migrated from feature SCSS to Tailwind utilities.
+
+### Information architecture
+
+Administration is treated as a set of privileged operational tools, not a visual dashboard.
+
+The landing page is a permission-aware index into:
+
+```text
+Users
+Roles & Permissions
+Application Settings
+Audit Log
+```
+
+### Users
+
+User lists use compact tabular presentation and the shared filter/data-footer patterns.
+
+User forms separate identity from role membership. User detail pages use definition-list sections and restrained lifecycle actions.
+
+### Roles
+
+Roles remain backend-authoritative authorization bundles.
+
+Role lists align numeric permission/user counts for scanning. Permission editing is grouped by backend-defined capability area, and exact permission keys remain visible.
+
+### Settings
+
+Application settings use separated form sections rather than nested cards.
+
+Organization defaults and inventory policy are visually distinct, while backend enforcement remains the source of truth.
+
+### Audit
+
+Audit history is presented as a read-only ledger.
+
+Timestamps, actors, areas, actions, entity references, and summaries remain dense and searchable. Audit events are never generated or rewritten by the frontend.
+
