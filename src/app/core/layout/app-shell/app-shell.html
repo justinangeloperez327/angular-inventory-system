@@ -1,15 +1,24 @@
-<div class="shell">
-  <a class="shell__skip-link" href="#main-content">Skip to main content</a>
+<div class="min-h-screen bg-background text-foreground">
+  <a
+    class="fixed left-2 top-2 z-50 -translate-y-24 rounded-sm bg-foreground px-3 py-2 text-base font-semibold text-surface no-underline transition-transform focus:translate-y-0"
+    href="#main-content"
+  >
+    Skip to main content
+  </a>
 
   <app-sidebar
     [open]="mobileNavigationOpen()"
     (closed)="mobileNavigationOpen.set(false)"
   />
 
-  <div class="shell__workspace">
+  <div class="min-h-screen min-w-0 lg:ml-sidebar">
     <app-header (menuRequested)="mobileNavigationOpen.set(true)" />
 
-    <main id="main-content" class="shell__content" tabindex="-1">
+    <main
+      id="main-content"
+      class="min-h-[calc(100vh-var(--spacing-header))] min-w-0"
+      tabindex="-1"
+    >
       <router-outlet />
     </main>
   </div>

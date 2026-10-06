@@ -1,32 +1,66 @@
-<div class="sidebar-backdrop" [class.is-open]="open" (click)="closed.emit()" aria-hidden="true"></div>
+@if (open) {
+  <div
+    class="fixed inset-0 z-20 bg-black/40 lg:hidden"
+    (click)="closed.emit()"
+    aria-hidden="true"
+  ></div>
+}
 
-<aside class="sidebar" [class.is-open]="open" aria-label="Primary navigation">
-  <div class="sidebar__brand">
-    <div class="sidebar__brand-mark" aria-hidden="true">IS</div>
-    <div>
-      <strong>Inventory</strong>
-      <span>Management System</span>
+<aside
+  class="fixed inset-y-0 left-0 z-30 w-sidebar -translate-x-full border-r border-border bg-surface transition-transform duration-150 lg:translate-x-0"
+  [class.translate-x-0]="open"
+  aria-label="Primary navigation"
+>
+  <div class="flex h-header items-center gap-3 border-b border-border px-4">
+    <div
+      class="grid size-8 place-items-center rounded-sm border border-border-strong bg-foreground text-xs font-semibold tracking-wide text-surface"
+      aria-hidden="true"
+    >
+      IS
     </div>
-    <button class="sidebar__close" type="button" aria-label="Close navigation" (click)="closed.emit()">
+
+    <div class="min-w-0">
+      <strong class="block truncate text-base font-semibold">Inventory</strong>
+      <span class="mt-0.5 block truncate text-xs text-muted-foreground">Management System</span>
+    </div>
+
+    <button
+      class="ml-auto grid size-8 place-items-center rounded-sm border-0 bg-transparent text-xl text-muted-foreground hover:bg-surface-muted hover:text-foreground lg:hidden"
+      type="button"
+      aria-label="Close navigation"
+      (click)="closed.emit()"
+    >
       ×
     </button>
   </div>
 
-  <nav class="sidebar__nav">
+  <nav class="h-[calc(100vh-var(--spacing-header))] overflow-y-auto px-3 py-4">
     @for (section of sections(); track section.label) {
-      <section class="sidebar__section">
-        <p class="sidebar__section-label">{{ section.label }}</p>
-        @for (item of section.items; track item.route) {
-          <a
-            class="sidebar__link"
-            [routerLink]="item.route"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            (click)="closed.emit()"
-          >
-            {{ item.label }}
-          </a>
-        }
+      <section class="mt-5 first:mt-0">
+        <p
+          class="mb-1.5 mt-0 px-2 text-xs font-semibold uppercase tracking-wider text-subtle-foreground"
+        >
+          {{ section.label }}
+        </p>
+
+        <div class="grid gap-0.5">
+          @for (item of section.items; track item.route) {
+            <a
+              class="border-l-2 border-transparent px-2.5 py-2 text-base font-normal text-muted-foreground no-underline transition-colors hover:bg-surface-muted hover:text-foreground"
+              [routerLink]="item.route"
+              [routerLinkActive]="[
+                'border-primary',
+                'bg-surface-strong',
+                'font-medium',
+                'text-foreground'
+              ]"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closed.emit()"
+            >
+              {{ item.label }}
+            </a>
+          }
+        </div>
       </section>
     }
   </nav>

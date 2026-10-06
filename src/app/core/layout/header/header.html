@@ -1,23 +1,31 @@
-<header class="header">
-  <button class="header__menu" type="button" aria-label="Open navigation" (click)="menuRequested.emit()">
-    <span></span>
-    <span></span>
-    <span></span>
+<header class="flex h-header items-center gap-3 border-b border-border bg-surface px-4 md:px-6">
+  <button
+    class="grid size-9 place-content-center gap-1 rounded-sm border border-border bg-surface text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50 lg:hidden"
+    type="button"
+    aria-label="Open navigation"
+    (click)="menuRequested.emit()"
+  >
+    <span class="block h-px w-4 bg-current"></span>
+    <span class="block h-px w-4 bg-current"></span>
+    <span class="block h-px w-4 bg-current"></span>
   </button>
 
-  <div class="header__context">
-    <span class="header__product">Inventory System</span>
-  </div>
+  <span class="text-base font-semibold">Inventory System</span>
 
-  <div class="header__actions">
+  <div class="ml-auto flex items-center gap-3">
     @if (session.currentUser(); as user) {
-      <div class="header__user">
-        <strong>{{ user.name }}</strong>
-        <span>{{ user.email }}</span>
+      <div class="hidden text-right sm:block">
+        <strong class="block text-sm font-semibold">{{ user.name }}</strong>
+        <span class="mt-0.5 block text-xs text-muted-foreground">{{ user.email }}</span>
       </div>
     }
 
-    <button class="header__logout" type="button" [disabled]="loggingOut()" (click)="logout()">
+    <button
+      class="min-h-control-sm rounded-sm border border-border bg-surface px-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
+      type="button"
+      [disabled]="loggingOut()"
+      (click)="logout()"
+    >
       {{ loggingOut() ? 'Signing out…' : 'Sign out' }}
     </button>
   </div>

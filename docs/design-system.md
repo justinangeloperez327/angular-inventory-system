@@ -190,3 +190,61 @@ Each subsequent group should migrate shared primitives and feature pages toward 
 8. Keep Angular templates readable; extract reusable UI patterns instead of repeating very long utility strings.
 9. Do not use arbitrary values when an existing token communicates the same intent.
 10. Production build, tests, and Docker validation must stay green throughout the migration.
+
+
+## Group 2 — typography, spacing, and shell
+
+The first visible migration establishes the global application frame.
+
+Migrated to Tailwind utilities:
+
+- application shell
+- header
+- sidebar
+- shared content container
+- shared page header
+
+The obsolete SCSS files for these components are removed after migration.
+
+### Global frame
+
+```text
+Header height    56px
+Sidebar width    240px
+Content maximum  1440px
+Default control  40px
+Small control    32px
+```
+
+The application uses a 14px default operational body size with restrained 12/13/14/16/20/24px hierarchy.
+
+Bold text defaults to weight 600 rather than browser-default 700 to reduce visual noise.
+
+### Page spacing
+
+Shared content pages use:
+
+```text
+mobile      16px horizontal / 20px vertical
+tablet      24px horizontal / 24px vertical
+wide        32px horizontal / 24px vertical
+```
+
+Page content is centered and capped at 1440px. Data tables may still scroll horizontally when their content requires more width.
+
+### Page header
+
+The shared header now uses a 24px title and 14px description. Actions wrap without increasing the title hierarchy.
+
+### Sidebar
+
+The sidebar remains 240px wide and uses flat navigation rows rather than card-shaped links.
+
+Active navigation uses:
+
+- subtle muted surface
+- foreground text
+- medium weight
+- a 2px primary left indicator
+
+Responsive mobile drawer behavior and permission filtering are preserved.

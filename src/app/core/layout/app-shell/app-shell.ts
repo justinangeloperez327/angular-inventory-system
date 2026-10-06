@@ -9,7 +9,6 @@ import { SidebarComponent } from '../sidebar/sidebar';
   selector: 'app-shell',
   imports: [RouterOutlet, HeaderComponent, SidebarComponent, ToastOutletComponent],
   templateUrl: './app-shell.html',
-  styleUrl: './app-shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShellComponent {

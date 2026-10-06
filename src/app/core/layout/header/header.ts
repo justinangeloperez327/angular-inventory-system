@@ -14,7 +14,6 @@ import { AuthSessionService } from '../../auth/auth-session.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
-  styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {

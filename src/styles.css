@@ -79,8 +79,11 @@
 
   --spacing-control-sm: 2rem;
   --spacing-control: 2.5rem;
+  --spacing-header: 3.5rem;
   --spacing-page: 1.5rem;
   --spacing-sidebar: 15rem;
+
+  --container-app: 90rem;
 
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
@@ -133,6 +136,26 @@
     min-width: 320px;
     min-height: 100vh;
     background: var(--color-bg);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
   }
 
   button,
