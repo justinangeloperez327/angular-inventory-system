@@ -109,3 +109,12 @@ production build
 ```
 
 CI runs the same accessibility guard before tests and production build.
+
+## Rendered-browser coverage
+
+Group 20 adds Playwright coverage for the responsive mobile-navigation keyboard contract.
+
+The browser test verifies that opening mobile navigation captures focus inside the modal navigation surface, Escape closes it, and focus returns to the menu trigger.
+
+Static accessibility checks remain useful for broad template regressions; rendered-browser tests cover interaction behavior that static inspection cannot prove.
+

@@ -55,6 +55,13 @@ npm run check:design
 npm run check:accessibility
 npm test
 npm run build:production
+npm run e2e
+```
+
+Install the browser once before running E2E locally:
+
+```bash
+npx playwright install chromium
 ```
 
 Or run the complete release gate:
@@ -126,6 +133,7 @@ See:
 
 - `docs/design-system.md`
 - `docs/accessibility.md`
+- `docs/browser-testing.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`

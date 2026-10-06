@@ -998,3 +998,46 @@ CI runs the accessibility guard before the test/build/Docker stages.
 
 The static guard is intentionally a baseline. It does not replace manual keyboard review, screen-reader testing, or future rendered-browser accessibility automation.
 
+## Group 20 — rendered-browser regression coverage
+
+The application now has a Playwright browser smoke layer in addition to unit tests and static repository guards.
+
+### Critical-flow coverage
+
+The Chromium suite exercises the assembled Angular application with mocked REST responses:
+
+- anonymous protected-route redirect
+- sign-in validation
+- successful sign-in and dashboard rendering
+- persisted-session restoration
+- permission-denied routing
+- responsive mobile navigation focus management
+- Escape close + trigger focus restoration
+- sign-out session clearing
+- authenticated 404 rendering
+
+The browser suite uses the real Angular router, guards, session storage, shared components, lazy-loaded routes, and responsive styles.
+
+Only the HTTP boundary is mocked.
+
+### CI position
+
+Browser E2E runs after unit tests and the production build, and before the Docker build/smoke stage.
+
+The repository therefore checks the UI at four different levels:
+
+```text
+Static design-system rules
+Static accessibility rules
+Angular unit tests
+Rendered Chromium critical flows
+```
+
+Docker validation remains the final deployable-container check.
+
+### Test philosophy
+
+E2E coverage stays intentionally narrow.
+
+Backend transaction correctness, inventory accounting, authorization enforcement, and data validation belong to the NestJS backend test suite. Angular browser tests verify that frontend orchestration presents and routes those contracts correctly.
+
