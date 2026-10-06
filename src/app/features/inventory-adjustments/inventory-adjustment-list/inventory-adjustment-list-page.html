@@ -13,7 +13,7 @@
     </a>
   </app-page-header>
 
-  <form class="adjustments__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Number, SKU, product, reason" formControlName="search" />
     <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
     <app-select label="Direction" placeholder="All directions" [options]="[
@@ -27,7 +27,7 @@
     ]" formControlName="status" />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-    <div class="adjustments__filter-actions">
+    <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
     </div>
@@ -84,7 +84,7 @@
         </tbody>
       </app-table>
 
-      <div class="adjustments__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} adjustments</span>
         <app-pagination
           [page]="store.pagination().page"

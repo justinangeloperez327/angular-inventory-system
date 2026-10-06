@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.html',
-  styleUrl: './pagination.scss',
+  host: {
+    class: 'block',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationComponent {

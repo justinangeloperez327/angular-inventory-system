@@ -8,7 +8,7 @@
     </app-button>
   </app-page-header>
 
-  <form class="inventory__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input
       type="search"
       label="Search products"
@@ -34,7 +34,7 @@
       formControlName="status"
     />
 
-    <div class="inventory__filter-actions">
+    <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
     </div>
@@ -93,7 +93,7 @@
         </tbody>
       </app-table>
 
-      <div class="inventory__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} balance lines</span>
         <app-pagination
           [page]="store.pagination().page"

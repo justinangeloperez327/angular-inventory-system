@@ -2,24 +2,6 @@
   display: block;
 }
 
-.inventory__filters {
-  display: grid;
-  grid-template-columns: minmax(16rem, 2fr) minmax(11rem, 1fr) minmax(10rem, 1fr) auto;
-  gap: 0.75rem;
-  align-items: end;
-  margin-top: 1.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  padding: 0.875rem;
-}
-
-.inventory__filter-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .inventory__alert,
 .inventory__loading,
 .inventory__table {
@@ -50,31 +32,4 @@
 
 .inventory__number {
   font-variant-numeric: tabular-nums;
-}
-
-.inventory__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.75rem;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-}
-
-@media (max-width: 900px) {
-  .inventory__filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 650px) {
-  .inventory__filters {
-    grid-template-columns: 1fr;
-  }
-
-  .inventory__pagination {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }

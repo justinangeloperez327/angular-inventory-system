@@ -193,3 +193,30 @@
     }
   }
 }
+
+
+@layer components {
+  .filter-bar {
+    @apply mt-6 grid items-end gap-3 rounded-md border border-border bg-surface p-3;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+
+  .filter-bar__actions {
+    @apply flex min-h-control items-center justify-end gap-1.5;
+  }
+
+  .data-footer {
+    @apply mt-3 flex items-center justify-between gap-4 text-xs text-muted-foreground;
+  }
+
+  @media (max-width: 39.999rem) {
+    .filter-bar__actions {
+      justify-content: flex-start;
+    }
+
+    .data-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+}

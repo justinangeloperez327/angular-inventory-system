@@ -6,7 +6,7 @@
     <a actions routerLink="new" class="admin-users__primary-action">New user</a>
   </app-page-header>
 
-  <form class="admin-users__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Name or email" formControlName="search" />
     <app-select label="Role" placeholder="All roles" [options]="roleOptions()" formControlName="roleId" />
     <app-select
@@ -18,7 +18,7 @@
       ]"
       formControlName="status"
     />
-    <div class="admin-users__filter-actions">
+    <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
     </div>
@@ -67,7 +67,7 @@
         </tbody>
       </app-table>
 
-      <div class="admin-users__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} users</span>
         <app-pagination
           [page]="store.pagination().page"

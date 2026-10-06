@@ -13,7 +13,7 @@
     </a>
   </app-page-header>
 
-  <form class="supplier-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input
       type="search"
       label="Search"
@@ -31,7 +31,7 @@
       formControlName="status"
     />
 
-    <div class="supplier-list__filter-actions">
+    <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
     </div>
@@ -99,7 +99,7 @@
         </tbody>
       </app-table>
 
-      <div class="supplier-list__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} suppliers</span>
         <app-pagination
           [page]="store.pagination().page"

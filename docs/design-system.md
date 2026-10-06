@@ -317,3 +317,49 @@ Buttons preserve:
 - disabled state while loading
 - `aria-busy`
 - non-semantic loading spinner decoration
+
+
+## Group 4 — tables and filters
+
+The shared data-workspace primitives are now Tailwind-based.
+
+### Table
+
+`app-table` provides:
+
+- horizontal overflow containment
+- compact 36px header rows
+- approximately 40px data rows
+- subtle horizontal separators
+- muted header surface
+- tabular numerals
+- low-noise row hover
+- no vertical grid lines
+- no automatic card conversion on narrow screens
+
+Feature pages should explicitly use `text-right` for numeric and currency columns when those pages are migrated. Horizontal scrolling is preferred over destroying tabular structure on small screens.
+
+### Filter bar
+
+List/report forms use the shared layout classes:
+
+```text
+filter-bar
+filter-bar__actions
+```
+
+The filter bar uses responsive auto-fit columns rather than feature-specific breakpoint grids. It remains compact and lets the shared Input/Select components determine control styling.
+
+### Data footer
+
+Paginated data views use:
+
+```text
+data-footer
+```
+
+for the result count + pagination row.
+
+### Pagination
+
+`app-pagination` uses compact 32px Previous/Next controls and tabular page numbering. Large numbered-page button sets are intentionally avoided because operational lists may have very large page counts.

@@ -6,7 +6,7 @@
     <a actions routerLink="new" class="count-list__primary-action">New stock count</a>
   </app-page-header>
 
-  <form class="count-list__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Count number or warehouse" formControlName="search" />
     <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
     <app-select label="Status" placeholder="All statuses" [options]="[
@@ -18,7 +18,7 @@
     ]" formControlName="status" />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-    <div class="count-list__filter-actions">
+    <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
     </div>
@@ -56,7 +56,7 @@
         </tbody>
       </app-table>
 
-      <div class="count-list__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} counts</span>
         <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
       </div>

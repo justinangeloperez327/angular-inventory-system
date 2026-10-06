@@ -7,7 +7,7 @@
       </app-button>
     </app-page-header>
 
-    <form class="report-viewer__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
       @if (hasFilter('search')) {
         <app-input
           type="search"
@@ -43,7 +43,7 @@
         <app-input type="date" label="To" formControlName="dateTo" />
       }
 
-      <div class="report-viewer__filter-actions">
+      <div class="filter-bar__actions">
         <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
         <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
       </div>
@@ -101,7 +101,7 @@
           </tbody>
         </app-table>
 
-        <div class="report-viewer__pagination">
+        <div class="data-footer">
           <span>{{ store.pagination().totalItems }} rows</span>
           <app-pagination
             [page]="store.pagination().page"

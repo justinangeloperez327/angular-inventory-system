@@ -2,27 +2,6 @@
   display: block;
 }
 
-.movements__filters {
-  display: grid;
-  grid-template-columns: minmax(14rem, 2fr) repeat(2, minmax(10rem, 1fr)) repeat(2, minmax(9rem, 1fr));
-  gap: 0.75rem;
-  align-items: end;
-  margin-top: 1.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  padding: 0.875rem;
-}
-
-.movements__filters > app-input:nth-of-type(4) {
-  grid-column: span 2;
-}
-
-.movements__filter-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .movements__alert,
 .movements__loading,
 .movements__table {
@@ -60,35 +39,4 @@
   color: var(--color-text-muted);
   font-size: 0.6875rem;
   font-weight: 400;
-}
-
-.movements__pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.75rem;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-}
-
-@media (max-width: 1100px) {
-  .movements__filters {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .movements__filters > app-input:nth-of-type(4) {
-    grid-column: auto;
-  }
-}
-
-@media (max-width: 650px) {
-  .movements__filters {
-    grid-template-columns: 1fr;
-  }
-
-  .movements__pagination {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }
