@@ -153,3 +153,47 @@ reports.view
 ```
 
 The API remains the security boundary.
+
+## Group 15 design migration
+
+Reports now use the shared Tailwind operational workspace rather than feature-specific report cards and SCSS.
+
+### Report catalog
+
+The report landing page is grouped by domain:
+
+```text
+Inventory
+Purchasing
+Sales
+```
+
+Each report is presented as a compact navigation row with its purpose visible before opening it. The catalog avoids decorative dashboard cards because report selection is navigation, not a KPI surface.
+
+### Report viewer
+
+Every report keeps one consistent structure:
+
+```text
+Title + export
+Filters
+Backend summary
+Generated timestamp
+Report table
+Pagination
+```
+
+Filters continue to be driven by each report definition, so irrelevant controls are not shown.
+
+Summary values remain backend-authoritative and cover the entire filtered result, not only the visible page.
+
+Numeric report columns are right-aligned with tabular numerals. Identifier fields such as SKU, document number, and code use monospace styling for scanability.
+
+### Export
+
+CSV export remains a backend-generated export of the complete filtered result. Browser pagination is not treated as the export boundary.
+
+### Styling
+
+Report hub and report viewer no longer use feature-level SCSS. They now rely on shared Tailwind tokens, filter bars, tables, pagination, state components, and compact action controls.
+
