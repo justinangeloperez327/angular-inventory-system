@@ -19,7 +19,6 @@ import { SalesOrderCustomerOption } from '../../models/sales-order.model';
   selector: 'app-sales-customer-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './sales-customer-lookup.html',
-  styleUrl: '../lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SalesCustomerLookupComponent {

@@ -727,3 +727,41 @@ Supplier Purchase History remains a separate permission-gated panel because purc
 Customer Sales activity remains a handoff into the Sales domain via `customerId` filtering rather than duplicating sales history inside Customer Management.
 
 Deactivation preserves historical transaction references for both partner types.
+
+## Group 14 — sales and returns
+
+Sales and Returns are fully migrated from feature SCSS to Tailwind utilities, including customer and product lookup controls.
+
+### Sales orders
+
+Sales uses a transaction-document hierarchy rather than generic CRUD cards.
+
+The list prioritizes order number, customer, warehouse, date, line count, subtotal, and lifecycle status. Numeric and monetary values are right-aligned; identifiers use monospace styling.
+
+The draft editor separates order context from line entry and notes. Product lines keep a horizontally scrollable tabular structure on narrow screens so quantity and price relationships remain easy to compare.
+
+### Lifecycle
+
+The workflow remains:
+
+```text
+Draft → Confirmed → Dispatched → Completed
+          └─ Cancelled
+
+Dispatched / Completed → Return
+```
+
+Confirmation is the reservation boundary. Dispatch is the inventory issue boundary. Completion is operational closure. The UI does not blur these state transitions into ordinary edit actions.
+
+### Detail
+
+Sales-order detail combines order identity, workflow audit, line quantities, movement links, returns, and notes without nested card panels.
+
+Ordered, reserved, dispatched, and returned quantities are aligned as one operational table so inventory state can be reviewed at a glance.
+
+### Returns
+
+Returns are separate inventory transactions and use the same line-oriented document pattern.
+
+Returnable and return-now quantities remain side by side. Posted return movements stay visible from the original sales order, preserving the audit trail rather than rewriting sale movements.
+

@@ -7,10 +7,23 @@
     <app-skeleton height="30rem" />
   } @else if (store.item(); as item) {
     <app-page-header [title]="item.number" [description]="'Sales order · ' + item.customerName">
-      <a actions routerLink="/sales" class="sales-detail__action">All sales orders</a>
+      <a
+        actions
+        routerLink="/sales"
+        class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
+      >
+        All sales orders
+      </a>
 
       @if (item.status === 'draft') {
-        <a actions [routerLink]="['edit']" class="sales-detail__action" *appHasPermission="permissions.salesCreate">Edit</a>
+        <a
+          actions
+          [routerLink]="['edit']"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
+          *appHasPermission="permissions.salesCreate"
+        >
+          Edit
+        </a>
         <app-button
           actions
           *appHasPermission="permissions.salesCreate"
@@ -56,7 +69,7 @@
         <a
           actions
           [routerLink]="['return']"
-          class="sales-detail__action"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
           *appHasPermission="permissions.salesReturn"
         >
           Create return
@@ -64,90 +77,181 @@
       }
     </app-page-header>
 
-    <div class="sales-detail__summary">
-      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
+    <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
+      <app-badge [variant]="statusVariant(item.status)">
+        <span class="capitalize">{{ item.status }}</span>
+      </app-badge>
       <span>{{ item.lineCount }} lines</span>
-      <strong>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</strong>
+      <strong class="font-semibold text-foreground tabular-nums">
+        {{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}
+      </strong>
     </div>
 
-    <div class="sales-detail__grid">
-      <section class="sales-detail__panel">
-        <h2>Order</h2>
-        <dl>
-          <div><dt>Customer</dt><dd><a [routerLink]="['/customers', item.customerId]">{{ item.customerName }}</a><span>{{ item.customerCode }}</span></dd></div>
-          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
-          <div><dt>Order date</dt><dd>{{ item.orderDate | date: 'mediumDate' }}</dd></div>
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Order</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Customer</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/customers', item.customerId]" class="font-semibold text-foreground no-underline hover:underline">
+                {{ item.customerName }}
+              </a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.customerCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Warehouse</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/inventory/warehouses', item.warehouseId]" class="font-semibold text-foreground no-underline hover:underline">
+                {{ item.warehouseName }}
+              </a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Order date</dt>
+            <dd class="m-0 text-sm">{{ item.orderDate | date: 'mediumDate' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="sales-detail__panel">
-        <h2>Workflow</h2>
-        <dl>
-          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
-          <div><dt>Confirmed</dt><dd>{{ item.confirmedAt ? (item.confirmedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Confirmed by</dt><dd>{{ item.confirmedBy?.name || '—' }}</dd></div>
-          <div><dt>Dispatched</dt><dd>{{ item.dispatchedAt ? (item.dispatchedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Dispatched by</dt><dd>{{ item.dispatchedBy?.name || '—' }}</dd></div>
-          <div><dt>Completed</dt><dd>{{ item.completedAt ? (item.completedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Completed by</dt><dd>{{ item.completedBy?.name || '—' }}</dd></div>
-        </dl>
-      </section>
-
-      <section class="sales-detail__panel sales-detail__panel--wide">
-        <h2>Lines</h2>
-        <app-table>
-          <thead>
-            <tr><th>SKU</th><th>Product</th><th>Ordered</th><th>Reserved</th><th>Dispatched</th><th>Returned</th><th>Unit price</th><th>Line total</th><th>Movement</th></tr>
-          </thead>
-          <tbody>
-            @for (line of item.lines; track line.id) {
-              <tr>
-                <td class="sales-detail__mono">{{ line.sku }}</td>
-                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
-                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityReserved }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityDispatched }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityReturned }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
-                <td>{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
-                <td>
-                  @if (line.saleMovement) {
-                    <a [routerLink]="['/stock-movements', line.saleMovement.id]">{{ line.saleMovement.number || 'Sale movement' }}</a>
-                  } @else {
-                    —
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </app-table>
-      </section>
-
-      @if (item.returns.length > 0) {
-        <section class="sales-detail__panel sales-detail__panel--wide">
-          <h2>Returns</h2>
-          @for (salesReturn of item.returns; track salesReturn.id) {
-            <div class="sales-detail__return">
-              <div>
-                <strong>{{ salesReturn.number }}</strong>
-                <span>{{ salesReturn.createdAt | date: 'medium' }} · {{ salesReturn.createdBy?.name || 'System' }}</span>
-              </div>
-              @for (line of salesReturn.lines; track line.id) {
-                <p>
-                  {{ line.sku }} · {{ line.quantityReturned }} {{ line.unitSymbol || '' }}
-                  @if (line.movement) {
-                    · <a [routerLink]="['/stock-movements', line.movement.id]">{{ line.movement.number || 'Return movement' }}</a>
-                  }
-                </p>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Workflow</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created</dt>
+            <dd class="m-0 text-sm">
+              {{ item.createdAt | date: 'medium' }}
+              <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.createdBy?.name || 'System' }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Confirmed</dt>
+            <dd class="m-0 text-sm">
+              {{ item.confirmedAt ? (item.confirmedAt | date: 'medium') : '—' }}
+              @if (item.confirmedBy?.name) {
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.confirmedBy?.name }}</span>
               }
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Dispatched</dt>
+            <dd class="m-0 text-sm">
+              {{ item.dispatchedAt ? (item.dispatchedAt | date: 'medium') : '—' }}
+              @if (item.dispatchedBy?.name) {
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.dispatchedBy?.name }}</span>
+              }
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Completed</dt>
+            <dd class="m-0 text-sm">
+              {{ item.completedAt ? (item.completedAt | date: 'medium') : '—' }}
+              @if (item.completedBy?.name) {
+                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ item.completedBy?.name }}</span>
+              }
+            </dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+
+    <section class="mt-5 border-t border-border pt-4">
+      <div class="mb-3">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Order lines</h2>
+        <p class="mb-0 mt-1 text-xs text-muted-foreground">
+          Ordered, reserved, dispatched, and returned quantities remain directly comparable.
+        </p>
+      </div>
+
+      <app-table>
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product</th>
+            <th class="text-right">Ordered</th>
+            <th class="text-right">Reserved</th>
+            <th class="text-right">Dispatched</th>
+            <th class="text-right">Returned</th>
+            <th class="text-right">Unit price</th>
+            <th class="text-right">Line total</th>
+            <th>Movement</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (line of item.lines; track line.id) {
+            <tr>
+              <td class="font-mono text-xs">{{ line.sku }}</td>
+              <td>
+                <a [routerLink]="['/products', line.productId]" class="font-semibold text-foreground no-underline hover:underline">
+                  {{ line.productName }}
+                </a>
+              </td>
+              <td class="text-right tabular-nums">{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+              <td class="text-right tabular-nums">{{ line.quantityReserved }} {{ line.unitSymbol || '' }}</td>
+              <td class="text-right tabular-nums">{{ line.quantityDispatched }} {{ line.unitSymbol || '' }}</td>
+              <td class="text-right tabular-nums">{{ line.quantityReturned }} {{ line.unitSymbol || '' }}</td>
+              <td class="text-right tabular-nums">{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+              <td class="text-right font-medium tabular-nums">{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+              <td>
+                @if (line.saleMovement) {
+                  <a [routerLink]="['/stock-movements', line.saleMovement.id]" class="font-medium text-foreground no-underline hover:underline">
+                    {{ line.saleMovement.number || 'Sale movement' }}
+                  </a>
+                } @else {
+                  —
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </app-table>
+    </section>
+
+    @if (item.returns.length > 0) {
+      <section class="mt-5 border-t border-border pt-4">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Returns</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Posted return transactions remain separate from the original sale movements.
+          </p>
+        </div>
+
+        <div class="divide-y divide-border border-y border-border">
+          @for (salesReturn of item.returns; track salesReturn.id) {
+            <div class="py-3">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <strong class="font-mono text-xs font-semibold text-foreground">{{ salesReturn.number }}</strong>
+                <span class="text-xs text-muted-foreground">
+                  {{ salesReturn.createdAt | date: 'medium' }} · {{ salesReturn.createdBy?.name || 'System' }}
+                </span>
+              </div>
+
+              <div class="mt-2 space-y-1.5">
+                @for (line of salesReturn.lines; track line.id) {
+                  <p class="m-0 flex flex-wrap items-center gap-2 text-sm">
+                    <span class="font-mono text-xs">{{ line.sku }}</span>
+                    <span class="tabular-nums">{{ line.quantityReturned }} {{ line.unitSymbol || '' }}</span>
+                    @if (line.movement) {
+                      <span class="text-muted-foreground">→</span>
+                      <a [routerLink]="['/stock-movements', line.movement.id]" class="font-medium text-foreground no-underline hover:underline">
+                        {{ line.movement.number || 'Return movement' }}
+                      </a>
+                    }
+                  </p>
+                }
+              </div>
             </div>
           }
-        </section>
-      }
+        </div>
+      </section>
+    }
 
-      <section class="sales-detail__panel sales-detail__panel--wide"><h2>Notes</h2><p>{{ item.notes || 'No notes recorded.' }}</p></section>
-    </div>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+      <p class="mb-0 mt-3 whitespace-pre-wrap text-sm text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</p>
+    </section>
 
     <app-confirmation-dialog
       [open]="confirmAction() !== null"
@@ -178,6 +282,7 @@
               ? 'Dispatch'
               : 'Complete'
       "
+      [destructive]="confirmAction() === 'cancel'"
       (confirmed)="runConfirmedAction()"
       (cancelled)="confirmAction.set(null)"
     />

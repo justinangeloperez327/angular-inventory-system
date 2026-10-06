@@ -4,19 +4,27 @@
   } @else {
     <app-page-header
       [title]="editing ? 'Edit sales order' : 'New sales order'"
-      description="Draft pricing and quantities are editable until confirmation reserves stock."
+      description="Prepare the draft order. Confirmation is the separate step that reserves inventory."
     />
 
     @if (error()) {
-      <div class="sales-form__alert"><app-alert variant="danger" title="Sales order error">{{ error() }}</app-alert></div>
+      <div class="mt-4">
+        <app-alert variant="danger" title="Sales order error">{{ error() }}</app-alert>
+      </div>
     }
 
-    <form class="sales-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section class="sales-form__section">
-        <div class="sales-form__heading"><h2>Order</h2><p>Customer, fulfillment warehouse, and order date.</p></div>
-        <div class="sales-form__grid">
+    <form class="mt-6" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section>
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Order</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Customer, fulfillment warehouse, and order date.
+          </p>
+        </div>
+
+        <div class="grid gap-3 md:grid-cols-2">
           <app-sales-customer-lookup
-            class="sales-form__wide"
+            class="md:col-span-2"
             [selectedLabel]="selectedCustomerLabel()"
             [error]="fieldError('customerId')"
             (selected)="selectCustomer($event)"
@@ -29,12 +37,22 @@
             formControlName="warehouseId"
             [error]="fieldError('warehouseId')"
           />
-          <app-input type="date" label="Order date" formControlName="orderDate" [error]="fieldError('orderDate')" />
+          <app-input
+            type="date"
+            label="Order date"
+            formControlName="orderDate"
+            [error]="fieldError('orderDate')"
+          />
         </div>
       </section>
 
-      <section class="sales-form__section">
-        <div class="sales-form__heading"><h2>Products</h2><p>Availability is advisory until the order is confirmed.</p></div>
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Products</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Availability is advisory while drafting. The server validates stock again at confirmation.
+          </p>
+        </div>
 
         <app-sales-product-lookup
           [warehouseId]="form.controls.warehouseId.value"
@@ -42,42 +60,95 @@
         />
 
         @if (lineError()) {
-          <div class="sales-form__line-error">{{ lineError() }}</div>
+          <div class="mt-3 text-xs font-medium text-danger">{{ lineError() }}</div>
         }
 
         @if (lines.length > 0) {
-          <div class="sales-form__lines" formArrayName="lines">
-            <div class="sales-form__line sales-form__line--header" aria-hidden="true">
-              <span>SKU</span><span>Product</span><span>Available</span><span>Quantity</span><span>Unit price</span><span>Line total</span><span></span>
+          <div class="mt-4 overflow-x-auto border-y border-border" formArrayName="lines">
+            <div
+              class="grid min-w-[68rem] grid-cols-[7rem_minmax(13rem,2fr)_7rem_8rem_9rem_9rem_5rem] items-center gap-3 bg-surface-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
+              aria-hidden="true"
+            >
+              <span>SKU</span>
+              <span>Product</span>
+              <span class="text-right">Available</span>
+              <span>Quantity</span>
+              <span>Unit price</span>
+              <span class="text-right">Line total</span>
+              <span></span>
             </div>
+
             @for (line of lines.controls; track line.controls.productId.value; let index = $index) {
-              <div class="sales-form__line" [formGroupName]="index">
-                <span class="sales-form__mono">{{ line.controls.sku.value }}</span>
-                <strong>{{ line.controls.productName.value }} <small>{{ line.controls.unitSymbol.value }}</small></strong>
-                <span>{{ line.controls.quantityAvailable.value || '—' }}</span>
-                <app-input type="number" [min]="0.000001" step="any" formControlName="quantity" [error]="quantityError(index)" />
-                <app-input type="number" [min]="0" step="0.01" formControlName="unitPrice" [error]="unitPriceError(index)" />
-                <span class="sales-form__money">{{ lineTotal(index) | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</span>
-                <button type="button" class="sales-form__remove" (click)="removeLine(index)">Remove</button>
+              <div
+                class="grid min-w-[68rem] grid-cols-[7rem_minmax(13rem,2fr)_7rem_8rem_9rem_9rem_5rem] items-center gap-3 border-t border-border px-3 py-2.5 text-sm"
+                [formGroupName]="index"
+              >
+                <span class="font-mono text-xs">{{ line.controls.sku.value }}</span>
+                <span>
+                  <strong class="font-semibold">{{ line.controls.productName.value }}</strong>
+                  @if (line.controls.unitSymbol.value) {
+                    <small class="ml-1 text-xs text-muted-foreground">{{ line.controls.unitSymbol.value }}</small>
+                  }
+                </span>
+                <span class="text-right tabular-nums">{{ line.controls.quantityAvailable.value || '—' }}</span>
+                <app-input
+                  type="number"
+                  [min]="0.000001"
+                  step="any"
+                  formControlName="quantity"
+                  [error]="quantityError(index)"
+                />
+                <app-input
+                  type="number"
+                  [min]="0"
+                  step="0.01"
+                  formControlName="unitPrice"
+                  [error]="unitPriceError(index)"
+                />
+                <span class="text-right font-medium tabular-nums">
+                  {{ lineTotal(index) | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}
+                </span>
+                <button
+                  type="button"
+                  class="border-0 bg-transparent p-0 text-left text-xs font-semibold text-danger"
+                  (click)="removeLine(index)"
+                >
+                  Remove
+                </button>
               </div>
             }
-            <div class="sales-form__subtotal">
-              <span>Subtotal</span>
-              <strong>{{ subtotal() | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}</strong>
+
+            <div class="flex min-w-[68rem] items-center justify-end gap-4 border-t border-border px-3 py-3 text-sm">
+              <span class="text-muted-foreground">Subtotal</span>
+              <strong class="font-semibold tabular-nums">
+                {{ subtotal() | currency: (options()?.currencyCode ?? '') : 'symbol' : '1.2-2' }}
+              </strong>
             </div>
           </div>
         } @else {
-          <p class="sales-form__empty-lines">No products added yet.</p>
+          <p class="mb-0 mt-3 text-sm text-muted-foreground">
+            No products added yet. Select a warehouse, then search for products above.
+          </p>
         }
       </section>
 
-      <section class="sales-form__section">
-        <div class="sales-form__heading"><h2>Notes</h2><p>Optional customer or fulfillment context.</p></div>
+      <section class="mt-5 border-t border-border pt-5">
+        <div class="mb-3">
+          <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Optional customer or fulfillment context.
+          </p>
+        </div>
         <app-textarea formControlName="notes" [error]="fieldError('notes')" />
       </section>
 
-      <div class="sales-form__actions">
-        <a [routerLink]="id ? ['/sales', id] : ['/sales']">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a
+          [routerLink]="id ? ['/sales', id] : ['/sales']"
+          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
+        >
+          Cancel
+        </a>
         <app-button type="submit" [loading]="saving()">Save draft</app-button>
       </div>
     </form>
