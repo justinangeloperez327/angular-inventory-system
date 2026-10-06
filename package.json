@@ -13,12 +13,13 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress",
     "test:watch": "ng test",
-    "check": "npm run check:design && npm run check:accessibility && npm run check:production && npm run test && npm run build:production && npm run e2e",
+    "check": "npm run check:dependencies && npm run check:design && npm run check:accessibility && npm run check:production && npm run test && npm run build:production && npm run e2e",
     "check:design": "node scripts/check-design-system.mjs",
     "check:accessibility": "node scripts/check-accessibility.mjs",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
-    "check:production": "node scripts/check-production.mjs"
+    "check:production": "node scripts/check-production.mjs",
+    "check:dependencies": "node scripts/check-dependencies.mjs"
   },
   "dependencies": {
     "@angular/cdk": "^22.2.1",
@@ -42,5 +43,6 @@
     "tailwindcss": "^4.3.0",
     "typescript": "~6.0.3",
     "vitest": "^5.0.3"
-  }
+  },
+  "packageManager": "npm@11.12.1"
 }
