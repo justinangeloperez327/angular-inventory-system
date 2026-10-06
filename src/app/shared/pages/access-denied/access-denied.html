@@ -1,7 +1,10 @@
 <app-content-container>
-  <section class="access-denied" aria-labelledby="access-denied-title">
-    <p class="access-denied__code">403</p>
-    <h1 id="access-denied-title">Access denied</h1>
-    <p>You do not have permission to open this area. Choose an available section from the navigation.</p>
-  </section>
+  <div class="mx-auto max-w-2xl py-10 md:py-16">
+    <app-empty-state
+      eyebrow="403"
+      title="Access denied"
+      description="You do not have permission to open this area. Choose an available section from the navigation."
+      [page]="true"
+    />
+  </div>
 </app-content-container>

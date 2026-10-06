@@ -1,8 +1,29 @@
-<section class="empty-state">
-  <div class="empty-state__icon" aria-hidden="true">—</div>
-  <h2>{{ title }}</h2>
-  @if (description) {
-    <p>{{ description }}</p>
+<section
+  class="border border-dashed border-border-strong bg-surface px-6 py-10 text-center"
+>
+  @if (eyebrow) {
+    <p class="m-0 text-xs font-semibold uppercase tracking-wider text-subtle-foreground">
+      {{ eyebrow }}
+    </p>
   }
-  <div class="empty-state__actions"><ng-content /></div>
+
+  @if (page) {
+    <h1 class="m-0 text-xl font-semibold text-foreground" [class.mt-2]="eyebrow">
+      {{ title }}
+    </h1>
+  } @else {
+    <h2 class="m-0 text-lg font-semibold text-foreground" [class.mt-2]="eyebrow">
+      {{ title }}
+    </h2>
+  }
+
+  @if (description) {
+    <p class="mx-auto mb-0 mt-2 max-w-lg text-base leading-5 text-muted-foreground">
+      {{ description }}
+    </p>
+  }
+
+  <div class="mt-4 flex flex-wrap justify-center gap-2 empty:mt-0">
+    <ng-content />
+  </div>
 </section>

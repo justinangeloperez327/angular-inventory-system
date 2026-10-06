@@ -1,7 +1,10 @@
 @if (open) {
-  <div class="dialog-backdrop" (click)="onBackdrop($event)">
+  <div
+    class="fixed inset-0 z-[80] grid place-items-center bg-black/40 p-4"
+    (click)="onBackdrop($event)"
+  >
     <section
-      class="dialog"
+      class="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-md border border-border bg-surface shadow-lg"
       role="dialog"
       aria-modal="true"
       [attr.aria-labelledby]="titleId"
@@ -9,16 +12,27 @@
       cdkTrapFocus
       [cdkTrapFocusAutoCapture]="true"
     >
-      <div class="dialog__header">
-        <div>
-          <h2 [id]="titleId">{{ title }}</h2>
+      <header class="flex items-start gap-4 border-b border-border p-4">
+        <div class="min-w-0">
+          <h2 class="m-0 text-lg font-semibold text-foreground" [id]="titleId">{{ title }}</h2>
           @if (description) {
-            <p [id]="descriptionId">{{ description }}</p>
+            <p class="mb-0 mt-1.5 text-sm leading-5 text-muted-foreground" [id]="descriptionId">
+              {{ description }}
+            </p>
           }
         </div>
-        <button type="button" aria-label="Close dialog" (click)="closed.emit()">×</button>
-      </div>
-      <div class="dialog__body"><ng-content /></div>
+
+        <button
+          class="ml-auto grid size-8 shrink-0 place-items-center rounded-sm border-0 bg-transparent text-xl text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+          type="button"
+          aria-label="Close dialog"
+          (click)="closed.emit()"
+        >
+          ×
+        </button>
+      </header>
+
+      <div class="p-4"><ng-content /></div>
     </section>
   </div>
 }

@@ -14,7 +14,6 @@ let dialogSequence = 0;
   selector: 'app-dialog',
   imports: [A11yModule],
   templateUrl: './dialog.html',
-  styleUrl: './dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DialogComponent {

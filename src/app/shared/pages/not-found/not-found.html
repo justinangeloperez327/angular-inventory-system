@@ -1,7 +1,10 @@
 <app-content-container>
-  <app-page-header
-    title="Page not found"
-    description="The requested page does not exist or is no longer available."
-  />
-  <p class="not-found__message">Use the application navigation to continue.</p>
+  <div class="mx-auto max-w-2xl py-10 md:py-16">
+    <app-empty-state
+      eyebrow="404"
+      title="Page not found"
+      description="The requested page does not exist or is no longer available. Use the application navigation to continue."
+      [page]="true"
+    />
+  </div>
 </app-content-container>

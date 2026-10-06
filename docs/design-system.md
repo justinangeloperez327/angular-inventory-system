@@ -438,3 +438,70 @@ Desktop navigation remains fixed and does not close/focus-jump when selecting a 
 ### Header
 
 The header remains 56px high and is sticky. The global application name is visually secondary so page-specific titles remain the dominant hierarchy.
+
+
+## Group 6 — dialogs, alerts, toasts, and states
+
+The shared feedback/state layer now uses the Tailwind design system:
+
+- Dialog
+- Confirmation Dialog
+- Alert
+- Toast
+- Empty State
+- Skeleton
+- Access Denied
+- Not Found
+
+Their legacy SCSS files are removed.
+
+### Dialogs
+
+Dialogs remain compact and use:
+
+- 512px maximum width
+- restrained 6px radius
+- semantic border/surface/shadow
+- CDK focus trapping
+- automatic initial focus capture
+- Escape dismissal
+- backdrop dismissal
+- programmatic title/description association
+
+Confirmation dialogs pass their message as the dialog description so the confirmation context is announced immediately by assistive technology.
+
+### Alerts
+
+Alerts use a neutral white surface with only a 3px semantic left border:
+
+```text
+info       primary
+success    success
+warning    warning
+danger     danger
+```
+
+Large tinted alert backgrounds are intentionally avoided.
+
+Danger alerts use assertive live-region behavior; other alert types use polite status announcements.
+
+### Toasts
+
+Toasts use the same severity treatment as alerts and retain manual dismissal.
+
+Each toast owns its announcement semantics:
+
+- danger → `role="alert"`, assertive
+- other variants → `role="status"`, polite
+
+The outlet itself is only a labeled notification region, preventing danger notifications from being downgraded by a parent polite live region.
+
+### Empty/error states
+
+Empty states are deliberately text-first and low decoration. They support an optional eyebrow such as HTTP status code plus projected actions.
+
+The 403 and 404 pages now reuse the same Empty State primitive rather than maintaining separate page-specific visual systems.
+
+### Skeleton
+
+Skeletons use a simple muted-surface pulse rather than a decorative gradient shimmer. Global reduced-motion handling continues to neutralize the animation for users who request reduced motion.

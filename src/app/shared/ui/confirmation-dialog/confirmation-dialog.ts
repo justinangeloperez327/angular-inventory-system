@@ -7,7 +7,6 @@ import { DialogComponent } from '../dialog/dialog';
   selector: 'app-confirmation-dialog',
   imports: [ButtonComponent, DialogComponent],
   templateUrl: './confirmation-dialog.html',
-  styleUrl: './confirmation-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent {
