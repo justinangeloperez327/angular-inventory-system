@@ -9,10 +9,12 @@
     class="fixed inset-y-0 right-0 z-[80] w-[min(28rem,92vw)] border-l border-border bg-surface shadow-lg"
     role="dialog"
     aria-modal="true"
-    [attr.aria-label]="title"
+    [attr.aria-labelledby]="titleId"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
   >
     <header class="flex min-h-16 items-center border-b border-border px-4 py-3">
-      <h2 class="m-0 text-lg font-semibold text-foreground">{{ title }}</h2>
+      <h2 class="m-0 text-lg font-semibold text-foreground" [id]="titleId">{{ title }}</h2>
       <button
         class="ml-auto grid size-8 place-items-center border-0 bg-transparent p-0 text-xl text-muted-foreground hover:text-foreground"
         type="button"

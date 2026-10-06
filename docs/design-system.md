@@ -949,3 +949,52 @@ npm run check
 
 This prevents future feature work from silently reverting the application to mixed Tailwind/component-SCSS styling.
 
+## Group 19 — accessibility and keyboard hardening
+
+Accessibility requirements are now enforced at both the shared-component and CI levels.
+
+### Modal interaction parity
+
+The generic Drawer now matches the Dialog interaction contract:
+
+- generated accessible title ID
+- `aria-labelledby`
+- `aria-modal="true"`
+- CDK focus trapping
+- automatic focus capture
+- Escape dismissal
+- labelled close control
+- backdrop dismissal
+
+This prevents feature teams from receiving weaker keyboard behavior when they choose a drawer instead of a dialog.
+
+### Accessibility guard
+
+`npm run check:accessibility` statically audits Angular templates for baseline regressions.
+
+The guard rejects:
+
+- positive `tabindex`
+- buttons without explicit type
+- focusable controls hidden from assistive technology
+- images without `alt`
+- literal dialogs without modal semantics
+- literal dialogs without accessible labelling
+
+Both external `.html` templates and inline Angular `template:` blocks are scanned.
+
+### Release gate
+
+The repository release gate is now:
+
+```text
+Design-system guard
+Accessibility guard
+Unit tests
+Production build
+```
+
+CI runs the accessibility guard before the test/build/Docker stages.
+
+The static guard is intentionally a baseline. It does not replace manual keyboard review, screen-reader testing, or future rendered-browser accessibility automation.
+
