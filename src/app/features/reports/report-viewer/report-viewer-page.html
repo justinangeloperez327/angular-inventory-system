@@ -1,0 +1,117 @@
+<app-content-container>
+  @if (store.definition(); as report) {
+    <app-page-header [title]="report.title" [description]="report.description">
+      <a actions routerLink="/reports" class="report-viewer__back">All reports</a>
+      <app-button actions variant="secondary" [loading]="store.exporting()" (click)="exportCsv()">
+        Export CSV
+      </app-button>
+    </app-page-header>
+
+    <form class="report-viewer__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+      @if (hasFilter('search')) {
+        <app-input
+          type="search"
+          label="Search"
+          [placeholder]="report.searchPlaceholder"
+          formControlName="search"
+        />
+      }
+
+      @if (hasFilter('warehouseId')) {
+        <app-select
+          label="Warehouse"
+          placeholder="All warehouses"
+          [options]="warehouseOptions()"
+          formControlName="warehouseId"
+        />
+      }
+
+      @if (hasFilter('movementType')) {
+        <app-select
+          label="Movement type"
+          placeholder="All movement types"
+          [options]="movementTypeOptions()"
+          formControlName="movementType"
+        />
+      }
+
+      @if (hasFilter('dateFrom')) {
+        <app-input type="date" label="From" formControlName="dateFrom" />
+      }
+
+      @if (hasFilter('dateTo')) {
+        <app-input type="date" label="To" formControlName="dateTo" />
+      }
+
+      <div class="report-viewer__filter-actions">
+        <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
+        <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      </div>
+    </form>
+
+    @if (filterError()) {
+      <div class="report-viewer__alert">
+        <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
+      </div>
+    }
+
+    @if (store.error()) {
+      <div class="report-viewer__alert">
+        <app-alert variant="danger" title="Report unavailable">{{ store.error() }}</app-alert>
+      </div>
+    }
+
+    @if (store.response(); as response) {
+      @if (report.metrics.length > 0) {
+        <div class="report-viewer__metrics">
+          @for (metric of report.metrics; track metric.key) {
+            <div class="report-viewer__metric">
+              <span>{{ metric.label }}</span>
+              <strong>{{ formatValue(response.summary[metric.key], metric.type) }}</strong>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="report-viewer__generated">
+        Generated {{ formatValue(response.generatedAt, 'datetime') }}
+      </div>
+    }
+
+    @if (store.loading() && store.rows().length === 0) {
+      <div class="report-viewer__loading"><app-skeleton height="24rem" /></div>
+    } @else if (store.rows().length > 0) {
+      <div class="report-viewer__table">
+        <app-table>
+          <thead>
+            <tr>
+              @for (column of report.columns; track column.key) {
+                <th>{{ column.label }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of store.rows(); track $index) {
+              <tr>
+                @for (column of report.columns; track column.key) {
+                  <td>{{ formatValue(row[column.key], column.type) }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </app-table>
+
+        <div class="report-viewer__pagination">
+          <span>{{ store.pagination().totalItems }} rows</span>
+          <app-pagination
+            [page]="store.pagination().page"
+            [totalPages]="store.pagination().totalPages"
+            (pageChange)="store.setPage($event)"
+          />
+        </div>
+      </div>
+    } @else if (!store.loading()) {
+      <app-empty-state title="No report data" description="No rows match the current report filters." />
+    }
+  }
+</app-content-container>
