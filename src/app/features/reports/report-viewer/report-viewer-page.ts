@@ -35,7 +35,6 @@ import { ReportColumnType, ReportFilter } from '../models/report.model';
   ],
   providers: [ReportViewerStore],
   templateUrl: './report-viewer-page.html',
-  styleUrl: './report-viewer-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportViewerPage implements OnInit {
@@ -124,6 +123,14 @@ export class ReportViewerPage implements OnInit {
       anchor.remove();
       URL.revokeObjectURL(url);
     });
+  }
+
+  isNumericType(type: ReportColumnType | undefined): boolean {
+    return type === 'integer' || type === 'quantity' || type === 'currency';
+  }
+
+  isIdentifierColumn(key: string): boolean {
+    return key === 'sku' || key.endsWith('Number') || key.endsWith('Code');
   }
 
   formatValue(
