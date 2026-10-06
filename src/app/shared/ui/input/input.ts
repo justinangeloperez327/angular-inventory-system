@@ -13,7 +13,9 @@ let inputSequence = 0;
 @Component({
   selector: 'app-input',
   templateUrl: './input.html',
-  styleUrl: './input.scss',
+  host: {
+    class: 'block min-w-0',
+  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

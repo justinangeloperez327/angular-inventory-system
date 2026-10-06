@@ -13,7 +13,9 @@ let textareaSequence = 0;
 @Component({
   selector: 'app-textarea',
   templateUrl: './textarea.html',
-  styleUrl: './textarea.scss',
+  host: {
+    class: 'block min-w-0',
+  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

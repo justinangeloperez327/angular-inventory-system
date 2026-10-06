@@ -1,11 +1,11 @@
-<label class="field" [for]="id || fallbackId">
+<label class="grid min-w-0 gap-1.5" [for]="id || fallbackId">
   @if (label) {
-    <span class="field__label">{{ label }}</span>
+    <span class="text-sm font-semibold text-foreground">{{ label }}</span>
   }
 
   <select
-    class="field__control"
-    [class.is-invalid]="error"
+    class="min-h-control w-full min-w-0 rounded-sm border border-border bg-surface px-2.5 text-base text-foreground transition-colors focus:border-focus disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted-foreground disabled:opacity-75"
+    [class.border-danger]="error"
     [id]="id || fallbackId"
     [disabled]="disabled"
     [value]="value"
@@ -21,8 +21,8 @@
   </select>
 
   @if (error) {
-    <span class="field__message field__message--error" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
+    <span class="text-xs leading-4 text-danger" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
   } @else if (hint) {
-    <span class="field__message" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
+    <span class="text-xs leading-4 text-muted-foreground" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
   }
 </label>

@@ -248,3 +248,72 @@ Active navigation uses:
 - a 2px primary left indicator
 
 Responsive mobile drawer behavior and permission filtering are preserved.
+
+
+## Group 3 — shared controls
+
+The core interactive controls now use Tailwind utilities:
+
+- Button
+- Input
+- Select
+- Textarea
+
+Their previous component SCSS files are removed.
+
+### Control sizing
+
+```text
+small button       32px minimum height
+default button     40px minimum height
+input              40px minimum height
+select             40px minimum height
+textarea           96px minimum height
+```
+
+Inputs, selects, and textareas render as block-level, full-width controls so grids and filter bars determine their available width rather than the custom-element host shrinking to inline content.
+
+### Button hierarchy
+
+```text
+primary      semantic primary blue
+secondary    white surface + border
+ghost        transparent
+danger       semantic danger red
+```
+
+Primary actions use the design-system primary color. Neutral navigation/actions should use secondary or ghost buttons rather than overusing primary blue.
+
+### Fields
+
+Labels use 13px semibold text. Hint and validation copy use 12px text.
+
+All field controls share:
+
+- 4px radius
+- semantic border color
+- white surface
+- 40px control height
+- 14px entered text
+- primary/focus border on keyboard or pointer focus
+- semantic danger border and message for invalid state
+- muted surface and reduced opacity when disabled
+
+Native form semantics and ControlValueAccessor behavior are preserved.
+
+### Accessibility
+
+Fields preserve:
+
+- explicit label/control association
+- `aria-invalid`
+- `aria-describedby` for error or hint text
+- native disabled state
+- visible global focus indication
+
+Buttons preserve:
+
+- native button type
+- disabled state while loading
+- `aria-busy`
+- non-semantic loading spinner decoration

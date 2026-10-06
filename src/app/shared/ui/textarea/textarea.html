@@ -1,11 +1,11 @@
-<label class="field" [for]="id || fallbackId">
+<label class="grid min-w-0 gap-1.5" [for]="id || fallbackId">
   @if (label) {
-    <span class="field__label">{{ label }}</span>
+    <span class="text-sm font-semibold text-foreground">{{ label }}</span>
   }
 
   <textarea
-    class="field__control"
-    [class.is-invalid]="error"
+    class="min-h-24 w-full min-w-0 resize-y rounded-sm border border-border bg-surface px-2.5 py-2 text-base leading-5 text-foreground transition-colors placeholder:text-subtle-foreground focus:border-focus disabled:cursor-not-allowed disabled:bg-surface-muted disabled:text-muted-foreground disabled:opacity-75"
+    [class.border-danger]="error"
     [id]="id || fallbackId"
     [rows]="rows"
     [placeholder]="placeholder"
@@ -18,8 +18,8 @@
   ></textarea>
 
   @if (error) {
-    <span class="field__message field__message--error" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
+    <span class="text-xs leading-4 text-danger" [id]="(id || fallbackId) + '-error'">{{ error }}</span>
   } @else if (hint) {
-    <span class="field__message" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
+    <span class="text-xs leading-4 text-muted-foreground" [id]="(id || fallbackId) + '-hint'">{{ hint }}</span>
   }
 </label>

@@ -19,7 +19,9 @@ let selectSequence = 0;
 @Component({
   selector: 'app-select',
   templateUrl: './select.html',
-  styleUrl: './select.scss',
+  host: {
+    class: 'block min-w-0',
+  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
