@@ -40,6 +40,8 @@ POST /api/inventory-adjustments/:id/post
 
 Create and update save drafts. The backend must reject updates to non-draft adjustments.
 
+List filtering uses `adjustmentDirection=increase|decrease`. The generic `direction=asc|desc` query key remains reserved for pagination sorting.
+
 Posting is a separate command and must be atomic.
 
 ## Product lookup

@@ -38,7 +38,7 @@
               <td>
                 {{ entry.actor?.name || 'System' }}
                 @if (entry.actor?.email) {
-                  <span class="admin-audit__secondary">{{ entry.actor?.email }}</span>
+                  <span class="admin-audit__secondary">{{ entry.actor.email }}</span>
                 }
               </td>
               <td>{{ entry.area }}</td>

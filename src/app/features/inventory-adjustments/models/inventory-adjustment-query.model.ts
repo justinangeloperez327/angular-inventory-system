@@ -6,7 +6,7 @@ import {
 
 export interface InventoryAdjustmentQuery extends PaginationQuery {
   readonly warehouseId?: string;
-  readonly direction?: InventoryAdjustmentDirection;
+  readonly adjustmentDirection?: InventoryAdjustmentDirection;
   readonly status?: InventoryAdjustmentStatus;
   readonly dateFrom?: string;
   readonly dateTo?: string;

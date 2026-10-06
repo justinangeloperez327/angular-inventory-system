@@ -85,7 +85,7 @@ export class InventoryAdjustmentListStore {
       page: 1,
       search: filters.search.trim() || undefined,
       warehouseId: filters.warehouseId || undefined,
-      direction: this.toDirection(filters.direction),
+      adjustmentDirection: this.toDirection(filters.direction),
       status: this.toStatus(filters.status),
       dateFrom: filters.dateFrom || undefined,
       dateTo: filters.dateTo || undefined,

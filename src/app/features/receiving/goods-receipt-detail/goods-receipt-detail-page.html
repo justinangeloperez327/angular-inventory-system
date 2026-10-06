@@ -11,6 +11,8 @@
 
       @if (item.status === 'draft') {
         <a actions [routerLink]="['edit']" class="receipt-detail__action">Edit</a>
+      }
+      @if (item.status === 'draft') {
         <app-button actions [loading]="store.posting()" (click)="confirmPost.set(true)">
           Post receipt
         </app-button>
