@@ -13,7 +13,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress",
     "test:watch": "ng test",
-    "check": "npm run test && npm run build:production"
+    "check": "npm run check:design && npm run test && npm run build:production",
+    "check:design": "node scripts/check-design-system.mjs"
   },
   "dependencies": {
     "@angular/cdk": "^22.2.1",
