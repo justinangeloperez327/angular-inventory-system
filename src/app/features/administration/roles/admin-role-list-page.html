@@ -3,37 +3,73 @@
     title="Roles & Permissions"
     description="Role definitions map users to backend-authorized application permissions."
   >
-    <a actions routerLink="new" class="admin-roles__primary-action">New role</a>
+    <a
+      actions
+      routerLink="new"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+    >
+      New role
+    </a>
   </app-page-header>
 
   @if (error()) {
-    <div class="admin-roles__alert"><app-alert variant="danger" title="Roles unavailable">{{ error() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="danger" title="Roles unavailable">{{ error() }}</app-alert>
+    </div>
   }
 
   @if (loading() && items().length === 0) {
-    <div class="admin-roles__loading"><app-skeleton height="18rem" /></div>
+    <div class="mt-4"><app-skeleton height="18rem" /></div>
   } @else if (items().length > 0) {
-    <div class="admin-roles__table">
+    <div class="mt-4">
       <app-table>
         <thead>
-          <tr><th>Role</th><th>Description</th><th>Permissions</th><th>Users</th><th>Type</th><th>Updated</th><th>Actions</th></tr>
+          <tr>
+            <th>Role</th>
+            <th>Description</th>
+            <th class="text-right">Permissions</th>
+            <th class="text-right">Users</th>
+            <th>Type</th>
+            <th>Updated</th>
+            <th><span class="sr-only">Actions</span></th>
+          </tr>
         </thead>
         <tbody>
           @for (role of items(); track role.id) {
             <tr>
-              <td>{{ role.name }}</td>
-              <td>{{ role.description || '—' }}</td>
-              <td>{{ role.permissionCount }}</td>
-              <td>{{ role.userCount }}</td>
-              <td><app-badge [variant]="role.builtIn ? 'info' : 'neutral'">{{ role.builtIn ? 'built-in' : 'custom' }}</app-badge></td>
-              <td>{{ role.updatedAt | date: 'short' }}</td>
-              <td><a [routerLink]="[role.id, 'edit']" class="admin-roles__action">Edit</a></td>
+              <td class="font-semibold text-foreground">{{ role.name }}</td>
+              <td class="max-w-xl text-muted-foreground">{{ role.description || '—' }}</td>
+              <td class="text-right tabular-nums">{{ role.permissionCount }}</td>
+              <td class="text-right tabular-nums">{{ role.userCount }}</td>
+              <td>
+                <app-badge [variant]="role.builtIn ? 'info' : 'neutral'">
+                  {{ role.builtIn ? 'Built-in' : 'Custom' }}
+                </app-badge>
+              </td>
+              <td class="whitespace-nowrap">{{ role.updatedAt | date: 'short' }}</td>
+              <td>
+                <a
+                  [routerLink]="[role.id, 'edit']"
+                  class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+                >
+                  Edit
+                </a>
+              </td>
             </tr>
           }
         </tbody>
       </app-table>
     </div>
   } @else if (!loading()) {
-    <app-empty-state title="No roles found" description="Create a role to assign application permissions." />
+    <div class="mt-4">
+      <app-empty-state title="No roles found" description="Create a role to assign application permissions.">
+        <a
+          routerLink="new"
+          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+        >
+          New role
+        </a>
+      </app-empty-state>
+    </div>
   }
 </app-content-container>
