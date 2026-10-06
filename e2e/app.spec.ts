@@ -70,7 +70,8 @@ const dashboardSnapshot = {
 };
 
 async function seedSession(page: Page): Promise<void> {
-  await page.addInitScript(
+  await page.goto('/auth/login');
+  await page.evaluate(
     ({ key, token }) => window.sessionStorage.setItem(key, token),
     { key: ACCESS_TOKEN_KEY, token: 'e2e-access-token' },
   );
