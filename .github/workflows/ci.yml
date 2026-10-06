@@ -34,6 +34,9 @@ jobs:
       - name: Design-system guard
         run: npm run check:design
 
+      - name: Accessibility guard
+        run: npm run check:accessibility
+
       - name: Unit tests
         run: npm test
 
