@@ -1,28 +1,64 @@
 <app-content-container>
   <app-page-header
     title="Administration"
-    description="Users, roles, application settings, and the administrative audit trail."
+    description="Manage access, authorization, operating policy, and audit history."
   />
 
-  <div class="admin-home__grid">
-    <a routerLink="users" class="admin-home__card" *appHasPermission="permissions.userManage">
-      <strong>Users</strong>
-      <span>Manage account profiles, role membership, and activation state.</span>
+  <div class="mt-6 divide-y divide-border border-y border-border">
+    <a
+      routerLink="users"
+      class="group grid gap-1 py-3 text-foreground no-underline"
+      *appHasPermission="permissions.userManage"
+    >
+      <span class="flex items-center justify-between gap-3">
+        <strong class="text-sm font-semibold group-hover:underline">Users</strong>
+        <span aria-hidden="true" class="text-muted-foreground">→</span>
+      </span>
+      <span class="text-xs leading-5 text-muted-foreground">
+        Account identity, role membership, and activation state.
+      </span>
     </a>
 
-    <a routerLink="roles" class="admin-home__card" *appHasPermission="permissions.roleManage">
-      <strong>Roles & Permissions</strong>
-      <span>Define role permissions using the backend authorization catalog.</span>
+    <a
+      routerLink="roles"
+      class="group grid gap-1 py-3 text-foreground no-underline"
+      *appHasPermission="permissions.roleManage"
+    >
+      <span class="flex items-center justify-between gap-3">
+        <strong class="text-sm font-semibold group-hover:underline">Roles & Permissions</strong>
+        <span aria-hidden="true" class="text-muted-foreground">→</span>
+      </span>
+      <span class="text-xs leading-5 text-muted-foreground">
+        Role definitions mapped to the backend authorization catalog.
+      </span>
     </a>
 
-    <a routerLink="settings" class="admin-home__card" *appHasPermission="permissions.settingsManage">
-      <strong>Application Settings</strong>
-      <span>Organization, timezone, currency, pagination, and inventory policies.</span>
+    <a
+      routerLink="settings"
+      class="group grid gap-1 py-3 text-foreground no-underline"
+      *appHasPermission="permissions.settingsManage"
+    >
+      <span class="flex items-center justify-between gap-3">
+        <strong class="text-sm font-semibold group-hover:underline">Application Settings</strong>
+        <span aria-hidden="true" class="text-muted-foreground">→</span>
+      </span>
+      <span class="text-xs leading-5 text-muted-foreground">
+        Organization, regional defaults, pagination, and inventory policies.
+      </span>
     </a>
 
-    <a routerLink="audit-log" class="admin-home__card" *appHasPermission="permissions.auditView">
-      <strong>Audit Log</strong>
-      <span>Read the immutable administrative and operational audit trail.</span>
+    <a
+      routerLink="audit-log"
+      class="group grid gap-1 py-3 text-foreground no-underline"
+      *appHasPermission="permissions.auditView"
+    >
+      <span class="flex items-center justify-between gap-3">
+        <strong class="text-sm font-semibold group-hover:underline">Audit Log</strong>
+        <span aria-hidden="true" class="text-muted-foreground">→</span>
+      </span>
+      <span class="text-xs leading-5 text-muted-foreground">
+        Read-only administrative and operational event history.
+      </span>
     </a>
   </div>
 </app-content-container>
