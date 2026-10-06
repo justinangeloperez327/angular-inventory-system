@@ -58,9 +58,15 @@ The REST API remains authoritative and must only return dashboard data the authe
 
 The dashboard is operational rather than decorative. It prioritizes:
 
-- current inventory state
-- exceptions requiring attention
-- pending work
+- compact operational summary metrics
+- inventory exceptions requiring attention
+- pending purchasing/receiving work
 - recent stock activity
 
-Charts are intentionally deferred until real reporting data exists and a chart improves an operational decision.
+The visible KPI strip intentionally omits the redundant total-SKU tile even though the API may continue to return it.
+
+Pending purchase-order and receipt rows link directly to their workflow details when the user has permission to see the relevant panel.
+
+Stock and movement quantities are right-aligned with tabular numerals. Outbound movement quantities use semantic danger text; ordinary inbound quantities remain neutral.
+
+Charts remain intentionally absent until a real decision benefits from trend visualization.

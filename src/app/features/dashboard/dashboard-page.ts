@@ -38,12 +38,18 @@ import {
   ],
   providers: [DashboardStore],
   templateUrl: './dashboard-page.html',
-  styleUrl: './dashboard-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardPage implements OnInit {
   readonly store = inject(DashboardStore);
   readonly permissions = PERMISSIONS;
+
+  private readonly outboundMovements = new Set<DashboardMovementType>([
+    'sale',
+    'transfer-out',
+    'adjustment-out',
+    'return-out',
+  ]);
 
   ngOnInit(): void {
     this.store.load();
@@ -65,13 +71,10 @@ export class DashboardPage implements OnInit {
   }
 
   signedQuantity(type: DashboardMovementType, quantity: number): string {
-    const outbound = new Set<DashboardMovementType>([
-      'sale',
-      'transfer-out',
-      'adjustment-out',
-      'return-out',
-    ]);
+    return `${this.isOutbound(type) ? '−' : '+'}${Math.abs(quantity)}`;
+  }
 
-    return `${outbound.has(type) ? '−' : '+'}${Math.abs(quantity)}`;
+  isOutbound(type: DashboardMovementType): boolean {
+    return this.outboundMovements.has(type);
   }
 }

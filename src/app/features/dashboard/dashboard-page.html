@@ -1,15 +1,15 @@
 <app-content-container>
   <app-page-header
     title="Dashboard"
-    description="Current inventory position, stock risk, purchasing workload, and recent movement activity."
+    description="Inventory exceptions, pending purchasing work, and recent stock activity."
   >
-    <app-button actions variant="secondary" [loading]="store.loading()" (click)="store.refresh()">
+    <app-button actions variant="secondary" size="sm" [loading]="store.loading()" (click)="store.refresh()">
       Refresh
     </app-button>
   </app-page-header>
 
   @if (store.error()) {
-    <div class="dashboard__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Dashboard unavailable">
         {{ store.error() }}
       </app-alert>
@@ -17,20 +17,25 @@
   }
 
   @if (store.loading() && !store.hasData()) {
-    <section class="metrics" aria-label="Loading dashboard metrics">
-      @for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
-        <app-skeleton height="7.5rem" />
+    <section
+      class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
+      aria-label="Loading dashboard summary"
+    >
+      @for (item of [1, 2, 3, 4, 5, 6, 7]; track item) {
+        <app-skeleton height="5rem" />
       }
     </section>
 
-    <section class="dashboard__loading-panels" aria-label="Loading dashboard details">
+    <section class="mt-4 grid gap-4 xl:grid-cols-2" aria-label="Loading dashboard details">
       <app-skeleton height="18rem" />
       <app-skeleton height="18rem" />
     </section>
   } @else if (store.snapshot(); as dashboard) {
-    <section class="metrics" aria-label="Inventory summary">
+    <section
+      class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
+      aria-label="Operational summary"
+    >
       <app-dashboard-metric-card label="Products" [value]="dashboard.metrics.totalProducts" />
-      <app-dashboard-metric-card label="SKUs" [value]="dashboard.metrics.totalSkus" />
       <app-dashboard-metric-card label="Warehouses" [value]="dashboard.metrics.totalWarehouses" />
       <app-dashboard-metric-card
         label="Low stock"
@@ -43,7 +48,7 @@
         emphasis="danger"
       />
       <app-dashboard-metric-card
-        label="Pending purchase orders"
+        label="Pending POs"
         [value]="dashboard.metrics.pendingPurchaseOrders"
       />
       <app-dashboard-metric-card
@@ -59,21 +64,25 @@
       />
     </section>
 
-    <div class="dashboard__meta">
+    <p class="mb-0 mt-2 text-right text-xs text-subtle-foreground">
       Snapshot updated {{ dashboard.generatedAt | date: 'medium' }}
-    </div>
+    </p>
 
-    <div class="dashboard__grid">
-      <section
-        class="dashboard-panel dashboard-panel--wide"
-        *appHasPermission="permissions.inventoryView"
-      >
-        <div class="dashboard-panel__header">
+    <div class="mt-4 grid gap-4">
+      <section *appHasPermission="permissions.inventoryView">
+        <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2>Stock risk</h2>
-            <p>Products at or below their reorder threshold.</p>
+            <h2 class="m-0 text-lg font-semibold text-foreground">Stock attention</h2>
+            <p class="mb-0 mt-1 text-xs text-muted-foreground">
+              Products at or below their reorder threshold.
+            </p>
           </div>
-          <a routerLink="/inventory">View inventory</a>
+          <a
+            class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+            routerLink="/inventory"
+          >
+            View inventory
+          </a>
         </div>
 
         @if (dashboard.stockRisks.length > 0) {
@@ -83,19 +92,19 @@
                 <th>SKU</th>
                 <th>Product</th>
                 <th>Warehouse</th>
-                <th>On hand</th>
-                <th>Reorder level</th>
+                <th class="text-right">On hand</th>
+                <th class="text-right">Reorder</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               @for (item of dashboard.stockRisks; track item.id) {
                 <tr>
-                  <td class="dashboard__mono">{{ item.sku }}</td>
+                  <td class="font-mono text-xs">{{ item.sku }}</td>
                   <td>{{ item.productName }}</td>
                   <td>{{ item.warehouseName }}</td>
-                  <td>{{ item.quantityOnHand }}</td>
-                  <td>{{ item.reorderLevel }}</td>
+                  <td class="text-right tabular-nums">{{ item.quantityOnHand }}</td>
+                  <td class="text-right tabular-nums">{{ item.reorderLevel }}</td>
                   <td>
                     <app-badge [variant]="stockRiskBadge(item)">
                       {{ stockRiskLabel(item) }}
@@ -113,86 +122,122 @@
         }
       </section>
 
-      <section class="dashboard-panel" *appHasPermission="permissions.purchaseView">
-        <div class="dashboard-panel__header">
+      <div class="grid gap-4 xl:grid-cols-2">
+        <section
+          class="min-w-0 border border-border bg-surface p-3.5"
+          *appHasPermission="permissions.purchaseView"
+        >
+          <div class="mb-2.5 flex items-end justify-between gap-3">
+            <div>
+              <h2 class="m-0 text-lg font-semibold text-foreground">Purchase orders</h2>
+              <p class="mb-0 mt-1 text-xs text-muted-foreground">Orders requiring attention.</p>
+            </div>
+            <a
+              class="shrink-0 text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+              routerLink="/purchasing"
+            >
+              View all
+            </a>
+          </div>
+
+          @if (dashboard.pendingPurchaseOrders.length > 0) {
+            <div class="divide-y divide-border border-t border-border">
+              @for (order of dashboard.pendingPurchaseOrders; track order.id) {
+                <a
+                  class="flex items-center justify-between gap-3 py-2.5 text-foreground no-underline hover:bg-surface-muted"
+                  [routerLink]="['/purchasing', order.id]"
+                >
+                  <span class="min-w-0">
+                    <strong class="block truncate text-sm font-semibold">{{ order.number }}</strong>
+                    <span class="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {{ order.supplierName }}
+                    </span>
+                  </span>
+                  <span class="grid shrink-0 justify-items-end gap-1">
+                    <app-badge>{{ order.status }}</app-badge>
+                    @if (order.expectedDate) {
+                      <span class="text-xs text-subtle-foreground">
+                        {{ order.expectedDate | date: 'mediumDate' }}
+                      </span>
+                    }
+                  </span>
+                </a>
+              }
+            </div>
+          } @else {
+            <app-empty-state
+              title="No pending purchase orders"
+              description="There are no purchase orders requiring attention."
+            />
+          }
+        </section>
+
+        <section
+          class="min-w-0 border border-border bg-surface p-3.5"
+          *appHasPermission="permissions.purchaseReceive"
+        >
+          <div class="mb-2.5 flex items-end justify-between gap-3">
+            <div>
+              <h2 class="m-0 text-lg font-semibold text-foreground">Receiving</h2>
+              <p class="mb-0 mt-1 text-xs text-muted-foreground">Expected or in-progress receipts.</p>
+            </div>
+            <a
+              class="shrink-0 text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+              routerLink="/receiving"
+            >
+              View all
+            </a>
+          </div>
+
+          @if (dashboard.pendingReceipts.length > 0) {
+            <div class="divide-y divide-border border-t border-border">
+              @for (receipt of dashboard.pendingReceipts; track receipt.id) {
+                <a
+                  class="flex items-center justify-between gap-3 py-2.5 text-foreground no-underline hover:bg-surface-muted"
+                  [routerLink]="['/receiving', receipt.id]"
+                >
+                  <span class="min-w-0">
+                    <strong class="block truncate text-sm font-semibold">{{ receipt.number }}</strong>
+                    <span class="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {{ receipt.supplierName }} · {{ receipt.purchaseOrderNumber }}
+                    </span>
+                  </span>
+                  <span class="grid shrink-0 justify-items-end gap-1">
+                    <app-badge [variant]="receipt.status === 'in-progress' ? 'info' : 'neutral'">
+                      {{ receipt.status }}
+                    </app-badge>
+                    @if (receipt.expectedDate) {
+                      <span class="text-xs text-subtle-foreground">
+                        {{ receipt.expectedDate | date: 'mediumDate' }}
+                      </span>
+                    }
+                  </span>
+                </a>
+              }
+            </div>
+          } @else {
+            <app-empty-state
+              title="No pending receipts"
+              description="There are no goods receipts waiting to be processed."
+            />
+          }
+        </section>
+      </div>
+
+      <section *appHasPermission="permissions.inventoryView">
+        <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2>Pending purchase orders</h2>
-            <p>Orders requiring purchasing attention.</p>
+            <h2 class="m-0 text-lg font-semibold text-foreground">Recent movements</h2>
+            <p class="mb-0 mt-1 text-xs text-muted-foreground">
+              Latest inbound and outbound inventory activity.
+            </p>
           </div>
-          <a routerLink="/purchasing">View all</a>
-        </div>
-
-        @if (dashboard.pendingPurchaseOrders.length > 0) {
-          <div class="dashboard-list">
-            @for (order of dashboard.pendingPurchaseOrders; track order.id) {
-              <article class="dashboard-list__item">
-                <div>
-                  <strong>{{ order.number }}</strong>
-                  <span>{{ order.supplierName }}</span>
-                </div>
-                <div class="dashboard-list__meta">
-                  <app-badge>{{ order.status }}</app-badge>
-                  @if (order.expectedDate) {
-                    <span>{{ order.expectedDate | date: 'mediumDate' }}</span>
-                  }
-                </div>
-              </article>
-            }
-          </div>
-        } @else {
-          <app-empty-state
-            title="No pending purchase orders"
-            description="There are no purchase orders requiring attention."
-          />
-        }
-      </section>
-
-      <section class="dashboard-panel" *appHasPermission="permissions.purchaseReceive">
-        <div class="dashboard-panel__header">
-          <div>
-            <h2>Pending receipts</h2>
-            <p>Expected or in-progress goods receipts.</p>
-          </div>
-          <a routerLink="/receiving">View receiving</a>
-        </div>
-
-        @if (dashboard.pendingReceipts.length > 0) {
-          <div class="dashboard-list">
-            @for (receipt of dashboard.pendingReceipts; track receipt.id) {
-              <article class="dashboard-list__item">
-                <div>
-                  <strong>{{ receipt.number }}</strong>
-                  <span>{{ receipt.supplierName }} · {{ receipt.purchaseOrderNumber }}</span>
-                </div>
-                <div class="dashboard-list__meta">
-                  <app-badge [variant]="receipt.status === 'in-progress' ? 'info' : 'neutral'">
-                    {{ receipt.status }}
-                  </app-badge>
-                  @if (receipt.expectedDate) {
-                    <span>{{ receipt.expectedDate | date: 'mediumDate' }}</span>
-                  }
-                </div>
-              </article>
-            }
-          </div>
-        } @else {
-          <app-empty-state
-            title="No pending receipts"
-            description="There are no goods receipts waiting to be processed."
-          />
-        }
-      </section>
-
-      <section
-        class="dashboard-panel dashboard-panel--wide"
-        *appHasPermission="permissions.inventoryView"
-      >
-        <div class="dashboard-panel__header">
-          <div>
-            <h2>Recent stock movements</h2>
-            <p>Latest inbound and outbound inventory activity.</p>
-          </div>
-          <a routerLink="/stock-movements">View movements</a>
+          <a
+            class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+            routerLink="/stock-movements"
+          >
+            View movements
+          </a>
         </div>
 
         @if (dashboard.recentMovements.length > 0) {
@@ -204,21 +249,21 @@
                 <th>Product</th>
                 <th>Warehouse</th>
                 <th>Movement</th>
-                <th>Quantity</th>
+                <th class="text-right">Quantity</th>
                 <th>Reference</th>
               </tr>
             </thead>
             <tbody>
               @for (movement of dashboard.recentMovements; track movement.id) {
                 <tr>
-                  <td>{{ movement.occurredAt | date: 'short' }}</td>
-                  <td class="dashboard__mono">{{ movement.sku }}</td>
+                  <td class="whitespace-nowrap">{{ movement.occurredAt | date: 'short' }}</td>
+                  <td class="font-mono text-xs">{{ movement.sku }}</td>
                   <td>{{ movement.productName }}</td>
                   <td>{{ movement.warehouseName }}</td>
                   <td>{{ movementLabel(movement.type) }}</td>
                   <td
-                    class="dashboard__quantity"
-                    [class.is-outbound]="signedQuantity(movement.type, movement.quantity).startsWith('−')"
+                    class="text-right font-semibold tabular-nums"
+                    [class.text-danger]="isOutbound(movement.type)"
                   >
                     {{ signedQuantity(movement.type, movement.quantity) }}
                   </td>

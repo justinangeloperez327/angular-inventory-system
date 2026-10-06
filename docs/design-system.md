@@ -505,3 +505,54 @@ The 403 and 404 pages now reuse the same Empty State primitive rather than maint
 ### Skeleton
 
 Skeletons use a simple muted-surface pulse rather than a decorative gradient shimmer. Global reduced-motion handling continues to neutralize the animation for users who request reduced motion.
+
+
+## Group 7 — dashboard
+
+The dashboard is now a Tailwind-based operational workspace rather than a card-heavy summary page.
+
+### Summary strip
+
+The visible summary contains:
+
+- products
+- warehouses
+- low-stock count
+- out-of-stock count
+- pending purchase orders
+- pending receipts
+- inventory value
+
+The API's total-SKU metric remains available but is not displayed because it duplicates the product-scale signal without improving the first-screen decision.
+
+Metric tiles are approximately 80px high, use a restrained left-border emphasis, and avoid decorative icons or oversized numbers.
+
+### Operational attention
+
+The first detailed section is Stock Attention. It uses the shared table primitive and right-aligns on-hand/reorder quantities.
+
+Color is reserved for the semantic low-stock/out-of-stock status.
+
+### Purchasing workload
+
+Purchase Orders and Receiving sit side-by-side on wide screens and stack on smaller screens.
+
+Each row links directly to the corresponding workflow detail rather than forcing the user through a list page first.
+
+### Recent movements
+
+Recent movement activity uses a ledger-style table with:
+
+- timestamp
+- SKU
+- product
+- warehouse
+- movement type
+- signed quantity
+- reference
+
+Quantities are right-aligned and use tabular numerals. Outbound quantities use semantic danger text; inbound values remain foreground-neutral.
+
+### No decorative charts
+
+No chart is added merely to make the dashboard look analytical. Trend visualization should be introduced only when it supports an actual operational decision.
