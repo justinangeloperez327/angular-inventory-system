@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 @Component({
   selector: 'app-drawer',
   templateUrl: './drawer.html',
-  styleUrl: './drawer.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawerComponent {

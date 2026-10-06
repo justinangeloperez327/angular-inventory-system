@@ -51,11 +51,12 @@ Configure the development reverse proxy/hosting path to the NestJS backend as ap
 ## Verification
 
 ```bash
+npm run check:design
 npm test
 npm run build:production
 ```
 
-Or run the release gate:
+Or run the complete release gate:
 
 ```bash
 npm run check
@@ -92,7 +93,7 @@ Inventory balances are consequences of authoritative backend transactions. Angul
 
 ## Design system
 
-The visual layer is migrating to:
+The visual layer uses:
 
 ```text
 Tailwind CSS v4
@@ -102,7 +103,9 @@ Angular CDK / Angular Aria
 custom Angular UI components
 ```
 
-See `docs/design-system.md` for the semantic tokens and migration rules.
+Application components do not create feature-level stylesheet files. New components are scaffolded without a stylesheet and CI enforces the Tailwind-only component model.
+
+See `docs/design-system.md` for semantic tokens, component rules, and the design-system guard.
 
 ## Docker
 

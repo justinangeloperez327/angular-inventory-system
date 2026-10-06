@@ -1,6 +1,6 @@
 # Design System
 
-The inventory-system visual layer is migrating to Tailwind CSS v4 while remaining Angular-native.
+The inventory-system visual layer uses Tailwind CSS v4 while remaining Angular-native.
 
 ## Stack
 
@@ -40,11 +40,9 @@ Global stylesheet:
 src/styles.css
 ```
 
-The project intentionally imports Tailwind's theme and utilities layers without Preflight during the incremental migration.
+The project intentionally imports Tailwind's theme and utilities layers without Preflight.
 
-This prevents Tailwind's reset from unexpectedly changing the existing SCSS-based components before they are migrated.
-
-After the shared components and feature pages have moved to the new design system, the final cleanup group may enable a unified reset if it is still useful.
+The application owns a narrow explicit base reset for box sizing, typography, form-font inheritance, focus visibility, and reduced-motion behavior. This keeps native control and table behavior predictable while Tailwind utilities provide the visual system.
 
 ## Semantic colors
 
@@ -161,9 +159,9 @@ shadow-lg
 
 Most inventory UI should use borders and spacing rather than elevation.
 
-## Compatibility during migration
+## Global token bridge
 
-Existing components still reference variables such as:
+The global theme still exposes CSS custom properties such as:
 
 ```text
 --color-bg
@@ -174,9 +172,9 @@ Existing components still reference variables such as:
 --shadow-md
 ```
 
-Those remain defined during the migration, so adopting Tailwind does not require a single all-at-once visual rewrite.
+Tailwind semantic utilities map onto these variables through `@theme inline`. They are part of the global token implementation, not a compatibility allowance for feature-level stylesheets.
 
-Each subsequent group should migrate shared primitives and feature pages toward Tailwind utilities while removing obsolete component SCSS only after the replacement is verified.
+Application components should use Tailwind utilities and shared Angular primitives instead of creating component CSS/SCSS files.
 
 ## Rules
 
@@ -892,4 +890,62 @@ The following surfaces are now Tailwind-based:
 - authentication
 
 Feature-level legacy SCSS has been removed from the migrated application surfaces.
+
+## Group 18 — design-system enforcement and regression guard
+
+The visual migration is now enforced by repository tooling rather than documentation alone.
+
+### Final legacy cleanup
+
+The enforcement pass found and removed the last component stylesheets that were outside the feature migrations:
+
+- application root host styling
+- Badge
+- Breadcrumb
+- Drawer
+
+Their layout and variant styling now use Tailwind utilities or component class maps, so the application no longer depends on component-level CSS/SCSS under `src/app`.
+
+### Component scaffolding
+
+Angular component generation is configured with:
+
+```text
+@schematics/angular:component.style = none
+```
+
+New components therefore start without a component stylesheet and are expected to compose the existing Tailwind tokens and shared UI primitives.
+
+The obsolete SCSS inline-style build preference is removed.
+
+### Design-system guard
+
+`npm run check:design` validates the application source and fails when:
+
+- a component-level `.css`, `.scss`, `.sass`, or `.less` file appears under `src/app`
+- an application TypeScript file declares `styleUrl` or `styleUrls`
+- Angular component scaffolding stops using `style: none`
+- the build reintroduces an `inlineStyleLanguage` preference
+
+This guard is intentionally narrow. The global `src/styles.css` file remains the design-token and shared layout surface.
+
+### CI and release gate
+
+The CI pipeline runs the design-system guard before unit tests and production build.
+
+The local release gate is:
+
+```text
+npm run check:design
+npm test
+npm run build:production
+```
+
+and is available as:
+
+```bash
+npm run check
+```
+
+This prevents future feature work from silently reverting the application to mixed Tailwind/component-SCSS styling.
 
