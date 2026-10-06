@@ -148,3 +148,25 @@ The backend remains authoritative.
 Only draft receipts can be edited.
 
 Posted receipts have no edit/delete path. Corrections must be represented by an explicit authorized inventory transaction rather than rewriting the receiving ledger.
+
+
+## Group 11 design migration
+
+Receiving now uses the same document language as Purchase Orders.
+
+The draft form keeps the selected purchase order as the authoritative source of supplier and warehouse context. Existing drafts continue to lock their PO selection.
+
+Receipt entry prioritizes four quantities:
+
+```text
+Ordered
+Previously received
+Remaining
+Receive now
+```
+
+Line-entry tables retain their columns through horizontal scrolling on smaller screens.
+
+Posted receipt details show ordered, prior received, this receipt, remaining after, inventory balance transition, and the resulting immutable receipt movement.
+
+Posted receipts remain immutable.

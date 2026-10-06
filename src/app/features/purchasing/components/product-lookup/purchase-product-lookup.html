@@ -1,6 +1,7 @@
-<div class="purchase-lookup">
-  <span class="purchase-lookup__label">Add product</span>
-  <div class="purchase-lookup__search">
+<div class="grid gap-1.5">
+  <span class="text-sm font-semibold text-foreground">Add product</span>
+
+  <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
     <app-input
       type="search"
       placeholder="Search SKU or product name"
@@ -11,16 +12,22 @@
       Search
     </app-button>
   </div>
+
   @if (error()) {
-    <span class="purchase-lookup__message purchase-lookup__message--error">{{ error() }}</span>
+    <span class="text-xs text-danger">{{ error() }}</span>
   }
+
   @if (results().length > 0) {
-    <div class="purchase-lookup__results">
+    <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
       @for (item of results(); track item.id) {
-        <button type="button" (click)="choose(item)">
-          <span>{{ item.sku }}</span>
-          <strong>{{ item.name }}</strong>
-          <small>{{ item.unitSymbol || '' }}</small>
+        <button
+          type="button"
+          class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-2.5 py-2 text-left text-foreground last:border-b-0 hover:bg-surface-muted sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+          (click)="choose(item)"
+        >
+          <span class="font-mono text-xs text-muted-foreground">{{ item.sku }}</span>
+          <strong class="text-sm font-semibold">{{ item.name }}</strong>
+          <small class="text-xs text-muted-foreground">{{ item.unitSymbol || '' }}</small>
         </button>
       }
     </div>

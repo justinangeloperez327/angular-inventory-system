@@ -19,7 +19,6 @@ import { GoodsReceiptPurchaseOrderOption } from '../../models/goods-receipt.mode
   selector: 'app-receipt-purchase-order-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './receipt-purchase-order-lookup.html',
-  styleUrl: './receipt-purchase-order-lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReceiptPurchaseOrderLookupComponent {

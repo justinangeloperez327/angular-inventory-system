@@ -7,81 +7,118 @@
       actions
       [routerLink]="['new']"
       [queryParams]="purchaseOrderId ? { purchaseOrderId: purchaseOrderId } : null"
-      class="receipt-list__primary-action"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
     >
       New receipt
     </a>
   </app-page-header>
 
   @if (purchaseOrderId) {
-    <div class="receipt-list__context">
+    <div class="mt-3 border-l-[3px] border-l-primary bg-surface px-3 py-2 text-sm text-muted-foreground">
       Showing receipts for a selected purchase order.
-      <a routerLink="/receiving">Clear PO filter</a>
+      <a routerLink="/receiving" class="ml-1 font-medium text-foreground no-underline hover:underline">
+        Clear PO filter
+      </a>
     </div>
   }
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Receipt, PO, supplier, delivery reference" formControlName="search" />
     <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
-    <app-select label="Status" placeholder="All statuses" [options]="[
-      { label: 'Draft', value: 'draft' },
-      { label: 'Posted', value: 'posted' },
-      { label: 'Cancelled', value: 'cancelled' }
-    ]" formControlName="status" />
+    <app-select
+      label="Status"
+      placeholder="All statuses"
+      [options]="[
+        { label: 'Draft', value: 'draft' },
+        { label: 'Posted', value: 'posted' },
+        { label: 'Cancelled', value: 'cancelled' }
+      ]"
+      formControlName="status"
+    />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
+
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (filterError()) {
-    <div class="receipt-list__alert"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
+    </div>
   }
 
   @if (store.error()) {
-    <div class="receipt-list__alert"><app-alert variant="danger" title="Receiving unavailable">{{ store.error() }}</app-alert></div>
+    <div class="mt-4">
+      <app-alert variant="danger" title="Receiving unavailable">{{ store.error() }}</app-alert>
+    </div>
   }
 
   @if (store.loading() && !store.hasItems()) {
-    <div class="receipt-list__loading"><app-skeleton height="22rem" /></div>
+    <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="receipt-list__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
-            <th>Receipt</th><th>Purchase Order</th><th>Supplier</th><th>Warehouse</th>
-            <th>Receipt date</th><th>Lines</th><th>Status</th><th>Posted</th><th>Actions</th>
+            <th>Receipt</th>
+            <th>Purchase order</th>
+            <th>Supplier</th>
+            <th>Warehouse</th>
+            <th>Receipt date</th>
+            <th class="text-right">Lines</th>
+            <th>Status</th>
+            <th>Posted</th>
+            <th><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td><a [routerLink]="item.id">{{ item.number }}</a></td>
-              <td><a [routerLink]="['/purchasing', item.purchaseOrderId]">{{ item.purchaseOrderNumber }}</a></td>
-              <td>{{ item.supplierName }}<span class="receipt-list__secondary">{{ item.supplierCode }}</span></td>
-              <td>{{ item.warehouseName }}<span class="receipt-list__secondary">{{ item.warehouseCode }}</span></td>
-              <td>{{ item.receiptDate | date: 'mediumDate' }}</td>
-              <td>{{ item.lineCount }}</td>
+              <td>
+                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">{{ item.number }}</a>
+              </td>
+              <td>
+                <a [routerLink]="['/purchasing', item.purchaseOrderId]" class="font-medium text-foreground no-underline hover:underline">
+                  {{ item.purchaseOrderNumber }}
+                </a>
+              </td>
+              <td>
+                {{ item.supplierName }}
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.supplierCode }}</span>
+              </td>
+              <td>
+                {{ item.warehouseName }}
+                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+              </td>
+              <td class="whitespace-nowrap">{{ item.receiptDate | date: 'mediumDate' }}</td>
+              <td class="text-right tabular-nums">{{ item.lineCount }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td>{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td class="whitespace-nowrap">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
               <td>
                 @if (item.status === 'draft') {
-                  <a [routerLink]="[item.id, 'edit']" class="receipt-list__action">Edit</a>
+                  <a [routerLink]="[item.id, 'edit']" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Edit</a>
                 }
               </td>
             </tr>
           }
         </tbody>
       </app-table>
+    </div>
 
-      <div class="data-footer">
-        <span>{{ store.pagination().totalItems }} receipts</span>
-        <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
-      </div>
+    <div class="data-footer">
+      <span>{{ store.pagination().totalItems }} receipts</span>
+      <app-pagination
+        [page]="store.pagination().page"
+        [totalPages]="store.pagination().totalPages"
+        (pageChange)="store.setPage($event)"
+      />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state title="No goods receipts found" description="No receipts match the current filters." />
+    <div class="mt-4">
+      <app-empty-state title="No goods receipts found" description="No receipts match the current filters." />
+    </div>
   }
 </app-content-container>

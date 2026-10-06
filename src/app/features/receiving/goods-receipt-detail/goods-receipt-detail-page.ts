@@ -29,7 +29,6 @@ import { GoodsReceiptStatus } from '../models/goods-receipt.model';
   ],
   providers: [GoodsReceiptDetailStore],
   templateUrl: './goods-receipt-detail-page.html',
-  styleUrl: './goods-receipt-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoodsReceiptDetailPage implements OnInit {

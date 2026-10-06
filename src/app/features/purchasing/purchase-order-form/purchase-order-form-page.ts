@@ -66,7 +66,6 @@ function localDateValue(): string {
     TextareaComponent,
   ],
   templateUrl: './purchase-order-form-page.html',
-  styleUrl: './purchase-order-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseOrderFormPage implements OnInit {

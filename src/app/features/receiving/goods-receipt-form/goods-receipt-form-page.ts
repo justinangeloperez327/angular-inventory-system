@@ -62,7 +62,6 @@ function localDateValue(): string {
     TextareaComponent,
   ],
   templateUrl: './goods-receipt-form-page.html',
-  styleUrl: './goods-receipt-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoodsReceiptFormPage implements OnInit {

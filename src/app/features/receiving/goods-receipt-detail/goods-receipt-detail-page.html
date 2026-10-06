@@ -7,67 +7,115 @@
     <app-skeleton height="30rem" />
   } @else if (store.item(); as item) {
     <app-page-header [title]="item.number" [description]="'Goods receipt · ' + item.supplierName">
-      <a actions routerLink="/receiving" class="receipt-detail__action">All receipts</a>
+      <a actions routerLink="/receiving" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All receipts</a>
 
       @if (item.status === 'draft') {
-        <a actions [routerLink]="['edit']" class="receipt-detail__action">Edit</a>
-      }
-      @if (item.status === 'draft') {
+        <a actions [routerLink]="['edit']" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">Edit</a>
         <app-button actions [loading]="store.posting()" (click)="confirmPost.set(true)">
           Post receipt
         </app-button>
       }
     </app-page-header>
 
-    <div class="receipt-detail__summary">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
-      <span>{{ item.lineCount }} lines</span>
+      <span class="tabular-nums">{{ item.lineCount }} lines</span>
       @if (item.supplierDeliveryReference) {
-        <span>Delivery ref. {{ item.supplierDeliveryReference }}</span>
+        <span>Delivery ref. <strong class="font-medium text-foreground">{{ item.supplierDeliveryReference }}</strong></span>
+      }
+      @if (item.status === 'posted') {
+        <span>Immutable posted receipt</span>
       }
     </div>
 
-    <div class="receipt-detail__grid">
-      <section class="receipt-detail__panel">
-        <h2>Purchase order</h2>
-        <dl>
-          <div><dt>PO</dt><dd><a [routerLink]="['/purchasing', item.purchaseOrderId]">{{ item.purchaseOrderNumber }}</a></dd></div>
-          <div><dt>Supplier</dt><dd><a [routerLink]="['/suppliers', item.supplierId]">{{ item.supplierName }}</a><span>{{ item.supplierCode }}</span></dd></div>
-          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
-          <div><dt>Receipt date</dt><dd>{{ item.receiptDate | date: 'mediumDate' }}</dd></div>
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Purchase order context</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Purchase order</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/purchasing', item.purchaseOrderId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.purchaseOrderNumber }}</a>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Supplier</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/suppliers', item.supplierId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.supplierName }}</a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.supplierCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Warehouse</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/inventory/warehouses', item.warehouseId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.warehouseName }}</a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Receipt date</dt>
+            <dd class="m-0 text-sm">{{ item.receiptDate | date: 'mediumDate' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="receipt-detail__panel">
-        <h2>Audit</h2>
-        <dl>
-          <div><dt>Status</dt><dd>{{ item.status }}</dd></div>
-          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
-          <div><dt>Posted</dt><dd>{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Posted by</dt><dd>{{ item.postedBy?.name || '—' }}</dd></div>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Posting audit</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Status</dt>
+            <dd class="m-0 text-sm">{{ item.status }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created</dt>
+            <dd class="m-0 text-sm">{{ item.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created by</dt>
+            <dd class="m-0 text-sm">{{ item.createdBy?.name || 'System' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Posted</dt>
+            <dd class="m-0 text-sm">{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Posted by</dt>
+            <dd class="m-0 text-sm">{{ item.postedBy?.name || '—' }}</dd>
+          </div>
         </dl>
       </section>
+    </div>
 
-      <section class="receipt-detail__panel receipt-detail__panel--wide">
-        <h2>Received products</h2>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Received products</h2>
+      <div class="mt-3">
         <app-table>
           <thead>
             <tr>
-              <th>SKU</th><th>Product</th><th>Ordered</th><th>Previously received</th>
-              <th>This receipt</th><th>Remaining after</th><th>Balance</th><th>Movement</th>
+              <th>SKU</th>
+              <th>Product</th>
+              <th class="text-right">Ordered</th>
+              <th class="text-right">Previously received</th>
+              <th class="text-right">This receipt</th>
+              <th class="text-right">Remaining after</th>
+              <th class="text-right">Balance</th>
+              <th>Movement</th>
             </tr>
           </thead>
           <tbody>
             @for (line of item.lines; track line.id) {
               <tr>
-                <td class="receipt-detail__mono">{{ line.sku }}</td>
-                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
-                <td>{{ line.quantityOrdered }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityReceivedBefore }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityRemainingAfter }} {{ line.unitSymbol || '' }}</td>
+                <td class="font-mono text-xs">{{ line.sku }}</td>
                 <td>
+                  <a [routerLink]="['/products', line.productId]" class="font-semibold text-foreground no-underline hover:underline">
+                    {{ line.productName }}
+                  </a>
+                </td>
+                <td class="text-right tabular-nums">{{ line.quantityOrdered }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right tabular-nums">{{ line.quantityReceivedBefore }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right font-semibold tabular-nums">{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right tabular-nums">{{ line.quantityRemainingAfter }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right tabular-nums">
                   @if (line.balanceBefore !== undefined && line.balanceAfter !== undefined) {
                     {{ line.balanceBefore }} → {{ line.balanceAfter }}
                   } @else {
@@ -76,7 +124,10 @@
                 </td>
                 <td>
                   @if (line.movement) {
-                    <a [routerLink]="['/stock-movements', line.movement.id]">
+                    <a
+                      [routerLink]="['/stock-movements', line.movement.id]"
+                      class="font-medium text-foreground no-underline hover:underline"
+                    >
                       {{ line.movement.number || 'Receipt movement' }}
                     </a>
                   } @else {
@@ -87,13 +138,13 @@
             }
           </tbody>
         </app-table>
-      </section>
+      </div>
+    </section>
 
-      <section class="receipt-detail__panel receipt-detail__panel--wide">
-        <h2>Notes</h2>
-        <p>{{ item.notes || 'No notes recorded.' }}</p>
-      </section>
-    </div>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+      <p class="mb-0 mt-3 max-w-4xl text-base leading-6 text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</p>
+    </section>
 
     <app-confirmation-dialog
       [open]="confirmPost()"

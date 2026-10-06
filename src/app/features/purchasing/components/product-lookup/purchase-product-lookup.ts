@@ -18,7 +18,6 @@ import { PurchaseOrderProductOption } from '../../models/purchase-order.model';
   selector: 'app-purchase-product-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './purchase-product-lookup.html',
-  styleUrl: '../lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseProductLookupComponent {

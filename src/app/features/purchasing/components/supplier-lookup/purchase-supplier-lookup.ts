@@ -19,7 +19,6 @@ import { PurchaseOrderSupplierOption } from '../../models/purchase-order.model';
   selector: 'app-purchase-supplier-lookup',
   imports: [ReactiveFormsModule, ButtonComponent, InputComponent],
   templateUrl: './purchase-supplier-lookup.html',
-  styleUrl: '../lookup.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseSupplierLookupComponent {

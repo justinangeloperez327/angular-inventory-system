@@ -7,10 +7,17 @@
     <app-skeleton height="30rem" />
   } @else if (store.item(); as item) {
     <app-page-header [title]="item.number" [description]="'Purchase order · ' + item.supplierName">
-      <a actions routerLink="/purchasing" class="po-detail__action">All purchase orders</a>
+      <a actions routerLink="/purchasing" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All purchase orders</a>
 
       @if (item.status === 'draft') {
-        <a actions [routerLink]="['edit']" class="po-detail__action" *appHasPermission="permissions.purchaseCreate">Edit</a>
+        <a
+          actions
+          [routerLink]="['edit']"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
+          *appHasPermission="permissions.purchaseCreate"
+        >
+          Edit
+        </a>
         <app-button
           actions
           *appHasPermission="permissions.purchaseCreate"
@@ -37,23 +44,19 @@
           actions
           [routerLink]="['/receiving/new']"
           [queryParams]="{ purchaseOrderId: item.id }"
-          class="po-detail__action"
+          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
           *appHasPermission="permissions.purchaseReceive"
         >
           Receive
         </a>
       }
 
-      @if (
-        item.status === 'approved' ||
-        item.status === 'partially-received' ||
-        item.status === 'received'
-      ) {
+      @if (item.status === 'approved' || item.status === 'partially-received' || item.status === 'received') {
         <a
           actions
           [routerLink]="['/receiving']"
           [queryParams]="{ purchaseOrderId: item.id }"
-          class="po-detail__action"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
           *appHasPermission="permissions.purchaseReceive"
         >
           Receipts
@@ -61,59 +64,114 @@
       }
     </app-page-header>
 
-    <div class="po-detail__summary">
+    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
       <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
-      <span>{{ item.lineCount }} lines</span>
-      <strong>{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</strong>
+      <span class="tabular-nums">{{ item.lineCount }} lines</span>
+      <strong class="text-lg font-semibold text-foreground tabular-nums">
+        {{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}
+      </strong>
     </div>
 
-    <div class="po-detail__grid">
-      <section class="po-detail__panel">
-        <h2>Supplier</h2>
-        <dl>
-          <div><dt>Supplier</dt><dd><a [routerLink]="['/suppliers', item.supplierId]">{{ item.supplierName }}</a><span>{{ item.supplierCode }}</span></dd></div>
-          <div><dt>Warehouse</dt><dd><a [routerLink]="['/inventory/warehouses', item.warehouseId]">{{ item.warehouseName }}</a><span>{{ item.warehouseCode }}</span></dd></div>
-          <div><dt>Order date</dt><dd>{{ item.orderDate | date: 'mediumDate' }}</dd></div>
-          <div><dt>Expected</dt><dd>{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</dd></div>
+    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Order</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Supplier</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/suppliers', item.supplierId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.supplierName }}</a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.supplierCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Warehouse</dt>
+            <dd class="m-0 text-sm">
+              <a [routerLink]="['/inventory/warehouses', item.warehouseId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.warehouseName }}</a>
+              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+            </dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Order date</dt>
+            <dd class="m-0 text-sm">{{ item.orderDate | date: 'mediumDate' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Expected</dt>
+            <dd class="m-0 text-sm">{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</dd>
+          </div>
         </dl>
       </section>
 
-      <section class="po-detail__panel">
-        <h2>Workflow</h2>
-        <dl>
-          <div><dt>Created</dt><dd>{{ item.createdAt | date: 'medium' }}</dd></div>
-          <div><dt>Created by</dt><dd>{{ item.createdBy?.name || 'System' }}</dd></div>
-          <div><dt>Submitted</dt><dd>{{ item.submittedAt ? (item.submittedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Submitted by</dt><dd>{{ item.submittedBy?.name || '—' }}</dd></div>
-          <div><dt>Approved</dt><dd>{{ item.approvedAt ? (item.approvedAt | date: 'medium') : '—' }}</dd></div>
-          <div><dt>Approved by</dt><dd>{{ item.approvedBy?.name || '—' }}</dd></div>
+      <section class="border-t border-border pt-4">
+        <h2 class="m-0 text-lg font-semibold text-foreground">Workflow</h2>
+        <dl class="mt-3">
+          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created</dt>
+            <dd class="m-0 text-sm">{{ item.createdAt | date: 'medium' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Created by</dt>
+            <dd class="m-0 text-sm">{{ item.createdBy?.name || 'System' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Submitted</dt>
+            <dd class="m-0 text-sm">{{ item.submittedAt ? (item.submittedAt | date: 'medium') : '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Submitted by</dt>
+            <dd class="m-0 text-sm">{{ item.submittedBy?.name || '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Approved</dt>
+            <dd class="m-0 text-sm">{{ item.approvedAt ? (item.approvedAt | date: 'medium') : '—' }}</dd>
+          </div>
+          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Approved by</dt>
+            <dd class="m-0 text-sm">{{ item.approvedBy?.name || '—' }}</dd>
+          </div>
         </dl>
       </section>
+    </div>
 
-      <section class="po-detail__panel po-detail__panel--wide">
-        <h2>Lines</h2>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Lines</h2>
+      <div class="mt-3">
         <app-table>
           <thead>
-            <tr><th>SKU</th><th>Product</th><th>Ordered</th><th>Received</th><th>Remaining</th><th>Unit price</th><th>Line total</th></tr>
+            <tr>
+              <th>SKU</th>
+              <th>Product</th>
+              <th class="text-right">Ordered</th>
+              <th class="text-right">Received</th>
+              <th class="text-right">Remaining</th>
+              <th class="text-right">Unit price</th>
+              <th class="text-right">Line total</th>
+            </tr>
           </thead>
           <tbody>
             @for (line of item.lines; track line.id) {
               <tr>
-                <td class="po-detail__mono">{{ line.sku }}</td>
-                <td><a [routerLink]="['/products', line.productId]">{{ line.productName }}</a></td>
-                <td>{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.quantityRemaining }} {{ line.unitSymbol || '' }}</td>
-                <td>{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
-                <td>{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+                <td class="font-mono text-xs">{{ line.sku }}</td>
+                <td>
+                  <a [routerLink]="['/products', line.productId]" class="font-semibold text-foreground no-underline hover:underline">
+                    {{ line.productName }}
+                  </a>
+                </td>
+                <td class="text-right tabular-nums">{{ line.quantity }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right tabular-nums">{{ line.quantityReceived }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right font-medium tabular-nums">{{ line.quantityRemaining }} {{ line.unitSymbol || '' }}</td>
+                <td class="text-right tabular-nums">{{ line.unitPrice | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
+                <td class="text-right font-medium tabular-nums">{{ line.lineTotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
               </tr>
             }
           </tbody>
         </app-table>
-      </section>
+      </div>
+    </section>
 
-      <section class="po-detail__panel po-detail__panel--wide"><h2>Notes</h2><p>{{ item.notes || 'No notes recorded.' }}</p></section>
-    </div>
+    <section class="mt-5 border-t border-border pt-4">
+      <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
+      <p class="mb-0 mt-3 max-w-4xl text-base leading-6 text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</p>
+    </section>
 
     <app-confirmation-dialog
       [open]="confirmAction() !== null"

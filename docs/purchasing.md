@@ -151,3 +151,24 @@ Angular calculates temporary line totals/subtotal for immediate form feedback on
 - line total
 - subtotal
 - currency code
+
+
+## Group 11 design migration
+
+Purchase Orders now use the transaction-document visual system.
+
+The list is table-first with right-aligned line counts and monetary totals.
+
+The draft form presents supplier, receiving warehouse, dates, and a horizontally scrollable line-entry table. Quantity, unit price, line total, and subtotal use tabular numeric alignment.
+
+The detail page keeps workflow actions stable at the top:
+
+```text
+draft       Edit / Submit
+submitted   Approve
+approved    Receive / Receipts
+partial     Receive / Receipts
+received    Receipts
+```
+
+Order facts, workflow audit, line receiving progress, and notes are separated by simple rules instead of card panels.

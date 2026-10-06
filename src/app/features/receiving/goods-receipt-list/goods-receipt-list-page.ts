@@ -37,7 +37,6 @@ import { GoodsReceiptStatus } from '../models/goods-receipt.model';
   ],
   providers: [GoodsReceiptListStore],
   templateUrl: './goods-receipt-list-page.html',
-  styleUrl: './goods-receipt-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GoodsReceiptListPage implements OnInit {

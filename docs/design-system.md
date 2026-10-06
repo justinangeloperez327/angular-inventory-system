@@ -628,3 +628,28 @@ The form uses a source/destination header followed by a horizontal line-entry wo
 The posted detail emphasizes Source → Destination, then shows per-line quantity, balance-before/after values, and paired outbound/inbound movement links.
 
 Neither workflow introduces edit/delete behavior after posting.
+
+
+## Group 11 — purchasing and receiving
+
+Purchasing and Receiving are fully migrated from feature SCSS to Tailwind utilities, including supplier/product/PO lookup components.
+
+### Purchase Orders
+
+Purchase Orders use a transaction-document hierarchy rather than generic CRUD cards.
+
+The list aligns line counts and money. The draft form uses a bounded order header and a horizontally scrollable commercial line table with quantity, unit price, line total, and subtotal.
+
+The detail page keeps status-driven workflow actions in the page header and makes ordered / received / remaining quantities directly comparable.
+
+### Receiving
+
+Receiving mirrors Purchase Order structure so operators can move between purchasing and physical receipt without relearning the page model.
+
+The receipt form inherits supplier/warehouse context from the selected approved PO and makes the physical quantity workflow explicit:
+
+```text
+ordered → previously received → remaining → receive now
+```
+
+Posted receipt details expose resulting inventory balance transitions and immutable stock-movement links.

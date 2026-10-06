@@ -29,7 +29,6 @@ import { PurchaseOrderStatus } from '../models/purchase-order.model';
   ],
   providers: [PurchaseOrderListStore],
   templateUrl: './purchase-order-list-page.html',
-  styleUrl: './purchase-order-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PurchaseOrderListPage implements OnInit {
