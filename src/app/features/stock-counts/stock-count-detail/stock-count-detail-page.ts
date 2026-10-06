@@ -23,6 +23,7 @@ import { BadgeComponent, BadgeVariant } from '../../../shared/ui/badge/badge';
 import { ButtonComponent } from '../../../shared/ui/button/button';
 import { ConfirmationDialogComponent } from '../../../shared/ui/confirmation-dialog/confirmation-dialog';
 import { ContentContainerComponent } from '../../../shared/ui/content-container/content-container';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state';
 import { InputComponent } from '../../../shared/ui/input/input';
 import { PageHeaderComponent } from '../../../shared/ui/page-header/page-header';
 import { PaginationComponent } from '../../../shared/ui/pagination/pagination';
@@ -48,6 +49,7 @@ type CountLineForm = FormGroup<{
     ButtonComponent,
     ConfirmationDialogComponent,
     ContentContainerComponent,
+    EmptyStateComponent,
     InputComponent,
     PageHeaderComponent,
     PaginationComponent,

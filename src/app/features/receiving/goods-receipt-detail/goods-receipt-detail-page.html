@@ -11,6 +11,8 @@
 
       @if (item.status === 'draft') {
         <a actions [routerLink]="['edit']" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">Edit</a>
+      }
+      @if (item.status === 'draft') {
         <app-button actions [loading]="store.posting()" (click)="confirmPost.set(true)">
           Post receipt
         </app-button>
