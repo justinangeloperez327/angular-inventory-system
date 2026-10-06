@@ -39,7 +39,6 @@ import { AdminUserSummary } from '../models/admin-user.model';
   ],
   providers: [AdminUserListStore],
   templateUrl: './admin-user-list-page.html',
-  styleUrl: './admin-user-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUserListPage implements OnInit {
