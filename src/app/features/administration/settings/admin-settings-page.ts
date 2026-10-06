@@ -31,7 +31,6 @@ import {
     SkeletonComponent,
   ],
   templateUrl: './admin-settings-page.html',
-  styleUrl: './admin-settings-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminSettingsPage implements OnInit {
