@@ -29,7 +29,6 @@ import {
     SkeletonComponent,
   ],
   templateUrl: './admin-user-form-page.html',
-  styleUrl: './admin-user-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUserFormPage implements OnInit {
