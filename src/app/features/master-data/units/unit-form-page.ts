@@ -28,7 +28,6 @@ type UnitField = 'code' | 'name' | 'symbol';
     SkeletonComponent,
   ],
   templateUrl: './unit-form-page.html',
-  styleUrl: '../master-data-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnitFormPage implements OnInit {

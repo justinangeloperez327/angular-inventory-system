@@ -30,7 +30,6 @@ type CategoryField = 'code' | 'name' | 'description';
     TextareaComponent,
   ],
   templateUrl: './category-form-page.html',
-  styleUrl: '../master-data-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryFormPage implements OnInit {

@@ -556,3 +556,29 @@ Quantities are right-aligned and use tabular numerals. Outbound quantities use s
 ### No decorative charts
 
 No chart is added merely to make the dashboard look analytical. Trend visualization should be introduced only when it supports an actual operational decision.
+
+
+## Group 8 — products and master data
+
+Product Master and Master Data are now fully migrated from feature SCSS to Tailwind utilities.
+
+### Product Master
+
+Product lists use the shared table/filter primitives. Prices and reorder thresholds are right-aligned with tabular numerals; identifiers use the mono typeface.
+
+Product forms use simple separated sections instead of bordered card stacks.
+
+Product details use two-column definition-list sections on larger screens and collapse to one column on smaller screens. Commercial numbers remain aligned for scanability.
+
+### Master Data
+
+Categories, Units, and Warehouses share the same maintenance model:
+
+- compact filter bar
+- compact table
+- text-level Edit / Activate / Deactivate actions
+- lifecycle confirmation where required
+- narrow create/edit forms
+- no feature-specific list/form stylesheet
+
+The Master Data landing page is a small three-destination navigation surface rather than a decorative dashboard.

@@ -40,7 +40,6 @@ import { Unit } from './models/unit.model';
   ],
   providers: [UnitListStore],
   templateUrl: './unit-list-page.html',
-  styleUrl: '../master-data-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnitListPage implements OnInit {

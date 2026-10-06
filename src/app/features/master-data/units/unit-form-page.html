@@ -2,18 +2,18 @@
   @if (loading()) {
     <app-skeleton height="18rem" />
   } @else {
-    <app-page-header [title]="editing ? 'Edit unit' : 'Add unit'" description="Define the unit code, display name, and symbol." />
+    <app-page-header [title]="editing ? 'Edit unit' : 'Add unit'" description="Unit code, display name, and transaction symbol." />
     @if (error()) {
-      <div class="master-data-form__alert"><app-alert variant="danger" title="Unable to save unit">{{ error() }}</app-alert></div>
+      <div class="mt-4"><app-alert variant="danger" title="Unable to save unit">{{ error() }}</app-alert></div>
     }
-    <form class="master-data-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <div class="master-data-form__grid master-data-form__grid--three">
+    <form class="mt-6 max-w-3xl border-t border-border pt-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="grid gap-3 md:grid-cols-3">
         <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
         <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
         <app-input label="Symbol" formControlName="symbol" [error]="fieldError('symbol')" />
       </div>
-      <div class="master-data-form__actions">
-        <a routerLink="/master-data/units">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a class="text-base font-medium text-muted-foreground no-underline hover:text-foreground" routerLink="/master-data/units">Cancel</a>
         <app-button type="submit" [loading]="saving()">Save unit</app-button>
       </div>
     </form>

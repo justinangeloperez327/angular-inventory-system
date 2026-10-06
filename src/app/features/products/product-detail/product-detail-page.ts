@@ -30,7 +30,6 @@ import { ProductDetailStore } from '../data-access/product-detail.store';
   ],
   providers: [ProductDetailStore],
   templateUrl: './product-detail-page.html',
-  styleUrl: './product-detail-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailPage implements OnInit {

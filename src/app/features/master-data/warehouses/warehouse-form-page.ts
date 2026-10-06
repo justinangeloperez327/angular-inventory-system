@@ -28,7 +28,6 @@ type WarehouseField = 'code' | 'name' | 'location';
     SkeletonComponent,
   ],
   templateUrl: './warehouse-form-page.html',
-  styleUrl: '../master-data-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseFormPage implements OnInit {

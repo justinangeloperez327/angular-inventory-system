@@ -1,21 +1,36 @@
 <app-content-container>
   <app-page-header
     title="Master Data"
-    description="Maintain the reference data used by products and inventory operations."
+    description="Reference data used by products and inventory operations."
   />
 
-  <nav class="master-data-index" aria-label="Master data sections">
-    <a routerLink="categories">
-      <strong>Categories</strong>
-      <span>Product classification and reporting groups.</span>
+  <nav class="mt-6 grid gap-2 lg:grid-cols-3" aria-label="Master data sections">
+    <a
+      routerLink="categories"
+      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
+    >
+      <strong class="block text-base font-semibold">Categories</strong>
+      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
+        Product classification and reporting groups.
+      </span>
     </a>
-    <a routerLink="units">
-      <strong>Units of Measure</strong>
-      <span>Codes and symbols used for product quantities.</span>
+    <a
+      routerLink="units"
+      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
+    >
+      <strong class="block text-base font-semibold">Units of Measure</strong>
+      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
+        Codes and symbols used for product quantities.
+      </span>
     </a>
-    <a routerLink="warehouses">
-      <strong>Warehouses</strong>
-      <span>Physical inventory locations used for balances and movements.</span>
+    <a
+      routerLink="warehouses"
+      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
+    >
+      <strong class="block text-base font-semibold">Warehouses</strong>
+      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
+        Inventory locations used for balances and movements.
+      </span>
     </a>
   </nav>
 </app-content-container>

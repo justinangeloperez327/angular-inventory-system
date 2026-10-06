@@ -75,3 +75,20 @@ These frontend controls are usability measures. The API must enforce the same pe
 Client-side validation covers required fields, non-negative prices/reorder levels, and practical maximum lengths.
 
 Backend validation remains authoritative. Validation errors returned through the shared `ApiHttpError` contract are mapped back to matching product fields when possible.
+
+
+## Group 8 design migration
+
+Product Master now uses the Tailwind design system end-to-end.
+
+The list is table-first with:
+
+- monospace SKU/barcode identifiers
+- right-aligned price/reorder columns
+- compact status treatment
+- shared filter bar and pagination footer
+- primary create action and restrained row-level edit action
+
+The create/edit form uses whitespace and separators rather than card-per-section layouts.
+
+The detail page presents identification, commercial data, description, and record metadata as a compact master-data record rather than a dashboard of cards.

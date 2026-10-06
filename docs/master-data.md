@@ -94,3 +94,17 @@ The parent application route already requires `master-data.view`. Create/edit ro
 Client validation covers required values and practical maximum lengths.
 
 Backend validation remains authoritative, including code uniqueness, reference integrity, lifecycle restrictions, and any domain-specific warehouse constraints.
+
+
+## Group 8 design migration
+
+Categories, Units of Measure, and Warehouses use one consistent maintenance pattern:
+
+- shared compact filter bar
+- shared operational table
+- compact text row actions
+- shared pagination footer
+- activation/deactivation lifecycle
+- restrained create/edit form with no nested cards
+
+The Master Data index remains a small navigation surface for the three reference-data areas. Warehouses continue to be treated as operational inventory boundaries rather than generic lookups.

@@ -40,7 +40,6 @@ import { Category } from './models/category.model';
   ],
   providers: [CategoryListStore],
   templateUrl: './category-list-page.html',
-  styleUrl: '../master-data-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryListPage implements OnInit {

@@ -1,11 +1,11 @@
 <app-content-container>
   <app-page-header title="Categories" description="Maintain product classification categories.">
-    <a actions routerLink="new" class="master-data__primary-action" *appHasPermission="permissions.masterDataManage">
+    <a actions routerLink="new" class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover" *appHasPermission="permissions.masterDataManage">
       Add category
     </a>
   </app-page-header>
 
-  <form class="master-data__filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+  <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Code or category name" formControlName="search" />
     <app-select
       label="Status"
@@ -16,22 +16,22 @@
       ]"
       formControlName="status"
     />
-    <div class="master-data__filter-actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+    <div class="filter-bar__actions">
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (store.error()) {
-    <div class="master-data__alert">
+    <div class="mt-4">
       <app-alert variant="danger" title="Categories unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasItems()) {
-    <div class="master-data__loading"><app-skeleton height="18rem" /></div>
+    <div class="mt-4"><app-skeleton height="18rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="master-data__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
@@ -41,12 +41,12 @@
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td class="master-data__mono">{{ item.code }}</td>
+              <td class="font-mono text-xs">{{ item.code }}</td>
               <td>{{ item.name }}</td>
               <td>{{ item.description || '—' }}</td>
               <td><app-badge [variant]="item.active ? 'success' : 'neutral'">{{ item.active ? 'Active' : 'Inactive' }}</app-badge></td>
               <td>
-                <div class="master-data__row-actions" *appHasPermission="permissions.masterDataManage">
+                <div class="flex items-center gap-3 [&_a]:text-sm [&_a]:font-medium [&_a]:text-muted-foreground [&_a]:no-underline [&_a:hover]:text-foreground [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-sm [&_button]:font-medium [&_button]:text-muted-foreground [&_button]:transition-colors [&_button:hover:not(:disabled)]:text-foreground [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-40" *appHasPermission="permissions.masterDataManage">
                   <a [routerLink]="[item.id, 'edit']">Edit</a>
                   @if (item.active) {
                     <button type="button" (click)="selectedForDeactivation.set(item)">Deactivate</button>
@@ -59,7 +59,7 @@
           }
         </tbody>
       </app-table>
-      <div class="master-data__pagination">
+      <div class="data-footer">
         <span>{{ store.pagination().totalItems }} categories</span>
         <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
       </div>

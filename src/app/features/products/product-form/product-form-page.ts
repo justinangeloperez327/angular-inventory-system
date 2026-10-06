@@ -41,7 +41,6 @@ type ProductField =
     TextareaComponent,
   ],
   templateUrl: './product-form-page.html',
-  styleUrl: './product-form-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductFormPage implements OnInit {

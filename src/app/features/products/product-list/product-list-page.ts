@@ -40,7 +40,6 @@ import { ProductListStore } from '../data-access/product-list.store';
   ],
   providers: [ProductListStore],
   templateUrl: './product-list-page.html',
-  styleUrl: './product-list-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductListPage implements OnInit {

@@ -40,7 +40,6 @@ import { Warehouse } from './models/warehouse.model';
   ],
   providers: [WarehouseListStore],
   templateUrl: './warehouse-list-page.html',
-  styleUrl: '../master-data-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WarehouseListPage implements OnInit {

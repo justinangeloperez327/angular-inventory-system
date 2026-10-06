@@ -1,9 +1,14 @@
 <app-content-container>
   <app-page-header
     title="Products"
-    description="Manage product master data, identification, pricing, and reorder settings."
+    description="Product identity, classification, pricing, and reorder settings."
   >
-    <a actions routerLink="new" class="product-list__primary-action" *appHasPermission="permissions.productCreate">
+    <a
+      actions
+      routerLink="new"
+      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      *appHasPermission="permissions.productCreate"
+    >
       Add product
     </a>
   </app-page-header>
@@ -15,21 +20,18 @@
       placeholder="SKU, barcode, or product name"
       formControlName="search"
     />
-
     <app-select
       label="Category"
       placeholder="All categories"
       [options]="categoryOptions()"
       formControlName="categoryId"
     />
-
     <app-select
       label="Unit"
       placeholder="All units"
       [options]="unitOptions()"
       formControlName="unitId"
     />
-
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -39,27 +41,22 @@
       ]"
       formControlName="status"
     />
-
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" (click)="clearFilters()">Clear</app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (store.error()) {
-    <div class="product-list__alert">
-      <app-alert variant="danger" title="Products unavailable">
-        {{ store.error() }}
-      </app-alert>
+    <div class="mt-4">
+      <app-alert variant="danger" title="Products unavailable">{{ store.error() }}</app-alert>
     </div>
   }
 
   @if (store.loading() && !store.hasProducts()) {
-    <div class="product-list__loading">
-      <app-skeleton height="20rem" />
-    </div>
+    <div class="mt-4"><app-skeleton height="20rem" /></div>
   } @else if (store.hasProducts()) {
-    <div class="product-list__table">
+    <div class="mt-4">
       <app-table>
         <thead>
           <tr>
@@ -67,9 +64,9 @@
             <th>Product</th>
             <th>Category</th>
             <th>Unit</th>
-            <th>Cost</th>
-            <th>Selling price</th>
-            <th>Reorder</th>
+            <th class="text-right">Cost</th>
+            <th class="text-right">Selling price</th>
+            <th class="text-right">Reorder</th>
             <th>Status</th>
             <th>Updated</th>
             <th><span class="sr-only">Actions</span></th>
@@ -78,28 +75,39 @@
         <tbody>
           @for (product of store.products(); track product.id) {
             <tr>
-              <td class="product-list__mono">{{ product.sku }}</td>
+              <td class="font-mono text-xs">{{ product.sku }}</td>
               <td>
-                <a [routerLink]="product.id" class="product-list__name">{{ product.name }}</a>
+                <a
+                  [routerLink]="product.id"
+                  class="font-semibold text-foreground no-underline hover:underline"
+                >
+                  {{ product.name }}
+                </a>
                 @if (product.barcode) {
-                  <span class="product-list__secondary">{{ product.barcode }}</span>
+                  <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                    {{ product.barcode }}
+                  </span>
                 }
               </td>
               <td>{{ product.categoryName || '—' }}</td>
               <td>{{ product.unitName || '—' }}</td>
-              <td>{{ product.costPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}</td>
-              <td>{{ product.sellingPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}</td>
-              <td>{{ product.reorderLevel }}</td>
+              <td class="text-right tabular-nums">
+                {{ product.costPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}
+              </td>
+              <td class="text-right tabular-nums">
+                {{ product.sellingPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}
+              </td>
+              <td class="text-right tabular-nums">{{ product.reorderLevel }}</td>
               <td>
                 <app-badge [variant]="product.active ? 'success' : 'neutral'">
                   {{ product.active ? 'Active' : 'Inactive' }}
                 </app-badge>
               </td>
-              <td>{{ product.updatedAt | date: 'mediumDate' }}</td>
+              <td class="whitespace-nowrap">{{ product.updatedAt | date: 'mediumDate' }}</td>
               <td>
                 <a
                   [routerLink]="[product.id, 'edit']"
-                  class="product-list__action"
+                  class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
                   *appHasPermission="permissions.productUpdate"
                 >
                   Edit
@@ -120,13 +128,16 @@
       />
     </div>
   } @else if (!store.loading()) {
-    <app-empty-state
-      title="No products found"
-      description="No products match the current filters."
-    >
-      <a routerLink="new" class="product-list__primary-action" *appHasPermission="permissions.productCreate">
-        Add product
-      </a>
-    </app-empty-state>
+    <div class="mt-4">
+      <app-empty-state title="No products found" description="No products match the current filters.">
+        <a
+          routerLink="new"
+          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+          *appHasPermission="permissions.productCreate"
+        >
+          Add product
+        </a>
+      </app-empty-state>
+    </div>
   }
 </app-content-container>

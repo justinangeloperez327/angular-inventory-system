@@ -2,23 +2,18 @@
   @if (loading()) {
     <app-skeleton height="20rem" />
   } @else {
-    <app-page-header
-      [title]="editing ? 'Edit category' : 'Add category'"
-      description="Category codes and names are used to classify products."
-    />
-
+    <app-page-header [title]="editing ? 'Edit category' : 'Add category'" description="Classification used by Product Master." />
     @if (error()) {
-      <div class="master-data-form__alert"><app-alert variant="danger" title="Unable to save category">{{ error() }}</app-alert></div>
+      <div class="mt-4"><app-alert variant="danger" title="Unable to save category">{{ error() }}</app-alert></div>
     }
-
-    <form class="master-data-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <div class="master-data-form__grid">
+    <form class="mt-6 max-w-3xl border-t border-border pt-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="grid gap-3 md:grid-cols-2">
         <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
         <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
-        <app-textarea class="master-data-form__wide" label="Description" formControlName="description" [error]="fieldError('description')" />
+        <app-textarea class="md:col-span-2" label="Description" formControlName="description" [error]="fieldError('description')" />
       </div>
-      <div class="master-data-form__actions">
-        <a routerLink="/master-data/categories">Cancel</a>
+      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
+        <a class="text-base font-medium text-muted-foreground no-underline hover:text-foreground" routerLink="/master-data/categories">Cancel</a>
         <app-button type="submit" [loading]="saving()">Save category</app-button>
       </div>
     </form>
