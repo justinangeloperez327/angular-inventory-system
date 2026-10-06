@@ -1,9 +1,15 @@
 <nav aria-label="Breadcrumb">
-  <ol class="breadcrumb">
-    @for (item of items; track item.label; let last = $last) {
-      <li>
+  <ol class="m-0 flex list-none flex-wrap gap-1.5 p-0 text-sm text-muted-foreground">
+    @for (item of items; track item.label; let first = $first; let last = $last) {
+      <li class="flex items-center gap-1.5">
+        @if (!first) {
+          <span class="text-subtle-foreground" aria-hidden="true">/</span>
+        }
+
         @if (item.route && !last) {
-          <a [routerLink]="item.route">{{ item.label }}</a>
+          <a class="text-inherit no-underline hover:text-foreground" [routerLink]="item.route">
+            {{ item.label }}
+          </a>
         } @else {
           <span [attr.aria-current]="last ? 'page' : null">{{ item.label }}</span>
         }
