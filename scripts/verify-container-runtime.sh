@@ -105,6 +105,15 @@ grep -q '<app-root' "$TMP_DIR/index.body" || fail "/index.html does not contain 
 assert_header_contains "$TMP_DIR/index.headers" "Cache-Control" "no-store"
 assert_security_headers "$TMP_DIR/index.headers"
 
+build_info_status="$(request "/build-info.json" "build-info")"
+[[ "$build_info_status" == "200" ]] || fail "/build-info.json returned HTTP $build_info_status"
+assert_header_contains "$TMP_DIR/build-info.headers" "Cache-Control" "no-store"
+assert_security_headers "$TMP_DIR/build-info.headers"
+grep -Eq '"appName"[[:space:]]*:[[:space:]]*"angular-inventory-system"' "$TMP_DIR/build-info.body" || fail "build-info.json is missing the application name"
+grep -Eq '"angularVersion"[[:space:]]*:[[:space:]]*"22\.[0-9]+\.[0-9]+"' "$TMP_DIR/build-info.body" || fail "build-info.json is missing the Angular version"
+grep -Eq '"commitSha"[[:space:]]*:[[:space:]]*"[0-9a-f]{7,64}"' "$TMP_DIR/build-info.body" || fail "build-info.json is missing the CI commit SHA"
+grep -Eq '"buildId"[[:space:]]*:[[:space:]]*"[A-Za-z0-9._:-]+"' "$TMP_DIR/build-info.body" || fail "build-info.json is missing the CI build ID"
+
 spa_status="$(request "/products" "spa")"
 [[ "$spa_status" == "200" ]] || fail "SPA fallback /products returned HTTP $spa_status"
 grep -q '<app-root' "$TMP_DIR/spa.body" || fail "SPA fallback did not serve index.html"
@@ -131,4 +140,4 @@ api_status="$(request "/api/__runtime-verification__" "api")"
 grep -q '<app-root' "$TMP_DIR/api.body" && fail "/api/ request must never fall back to index.html"
 assert_security_headers "$TMP_DIR/api.headers"
 
-printf 'Runtime verification passed: health, security headers, SPA fallback, API separation, and asset caching are correct.\n'
+printf 'Runtime verification passed: health, build identity, security headers, SPA fallback, API separation, and asset caching are correct.\n'
