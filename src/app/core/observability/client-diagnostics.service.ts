@@ -10,7 +10,7 @@ export class ClientDiagnosticsService {
   private readonly sink = inject(CLIENT_DIAGNOSTIC_SINK);
 
   captureUnhandled(error: unknown): void {
-    this.sink({
+    this.emit({
       eventId: createDiagnosticId(),
       occurredAt: new Date().toISOString(),
       kind: 'unhandled-error',
@@ -25,7 +25,7 @@ export class ClientDiagnosticsService {
       return;
     }
 
-    this.sink({
+    this.emit({
       eventId: createDiagnosticId(),
       occurredAt: new Date().toISOString(),
       kind: 'api-error',
@@ -35,6 +35,14 @@ export class ClientDiagnosticsService {
       code: sanitizeIdentifier(error.code),
       traceId: sanitizeIdentifier(error.traceId),
     });
+  }
+
+  private emit(event: ClientDiagnosticEvent): void {
+    try {
+      this.sink(event);
+    } catch {
+      console.error('[inventory-client-diagnostic] Diagnostic sink failed.');
+    }
   }
 }
 
@@ -70,13 +78,4 @@ function sanitizeIdentifier(value: string | undefined): string | undefined {
   }
 
   return trimmed;
-}
-
-export function createDiagnosticSnapshot(
-  event: ClientDiagnosticEvent,
-): ClientDiagnosticEvent {
-  return {
-    ...event,
-    build: { ...event.build },
-  };
 }
