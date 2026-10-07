@@ -44,6 +44,11 @@ const apiRewrite =
   );
 
 requireValue(
+  vercel.git?.deploymentEnabled === false,
+  'vercel.json must keep automatic Git deployments disabled.',
+);
+
+requireValue(
   apiRewrite?.destination ===
     'https://nest-js-inventory-system.vercel.app/api/v1/:path*',
   'vercel.json must proxy /api/v1 to the canonical NestJS production origin.',
