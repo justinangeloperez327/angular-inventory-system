@@ -1,61 +1,146 @@
-<main class="grid min-h-screen place-items-center bg-background px-4 py-8 text-foreground">
+<main class="min-h-screen bg-background text-foreground lg:grid lg:grid-cols-2">
   <section
-    class="w-full max-w-md rounded-md border border-border bg-surface p-6 shadow-sm"
-    aria-labelledby="login-title"
+    class="hidden min-h-screen bg-foreground p-10 text-surface lg:flex lg:flex-col"
+    aria-label="Inventory system overview"
   >
     <div class="flex items-center gap-3">
       <span
-        class="grid size-8 place-items-center rounded-sm border border-border-strong bg-foreground text-xs font-semibold tracking-wide text-surface"
+        class="grid size-9 place-items-center rounded-sm border border-white/20 bg-white/10 text-xs font-semibold tracking-wide text-white"
         aria-hidden="true"
       >
         IS
       </span>
       <div class="min-w-0">
-        <strong class="block text-base font-semibold">Inventory</strong>
-        <span class="mt-0.5 block text-xs text-muted-foreground">Management System</span>
+        <strong class="block text-base font-semibold text-white">Inventory</strong>
+        <span class="mt-0.5 block text-xs text-white/60">Management System</span>
       </div>
     </div>
 
-    <div class="mb-5 mt-8">
-      <h1 id="login-title" class="m-0 text-2xl font-semibold text-foreground">Sign in</h1>
-      <p class="mb-0 mt-2 text-base leading-5 text-muted-foreground">
-        Use your account to access inventory operations.
+    <div class="my-auto max-w-xl py-12">
+      <p class="m-0 text-xs font-semibold uppercase tracking-widest text-white/50">
+        Operational workspace
       </p>
+
+      <h2 class="mb-0 mt-4 max-w-lg text-2xl font-semibold leading-tight text-white">
+        Inventory control without the noise.
+      </h2>
+
+      <p class="mb-0 mt-4 max-w-lg text-base leading-6 text-white/65">
+        Keep stock, purchasing, receiving, movements, counts, sales, and administration in one
+        focused workspace.
+      </p>
+
+      <div class="mt-8 grid gap-2" aria-label="System capabilities">
+        <div class="flex items-center justify-between gap-4 border-t border-white/10 py-3">
+          <div>
+            <strong class="block text-sm font-medium text-white">Stock visibility</strong>
+            <span class="mt-0.5 block text-xs text-white/55">
+              Balances, reservations, movements, and warehouse position.
+            </span>
+          </div>
+          <span class="text-xs font-medium text-white/45">01</span>
+        </div>
+
+        <div class="flex items-center justify-between gap-4 border-t border-white/10 py-3">
+          <div>
+            <strong class="block text-sm font-medium text-white">Operational workflows</strong>
+            <span class="mt-0.5 block text-xs text-white/55">
+              Purchasing, receiving, transfers, counts, sales, and returns.
+            </span>
+          </div>
+          <span class="text-xs font-medium text-white/45">02</span>
+        </div>
+
+        <div class="flex items-center justify-between gap-4 border-y border-white/10 py-3">
+          <div>
+            <strong class="block text-sm font-medium text-white">Controlled access</strong>
+            <span class="mt-0.5 block text-xs text-white/55">
+              Role-based permissions and auditable administrative actions.
+            </span>
+          </div>
+          <span class="text-xs font-medium text-white/45">03</span>
+        </div>
+      </div>
     </div>
 
-    @if (formError()) {
-      <div class="mb-4">
-        <app-alert variant="danger" title="Sign-in failed">
-          {{ formError() }}
-        </app-alert>
-      </div>
-    }
-
-    <form class="grid gap-4" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <app-input
-        type="email"
-        label="Email"
-        placeholder="name@example.com"
-        autocomplete="username"
-        formControlName="email"
-        [error]="emailError()"
-      />
-
-      <app-input
-        type="password"
-        label="Password"
-        autocomplete="current-password"
-        formControlName="password"
-        [error]="passwordError()"
-      />
-
-      <app-button class="mt-1 w-full [&>button]:w-full" type="submit" [loading]="submitting()">
-        Sign in
-      </app-button>
-    </form>
-
-    <p class="mb-0 mt-5 border-t border-border pt-4 text-xs leading-5 text-muted-foreground">
-      Access is controlled by your authenticated account and assigned application permissions.
+    <p class="m-0 text-xs text-white/40">
+      Built for day-to-day inventory operations.
     </p>
+  </section>
+
+  <section class="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6 lg:px-10">
+    <div class="w-full max-w-md">
+      <div class="mb-8 flex items-center gap-3 lg:hidden">
+        <span
+          class="grid size-9 place-items-center rounded-sm border border-border-strong bg-foreground text-xs font-semibold tracking-wide text-surface"
+          aria-hidden="true"
+        >
+          IS
+        </span>
+        <div class="min-w-0">
+          <strong class="block text-base font-semibold">Inventory</strong>
+          <span class="mt-0.5 block text-xs text-muted-foreground">Management System</span>
+        </div>
+      </div>
+
+      <div class="border-b border-border pb-5">
+        <p class="m-0 text-xs font-semibold uppercase tracking-wide text-primary">
+          Secure access
+        </p>
+        <h1 id="login-title" class="mb-0 mt-2 text-2xl font-semibold text-foreground">
+          Sign in
+        </h1>
+        <p class="mb-0 mt-2 max-w-sm text-base leading-5 text-muted-foreground">
+          Enter your account credentials to continue to the inventory workspace.
+        </p>
+      </div>
+
+      @if (formError()) {
+        <div class="mt-5">
+          <app-alert variant="danger" title="Sign-in failed">
+            {{ formError() }}
+          </app-alert>
+        </div>
+      }
+
+      <form
+        class="mt-6 grid gap-4"
+        [formGroup]="form"
+        (ngSubmit)="submit()"
+        aria-labelledby="login-title"
+        novalidate
+      >
+        <app-input
+          type="email"
+          label="Email"
+          placeholder="name@example.com"
+          autocomplete="username"
+          formControlName="email"
+          [error]="emailError()"
+        />
+
+        <app-input
+          type="password"
+          label="Password"
+          autocomplete="current-password"
+          formControlName="password"
+          [error]="passwordError()"
+        />
+
+        <app-button
+          class="mt-1 w-full [&>button]:w-full"
+          type="submit"
+          [loading]="submitting()"
+        >
+          Sign in
+        </app-button>
+      </form>
+
+      <div class="mt-6 border-t border-border pt-4">
+        <p class="m-0 text-xs leading-5 text-muted-foreground">
+          Access is limited to authenticated users with assigned application permissions.
+        </p>
+      </div>
+    </div>
   </section>
 </main>
