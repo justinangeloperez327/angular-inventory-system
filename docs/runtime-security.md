@@ -1,0 +1,106 @@
+# Runtime Security Verification
+
+Group 23 verifies the production Docker/Nginx runtime as an HTTP system rather than trusting configuration files alone.
+
+## Static runtime guard
+
+Run:
+
+```bash
+npm run check:runtime
+```
+
+The static guard verifies that the repository retains:
+
+- Node 24.15.0 as the validated Docker build runtime
+- lockfile-backed `npm ci`
+- container health check on `/healthz`
+- Nginx version-token suppression
+- the shared security-header include
+- explicit `/healthz`
+- `/api/` reverse proxy separation
+- SPA fallback to `index.html`
+- no-store caching for `index.html`
+- immutable one-year caching for generated JavaScript/CSS
+- the required security headers and CSP directives
+
+This guard catches configuration drift before the image is built.
+
+## Live container verifier
+
+CI builds the production image, starts it on port 8080, and runs:
+
+```bash
+bash scripts/verify-container-runtime.sh
+```
+
+The verifier performs real HTTP requests against the running Nginx container.
+
+### Health
+
+```text
+GET /healthz
+200 OK
+ok
+```
+
+The response must also carry the production security-header policy.
+
+### Security headers
+
+The running container must emit:
+
+```text
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Cross-Origin-Opener-Policy: same-origin
+X-Frame-Options: DENY
+```
+
+The complementary CSP must retain framing protection and Trusted Types enforcement.
+
+The `Server` response header must not disclose an Nginx version.
+
+### SPA fallback
+
+A frontend path such as:
+
+```text
+/products
+```
+
+must return the Angular application and inherit the non-cacheable HTML policy.
+
+This proves refresh/deep-link routing in the actual container.
+
+### API separation
+
+A request under:
+
+```text
+/api/
+```
+
+must never return Angular `index.html`.
+
+The CI runtime intentionally points `API_UPSTREAM` at an unavailable local backend; the expected request fails upstream instead of falling back to the SPA. The exact upstream failure status is not treated as the contract—the separation from Angular routing is.
+
+### Asset caching
+
+The verifier discovers a generated JavaScript or CSS asset from the built `index.html` and confirms:
+
+```text
+max-age=31536000
+immutable
+```
+
+This validates the actual Nginx cache policy against hashed Angular output.
+
+## Deployment boundary
+
+Passing the container verifier proves the repository's Nginx image behaves as intended.
+
+It does not prove that an external CDN, ingress, reverse proxy, WAF, or hosting platform preserves those headers. Production deployment should still verify the final public HTTPS origin after infrastructure is configured.
+
+HSTS remains an ingress/domain decision and is intentionally not forced by the application container.
