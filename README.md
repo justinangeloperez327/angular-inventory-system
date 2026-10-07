@@ -40,10 +40,10 @@ Then open:
 http://localhost:4200
 ```
 
-The default API base URL is same-origin:
+The default API base URL is same-origin and versioned to match the NestJS contract:
 
 ```text
-/api
+/api/v1
 ```
 
 Configure the development reverse proxy/hosting path to the NestJS backend as appropriate for your environment.
@@ -52,6 +52,7 @@ Configure the development reverse proxy/hosting path to the NestJS backend as ap
 
 ```bash
 npm run check:dependencies
+npm run check:api-contract
 npm run check:design
 npm run check:accessibility
 npm run check:production
@@ -127,7 +128,7 @@ Build and run the production container:
 docker compose up --build
 ```
 
-The frontend is available at `http://localhost:8080` and proxies `/api` to the runtime `API_UPSTREAM`.
+The frontend is available at `http://localhost:8080` and proxies `/api/v1` through the runtime `/api/` reverse-proxy boundary to `API_UPSTREAM`.
 
 See `docs/docker.md` for standalone Docker, Compose, health checks, caching, reverse-proxy behavior, and backend-network configuration.
 
@@ -141,6 +142,7 @@ See:
 - `docs/performance.md`
 - `docs/dependencies.md`
 - `docs/runtime-security.md`
+- `docs/api-integration.md`
 - `docs/observability.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
@@ -148,4 +150,4 @@ See:
 - `docs/authentication.md`
 - `docs/authorization.md`
 
-Production builds use hashed output and Angular CLI automatic CSP script hardening. Hosting infrastructure remains responsible for HTTPS, SPA fallback routing, security response headers, and the `/api` backend route.
+Production builds use hashed output and Angular CLI automatic CSP script hardening. Hosting infrastructure remains responsible for HTTPS, SPA fallback routing, security response headers, and the `/api/v1` backend route.
