@@ -156,18 +156,31 @@ function extractFrontendEndpoints(source, file) {
 }
 
 function extractBackendEndpoints(source, file) {
-  const controllerMatch = source.match(/@Controller\(\s*'([^']*)'\s*\)/);
-  const base = normalizeRoute(controllerMatch?.[1] ?? '');
   const endpoints = [];
+  const sections = source.split(/(?=@Controller\()/g);
   const routePattern = /@(Get|Post|Put|Patch|Delete)\(\s*(?:'([^']*)')?\s*\)/g;
 
-  for (const match of source.matchAll(routePattern)) {
-    const route = normalizeRoute([base, match[2] ?? ''].filter(Boolean).join('/'));
-    endpoints.push({
-      method: match[1].toUpperCase(),
-      route,
-      source: file,
-    });
+  for (const section of sections) {
+    const controllerMatch = section.match(
+      /@Controller\(\s*(?:'([^']*)')?\s*\)/,
+    );
+
+    if (!controllerMatch) {
+      continue;
+    }
+
+    const base = normalizeRoute(controllerMatch[1] ?? '');
+
+    for (const match of section.matchAll(routePattern)) {
+      const route = normalizeRoute(
+        [base, match[2] ?? ''].filter(Boolean).join('/'),
+      );
+      endpoints.push({
+        method: match[1].toUpperCase(),
+        route,
+        source: file,
+      });
+    }
   }
 
   return endpoints;
