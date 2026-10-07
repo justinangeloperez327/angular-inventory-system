@@ -8,7 +8,7 @@ Unit tests and static guards verify isolated logic and repository contracts. Bro
 
 The browser suite does not require a running NestJS backend.
 
-Playwright intercepts the application's `/api` requests and returns contract-shaped fixtures so failures remain attributable to the frontend.
+Playwright intercepts the application's `/api/v1` requests and returns contract-shaped fixtures so failures remain attributable to the frontend.
 
 ## Covered critical flows
 
@@ -17,7 +17,7 @@ The initial Chromium smoke suite verifies:
 1. Anonymous protected navigation redirects to Sign In and preserves a local return URL.
 2. Sign In blocks invalid forms before an API request.
 3. Successful authentication establishes the session and renders Dashboard.
-4. A persisted session restores through `GET /api/auth/me`.
+4. A persisted session restores through `GET /api/v1/auth/me`.
 5. Permission guards redirect unauthorized navigation to Access Denied.
 6. Mobile navigation opens as a modal surface, captures focus, closes on Escape, and restores focus to the menu button.
 7. Sign Out clears the local session and protected navigation becomes anonymous again.
@@ -101,4 +101,4 @@ Browser E2E
 Docker build / smoke test (CI)
 ```
 
-Local `npm run check` includes every gate through Browser E2E. Docker remains a CI/container validation step.
+Local `npm run check` includes every isolated frontend gate through Browser E2E. CI additionally runs the production-container full-stack integration suite after Docker verification. See `docs/full-stack-testing.md`.

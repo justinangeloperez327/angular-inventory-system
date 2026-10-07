@@ -58,9 +58,15 @@ Cross-Origin-Opener-Policy: same-origin
 X-Frame-Options: DENY
 ```
 
-The complementary CSP must retain framing protection and Trusted Types enforcement.
+The complementary CSP must retain framing protection and the Angular `angular` / `angular#bundler` Trusted Types policy allowlist. It must not enforce `require-trusted-types-for 'script'` while the validated Angular `autoCsp` bootstrap loader assigns string script URLs before Angular initializes its own policies.
 
 The `Server` response header must not disclose an Nginx version.
+
+### Production browser bootstrap
+
+Group 26 adds an actual Chromium run against the production Nginx image. This is required because HTTP-only checks can prove that HTML and JavaScript files are served while still missing a browser security-policy failure during application bootstrap.
+
+The guard specifically protects the compatibility between Angular CLI `security.autoCsp` and the HTTP CSP. A prior `require-trusted-types-for 'script'` directive blocked the autoCSP loader before Angular rendered the application; the full-stack browser test detects that class of failure.
 
 ### SPA fallback
 

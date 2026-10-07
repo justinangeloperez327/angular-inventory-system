@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 25 adds pinned Angular ↔ NestJS API compatibility verification to the frontend release gate.
+Group 26 adds production-container Angular ↔ NestJS ↔ PostgreSQL integration verification to the frontend release gate.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm ci
 npm run check
 ```
 
-`npm run check` executes the dependency, backend API-contract, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
+`npm run check` executes the isolated frontend dependency, backend API-contract, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and mocked-boundary Playwright browser E2E. CI additionally runs the Docker-backed full-stack integration gate.
 
 ## CI
 
@@ -43,6 +43,7 @@ The workflow performs:
 14. Playwright critical-flow browser E2E
 15. Docker image build with commit/run identity
 16. live container security/routing/cache/build-identity verification
+17. production-container Angular ↔ NestJS ↔ PostgreSQL full-stack integration
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -85,6 +86,33 @@ API prefix         /api/v1
 This prevents the frontend and backend from independently passing tests while drifting at the REST boundary.
 
 See `docs/api-integration.md`.
+
+
+
+## Full-stack authentication and authorization
+
+Group 26 runs the production Angular Nginx image against the pinned NestJS backend and an ephemeral PostgreSQL 18 database.
+
+The integration gate:
+
+- applies the backend's real Prisma migrations
+- runs the real backend seed
+- creates a CI-only Administrator
+- verifies backend readiness through the Angular Nginx proxy
+- signs in through the Angular UI against the live NestJS login endpoint
+- reloads the browser to verify real `/auth/me` session restoration
+- exercises the Angular-facing Administration role contract
+- creates and signs in a restricted Viewer through the live backend
+- verifies an allowed Dashboard request
+- verifies backend HTTP 403 enforcement for `role.manage`
+- verifies Angular's route guard independently produces Access Denied
+- verifies logout clears the browser session
+
+This closes the repository-controlled authentication/authorization end-to-end requirement.
+
+The test still does not validate an external hosting layer, CDN, ingress, WAF, TLS terminator, or DNS path. Deployed-origin verification remains separate.
+
+See `docs/full-stack-testing.md`.
 
 ## Build cleanliness and performance
 
@@ -133,13 +161,24 @@ Content-Security-Policy:
   base-uri 'self';
   frame-ancestors 'none';
   form-action 'self';
-  trusted-types angular angular#bundler;
-  require-trusted-types-for 'script'
+  trusted-types angular angular#bundler
 ```
 
 If the API is moved away from the same-origin `/api/v1` contract, explicitly add the approved HTTPS API origin to `connect-src`.
 
 Do not hard-code a reusable CSP nonce.
+
+### Angular autoCSP and Trusted Types
+
+The production header allowlists Angular's `angular` and `angular#bundler` Trusted Types policy names, but it intentionally does **not** send:
+
+```text
+require-trusted-types-for 'script'
+```
+
+Angular CLI `security.autoCsp` replaces external script tags with a hashed bootstrap loader. In the Angular 22 toolchain used by this repository, that loader assigns string URLs to dynamically created script elements before Angular's own Trusted Types policies exist. Enforcing the Trusted Types script sink in the HTTP header therefore blocks application bootstrap with `TrustedScriptURL` errors.
+
+The full-stack production-browser gate protects this boundary. Keep `security.autoCsp` enabled; do not re-add sink enforcement until the validated Angular CLI bootstrap path supports it.
 
 ## Recommended HTTP headers
 
@@ -188,7 +227,7 @@ See `docs/runtime-security.md`.
 
 The current frontend contract uses a bearer access token stored in tab-scoped `sessionStorage`, with an in-memory fallback.
 
-This is preferable to persistent local storage but it is still readable by JavaScript. CSP, Trusted Types, Angular template sanitization, and avoiding unsafe DOM APIs are therefore important.
+This is preferable to persistent local storage but it is still readable by JavaScript. CSP, Angular template sanitization, the allowed Angular Trusted Types policies, and avoiding unsafe DOM APIs are therefore important.
 
 For a higher-assurance production architecture, the backend can move session/refresh credentials to `HttpOnly; Secure; SameSite` cookies. That is a backend authentication change and should not be simulated only in Angular.
 
@@ -294,8 +333,8 @@ Frontend release readiness requires:
 - Playwright critical-flow browser E2E green
 - Docker image build and live runtime security/routing/cache/build-identity verification green
 - no unresolved critical/high dependency vulnerabilities after review
-- backend contracts implemented and integration-tested
-- authentication/authorization verified end-to-end
+- backend contracts implemented and integration-tested ✅ Group 25–26
+- authentication/authorization verified end-to-end ✅ Group 26
 - production security headers verified at the deployed origin
 - frontend application/Angular/build identity available from `/build-info.json`
 - API/Angular versions and deployment configuration documented
