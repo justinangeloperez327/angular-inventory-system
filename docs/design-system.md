@@ -843,10 +843,21 @@ Authentication is migrated to Tailwind and the visual-system migration is comple
 
 ### Sign-in
 
-The sign-in page is intentionally minimal:
+The sign-in page uses a restrained authentication composition rather than a generic centered card.
+
+On large screens it is split into:
 
 ```text
-Product identity
+Product / operational context
+Sign-in workspace
+```
+
+The context panel communicates the three core product ideas—stock visibility, operational workflows, and controlled access—without introducing dashboard widgets or decorative marketing art.
+
+The form remains deliberately compact:
+
+```text
+Secure-access eyebrow
 Sign-in heading
 Email
 Password
@@ -854,7 +865,9 @@ Primary submit action
 Access note
 ```
 
-It uses the same semantic colors, spacing, radius, typography, focus behavior, and shared controls as the authenticated shell.
+On smaller screens the context panel is removed and the page becomes a focused single-column sign-in surface.
+
+The page continues to use the same semantic colors, low-radius geometry, typography, focus behavior, shared Input/Button/Alert primitives, and authentication behavior as the rest of the application.
 
 ### Global reset decision
 
