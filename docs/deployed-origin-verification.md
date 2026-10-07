@@ -47,6 +47,26 @@ to the canonical backend production origin.
 
 The browser continues to use same-origin URLs.
 
+## Manual-only Vercel deployment
+
+This repository does **not** automatically deploy from Git pushes or merged pull requests.
+
+`vercel.json` enforces:
+
+```json
+{
+  "git": {
+    "deploymentEnabled": false
+  }
+}
+```
+
+This keeps the Vercel project available while stopping Git-triggered Preview and Production deployments.
+
+Deploy to Vercel only when intentionally requested, for example through an explicit manual Vercel deployment workflow or the Vercel CLI.
+
+The deployed-origin verification workflow does not create a deployment; it only verifies an already-deployed origin.
+
 ## Vercel deployment policy
 
 `vercel.json` mirrors the validated Docker/Nginx contract where the platform controls delivery:
