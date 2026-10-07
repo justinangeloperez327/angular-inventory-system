@@ -161,13 +161,24 @@ Content-Security-Policy:
   base-uri 'self';
   frame-ancestors 'none';
   form-action 'self';
-  trusted-types angular angular#bundler;
-  require-trusted-types-for 'script'
+  trusted-types angular angular#bundler
 ```
 
 If the API is moved away from the same-origin `/api/v1` contract, explicitly add the approved HTTPS API origin to `connect-src`.
 
 Do not hard-code a reusable CSP nonce.
+
+### Angular autoCSP and Trusted Types
+
+The production header allowlists Angular's `angular` and `angular#bundler` Trusted Types policy names, but it intentionally does **not** send:
+
+```text
+require-trusted-types-for 'script'
+```
+
+Angular CLI `security.autoCsp` replaces external script tags with a hashed bootstrap loader. In the Angular 22 toolchain used by this repository, that loader assigns string URLs to dynamically created script elements before Angular's own Trusted Types policies exist. Enforcing the Trusted Types script sink in the HTTP header therefore blocks application bootstrap with `TrustedScriptURL` errors.
+
+The full-stack production-browser gate protects this boundary. Keep `security.autoCsp` enabled; do not re-add sink enforcement until the validated Angular CLI bootstrap path supports it.
 
 ## Recommended HTTP headers
 
@@ -216,7 +227,7 @@ See `docs/runtime-security.md`.
 
 The current frontend contract uses a bearer access token stored in tab-scoped `sessionStorage`, with an in-memory fallback.
 
-This is preferable to persistent local storage but it is still readable by JavaScript. CSP, Trusted Types, Angular template sanitization, and avoiding unsafe DOM APIs are therefore important.
+This is preferable to persistent local storage but it is still readable by JavaScript. CSP, Angular template sanitization, the allowed Angular Trusted Types policies, and avoiding unsafe DOM APIs are therefore important.
 
 For a higher-assurance production architecture, the backend can move session/refresh credentials to `HttpOnly; Secure; SameSite` cookies. That is a backend authentication change and should not be simulated only in Angular.
 
