@@ -159,28 +159,46 @@ The NestJS application should configure trusted-proxy handling according to the 
 
 ## Image reproducibility
 
-There is currently no committed `package-lock.json`, so the Docker build uses:
+The repository commits `package-lock.json` and the Docker build uses:
 
-```bash
-npm install
+```dockerfile
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 ```
 
-Once a lockfile is intentionally committed, change the Docker build stage and CI installation to:
+The dependency layer is therefore resolved from the same lockfile used by CI.
+
+See `docs/dependencies.md` for the dependency-management contract.
+
+For formal production releases, the runtime Nginx base image should also be pinned to an approved version or digest according to the deployment team's image-maintenance policy.
+
+## CI runtime verification
+
+CI builds and starts the Docker image after the Angular unit, production-build, and browser gates.
+
+The static runtime guard first verifies the Nginx/Docker configuration:
 
 ```bash
-npm ci
+npm run check:runtime
 ```
 
-For formal releases, also pin the runtime Nginx image to an approved version or digest.
+The running image is then verified with:
 
-## CI
+```bash
+bash scripts/verify-container-runtime.sh
+```
 
-CI builds and starts the Docker image after the Angular unit-test and production-build gates.
+The live verifier checks:
 
-It validates:
+- Nginx becomes healthy
+- `/healthz` returns the expected body
+- production security headers are actually emitted
+- the Nginx version is not exposed
+- `index.html` is not cacheable
+- a deep SPA route resolves to Angular
+- `/api/` never falls through to Angular
+- a generated JS/CSS asset has immutable one-year caching
 
-- Dockerfile can build
-- Nginx starts
-- `/healthz` returns successfully
+The test deliberately does not require a live NestJS backend. In CI, an API request is expected to fail upstream while remaining clearly separated from the SPA.
 
-The CI smoke test deliberately does not require a live NestJS backend.
+See `docs/runtime-security.md`.
