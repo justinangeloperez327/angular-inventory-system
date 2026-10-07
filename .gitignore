@@ -35,3 +35,4 @@ Thumbs.db
 /test-results
 /blob-report
 /.contract-backend
+/deployment-verification-report.json

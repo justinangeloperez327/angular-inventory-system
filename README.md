@@ -58,10 +58,13 @@ npm run check:accessibility
 npm run check:production
 npm run check:runtime
 npm run check:observability
+npm run check:deployment
 npm test
 npm run build:production
 npm run e2e
 npm run e2e:full-stack
+npm run verify:deployed-origin
+npm run e2e:deployed
 ```
 
 Install the browser once before running E2E locally:
@@ -141,6 +144,7 @@ See:
 - `docs/accessibility.md`
 - `docs/browser-testing.md`
 - `docs/full-stack-testing.md`
+- `docs/deployed-origin-verification.md`
 - `docs/performance.md`
 - `docs/dependencies.md`
 - `docs/runtime-security.md`

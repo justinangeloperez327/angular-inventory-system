@@ -177,3 +177,14 @@ Passing this test proves the repository-controlled production containers integra
 It still does not prove that an external CDN, ingress, WAF, DNS, TLS termination layer, or hosted deployment preserves the same behavior.
 
 Final deployed-origin verification remains a separate production requirement.
+
+
+## Final public-origin gate
+
+The full-stack suite proves the production containers integrate correctly on the repository-controlled Docker network.
+
+It does not replace Group 27.
+
+After deployment, run the `Verify deployed origin` GitHub Actions workflow to confirm that the external hosting layer preserves the same security, routing, caching, build identity, backend readiness, and browser-bootstrap behavior.
+
+See `docs/deployed-origin-verification.md`.

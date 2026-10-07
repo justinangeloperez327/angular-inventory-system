@@ -1,0 +1,77 @@
+name: Verify deployed origin
+
+on:
+  workflow_dispatch:
+    inputs:
+      origin:
+        description: Public HTTPS origin to verify
+        required: true
+        type: string
+        default: https://angular-inventory-system.vercel.app
+      expected_commit:
+        description: Expected deployed Git commit (defaults to selected workflow ref)
+        required: false
+        type: string
+      require_hsts:
+        description: Require Strict-Transport-Security at the public origin
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployed-origin-${{ inputs.origin }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Production origin verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.15.0
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify deployed HTTP contract
+        run: npm run verify:deployed-origin
+        env:
+          DEPLOYED_ORIGIN: ${{ inputs.origin }}
+          EXPECTED_COMMIT_SHA: ${{ inputs.expected_commit || github.sha }}
+          REQUIRE_HSTS: ${{ inputs.require_hsts }}
+          DEPLOYMENT_REPORT_PATH: deployment-verification-report.json
+
+      - name: Verify deployed Angular bootstrap
+        run: npm run e2e:deployed
+        env:
+          DEPLOYED_ORIGIN: ${{ inputs.origin }}
+
+      - name: Upload deployment verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-origin-${{ github.run_id }}
+          path: |
+            deployment-verification-report.json
+            test-results/deployed-origin/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14

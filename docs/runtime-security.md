@@ -118,3 +118,24 @@ Passing the container verifier proves the repository's Nginx image behaves as in
 It does not prove that an external CDN, ingress, reverse proxy, WAF, or hosting platform preserves those headers. Production deployment should still verify the final public HTTPS origin after infrastructure is configured.
 
 HSTS remains an ingress/domain decision and is intentionally not forced by the application container.
+
+
+## Public deployed-origin verification
+
+Container verification proves the repository-controlled Nginx runtime.
+
+Group 27 adds a separate public-origin verification step because a deployment platform, CDN, ingress, WAF, or DNS/TLS layer can still alter the final response.
+
+The production workflow validates the public HTTPS origin for:
+
+- security headers
+- CSP compatibility
+- HTTPS redirect
+- health
+- build identity
+- SPA deep links
+- asset caching
+- backend readiness through `/api/v1`
+- real Chromium bootstrap
+
+See `docs/deployed-origin-verification.md`.

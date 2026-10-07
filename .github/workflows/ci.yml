@@ -68,6 +68,9 @@ jobs:
       - name: Observability guard
         run: npm run check:observability
 
+      - name: Deployment verification guard
+        run: npm run check:deployment
+
       - name: Unit tests
         run: npm test
 
