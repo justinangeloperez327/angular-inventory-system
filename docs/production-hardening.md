@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 25 adds pinned Angular ↔ NestJS API compatibility verification to the frontend release gate.
+Group 26 adds production-container Angular ↔ NestJS ↔ PostgreSQL integration verification to the frontend release gate.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm ci
 npm run check
 ```
 
-`npm run check` executes the dependency, backend API-contract, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
+`npm run check` executes the isolated frontend dependency, backend API-contract, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and mocked-boundary Playwright browser E2E. CI additionally runs the Docker-backed full-stack integration gate.
 
 ## CI
 
@@ -43,6 +43,7 @@ The workflow performs:
 14. Playwright critical-flow browser E2E
 15. Docker image build with commit/run identity
 16. live container security/routing/cache/build-identity verification
+17. production-container Angular ↔ NestJS ↔ PostgreSQL full-stack integration
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -85,6 +86,33 @@ API prefix         /api/v1
 This prevents the frontend and backend from independently passing tests while drifting at the REST boundary.
 
 See `docs/api-integration.md`.
+
+
+
+## Full-stack authentication and authorization
+
+Group 26 runs the production Angular Nginx image against the pinned NestJS backend and an ephemeral PostgreSQL 18 database.
+
+The integration gate:
+
+- applies the backend's real Prisma migrations
+- runs the real backend seed
+- creates a CI-only Administrator
+- verifies backend readiness through the Angular Nginx proxy
+- signs in through the Angular UI against the live NestJS login endpoint
+- reloads the browser to verify real `/auth/me` session restoration
+- exercises the Angular-facing Administration role contract
+- creates and signs in a restricted Viewer through the live backend
+- verifies an allowed Dashboard request
+- verifies backend HTTP 403 enforcement for `role.manage`
+- verifies Angular's route guard independently produces Access Denied
+- verifies logout clears the browser session
+
+This closes the repository-controlled authentication/authorization end-to-end requirement.
+
+The test still does not validate an external hosting layer, CDN, ingress, WAF, TLS terminator, or DNS path. Deployed-origin verification remains separate.
+
+See `docs/full-stack-testing.md`.
 
 ## Build cleanliness and performance
 
@@ -294,8 +322,8 @@ Frontend release readiness requires:
 - Playwright critical-flow browser E2E green
 - Docker image build and live runtime security/routing/cache/build-identity verification green
 - no unresolved critical/high dependency vulnerabilities after review
-- backend contracts implemented and integration-tested
-- authentication/authorization verified end-to-end
+- backend contracts implemented and integration-tested ✅ Group 25–26
+- authentication/authorization verified end-to-end ✅ Group 26
 - production security headers verified at the deployed origin
 - frontend application/Angular/build identity available from `/build-info.json`
 - API/Angular versions and deployment configuration documented
