@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { authFailureInterceptor } from './core/auth/interceptors/auth-failure.interceptor';
@@ -9,11 +9,13 @@ import { authInterceptor } from './core/http/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/http/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/http/interceptors/loading.interceptor';
 import { requestIdInterceptor } from './core/http/interceptors/request-id.interceptor';
+import { AppErrorHandler } from './core/observability/app-error-handler';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    { provide: ErrorHandler, useClass: AppErrorHandler },
     provideAppEnvironment(),
     ...AUTH_PROVIDERS,
     provideHttpClient(
