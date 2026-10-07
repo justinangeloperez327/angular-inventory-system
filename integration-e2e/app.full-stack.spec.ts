@@ -59,7 +59,7 @@ test.describe.serial('production frontend + pinned NestJS integration', () => {
     await expect(page.getByText('Integration Administrator')).toBeVisible();
 
     const rolesResponse = await request.get(
-      '/api/v1/roles?page=1&pageSize=100&sort=name&direction=asc',
+      '/api/v1/administration/roles',
       {
         headers: {
           Authorization: `Bearer ${adminAccessToken}`,
@@ -70,11 +70,16 @@ test.describe.serial('production frontend + pinned NestJS integration', () => {
     expect(rolesResponse.status()).toBe(200);
 
     const rolesBody = await rolesResponse.json();
-    const viewerRole = rolesBody.data.find(
-      (role: { name: string }) => role.name === 'Viewer',
+    const viewerRole = rolesBody.find(
+      (role: { id: string; name: string }) =>
+        role.name === 'Viewer',
     );
 
-    expect(viewerRole?.id).toBeTruthy();
+    if (!viewerRole?.id) {
+      throw new Error(
+        'Seeded Viewer role is missing from the administration contract.',
+      );
+    }
 
     const viewerEmail =
       `integration-viewer-${Date.now()}@example.com`;
