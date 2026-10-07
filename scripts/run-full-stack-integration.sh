@@ -41,25 +41,31 @@ if ! docker image inspect "${FRONTEND_IMAGE}" >/dev/null 2>&1; then
   exit 1
 fi
 
+compose=(
+  docker compose
+  --project-name "${PROJECT_NAME}"
+  --file "${BACKEND_COMPOSE}"
+)
+
 cleanup() {
   local status=$?
 
   if [[ "${status}" -ne 0 ]]; then
     echo "Full-stack integration failed; collecting container diagnostics." >&2
     docker logs "${FRONTEND_CONTAINER}" 2>&1 || true
-    docker compose       --project-name "${PROJECT_NAME}"       --file "${BACKEND_COMPOSE}"       logs --no-color 2>&1 || true
+    "${compose[@]}" logs --no-color 2>&1 || true
   fi
 
   docker rm --force "${FRONTEND_CONTAINER}" >/dev/null 2>&1 || true
-  docker compose     --project-name "${PROJECT_NAME}"     --file "${BACKEND_COMPOSE}"     down --volumes --remove-orphans >/dev/null 2>&1 || true
+  "${compose[@]}" down --volumes --remove-orphans >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
 docker rm --force "${FRONTEND_CONTAINER}" >/dev/null 2>&1 || true
-docker compose   --project-name "${PROJECT_NAME}"   --file "${BACKEND_COMPOSE}"   down --volumes --remove-orphans >/dev/null 2>&1 || true
+"${compose[@]}" down --volumes --remove-orphans >/dev/null 2>&1 || true
 
 echo "Starting pinned NestJS + PostgreSQL integration stack..."
-docker compose   --project-name "${PROJECT_NAME}"   --file "${BACKEND_COMPOSE}"   up --build --detach
+"${compose[@]}" up --build --detach
 
 backend_ready=0
 for attempt in $(seq 1 90); do
