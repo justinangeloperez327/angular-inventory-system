@@ -10,6 +10,33 @@ const adminPassword =
 const viewerPassword =
   'Integration-Viewer-Password-123!';
 
+function attachBrowserDiagnostics(
+  page: import('@playwright/test').Page,
+): void {
+  page.on('console', (message) => {
+    if (
+      message.type() === 'error' ||
+      message.type() === 'warning'
+    ) {
+      console.log(
+        `[browser:${message.type()}] ${message.text()}`,
+      );
+    }
+  });
+
+  page.on('pageerror', (error) => {
+    console.log(
+      `[browser:pageerror] ${error.name}: ${error.message}`,
+    );
+  });
+
+  page.on('requestfailed', (request) => {
+    console.log(
+      `[browser:requestfailed] ${request.method()} ${request.url()} :: ${request.failure()?.errorText ?? 'unknown'}`,
+    );
+  });
+}
+
 async function signIn(
   page: import('@playwright/test').Page,
   email: string,
@@ -43,6 +70,7 @@ test.describe.serial('production frontend + pinned NestJS integration', () => {
     page,
     request,
   }) => {
+    attachBrowserDiagnostics(page);
     await signIn(page, adminEmail, adminPassword);
 
     await expect(page.getByText('Integration Administrator')).toBeVisible();
