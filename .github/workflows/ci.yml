@@ -51,6 +51,9 @@ jobs:
       - name: Production guard
         run: npm run check:production
 
+      - name: Runtime configuration guard
+        run: npm run check:runtime
+
       - name: Unit tests
         run: npm test
 
@@ -63,7 +66,7 @@ jobs:
       - name: Build Docker image
         run: docker build --tag angular-inventory-system:ci .
 
-      - name: Smoke-test Docker image
+      - name: Verify Docker runtime
         run: |
           docker run --detach \
             --name angular-inventory-system-ci \
@@ -77,11 +80,4 @@ jobs:
           }
           trap cleanup EXIT
 
-          for attempt in $(seq 1 20); do
-            if curl --fail --silent --show-error http://127.0.0.1:8080/healthz; then
-              exit 0
-            fi
-            sleep 1
-          done
-
-          exit 1
+          bash scripts/verify-container-runtime.sh
