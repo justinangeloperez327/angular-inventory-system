@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 23 adds production runtime and security-header verification to the frontend release gate.
+Group 24 adds sanitized frontend diagnostics, request correlation, and deployable build identity to the frontend release gate.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm ci
 npm run check
 ```
 
-`npm run check` executes the dependency, design-system, accessibility, production, and runtime-configuration guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
+`npm run check` executes the dependency, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
 
 ## CI
 
@@ -35,11 +35,12 @@ The workflow performs:
 6. accessibility guard
 7. production-configuration guard
 8. runtime/Nginx configuration guard
-9. Vitest unit tests
-10. Angular production build
-11. Playwright critical-flow browser E2E
-12. Docker image build
-13. live container security/routing/cache verification
+9. observability/redaction/build-identity guard
+10. Vitest unit tests
+11. Angular production build with generated build metadata
+12. Playwright critical-flow browser E2E
+13. Docker image build with commit/run identity
+14. live container security/routing/cache/build-identity verification
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -204,11 +205,34 @@ Accessibility is an ongoing acceptance criterion. New interactive UI must remain
 
 ## Errors and observability
 
-HTTP errors are normalized into `ApiHttpError` and preserve backend/request trace identifiers when available.
+Group 24 provides a sanitized frontend diagnostic event contract and a custom Angular `ErrorHandler`.
 
-The frontend does not invent a telemetry endpoint. Production error ingestion must be connected to an approved observability service or backend endpoint before sending application/user context externally.
+Uncaught application errors and operational API failures can emit metadata such as:
 
-Never include access tokens, passwords, authorization headers, or sensitive business payloads in client telemetry.
+- diagnostic event ID
+- build identity
+- HTTP status
+- identifier-safe backend code
+- trace/request ID
+- JavaScript error type
+
+Diagnostic events intentionally exclude raw error messages, validation payloads, request/response bodies, authentication credentials, user identity, and business payloads.
+
+API correlation uses backend trace identity when available and falls back to the outbound client `X-Request-ID`.
+
+Every build also generates safe frontend identity metadata and exposes it from the production runtime at:
+
+```text
+/build-info.json
+```
+
+The endpoint is served with `Cache-Control: no-store` and is validated by the live Docker runtime test.
+
+The default diagnostic sink is local browser console output of the sanitized event only. No remote telemetry endpoint is invented. A future approved integration should replace only the `CLIENT_DIAGNOSTIC_SINK` token while preserving the redaction contract.
+
+See `docs/observability.md`.
+
+Never include access tokens, passwords, authorization headers, user/session data, or sensitive business payloads in client telemetry.
 
 ## Deployment requirements
 
@@ -241,12 +265,14 @@ Frontend release readiness requires:
 - accessibility guard green
 - production configuration guard green
 - runtime/Nginx configuration guard green
+- observability/redaction/build-identity guard green
 - Vitest unit tests green
 - warning-clean Angular production build within configured bundle ceilings
 - Playwright critical-flow browser E2E green
-- Docker image build and live runtime security/routing/cache verification green
+- Docker image build and live runtime security/routing/cache/build-identity verification green
 - no unresolved critical/high dependency vulnerabilities after review
 - backend contracts implemented and integration-tested
 - authentication/authorization verified end-to-end
 - production security headers verified at the deployed origin
+- frontend application/Angular/build identity available from `/build-info.json`
 - API/Angular versions and deployment configuration documented
