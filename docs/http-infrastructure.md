@@ -55,3 +55,22 @@ Use `toHttpParams` for ordinary request filters and `paginationToHttpParams` for
 ## Authentication boundary
 
 Group 3 deliberately does not store authentication credentials. `AUTH_TOKEN_READER` currently returns `null`. Group 4 will connect the interceptor to the authentication/session state without changing this transport layer.
+
+
+## Backend compatibility contract
+
+The Angular client targets the versioned NestJS base path:
+
+```text
+/api/v1
+```
+
+`npm run check:api-contract` verifies the frontend configuration and, in CI, compares every Angular `ApiClient` route/HTTP verb against the controllers in the pinned compatible backend revision.
+
+The pinned backend revision is recorded in:
+
+```text
+contracts/backend-api-contract.json
+```
+
+Do not change the frontend API prefix or backend pin independently. Update them together after the compatibility guard passes against the intended NestJS revision.
