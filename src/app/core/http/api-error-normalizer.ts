@@ -5,7 +5,7 @@ import { ApiHttpError } from './api-http-error';
 
 type JsonRecord = Record<string, unknown>;
 
-export function normalizeApiError(error: unknown): ApiHttpError {
+export function normalizeApiError(error: unknown, fallbackTraceId?: string): ApiHttpError {
   if (error instanceof ApiHttpError) {
     return error;
   }
@@ -20,6 +20,7 @@ export function normalizeApiError(error: unknown): ApiHttpError {
     readString(body?.['traceId']) ??
     readString(body?.['trace_id']) ??
     error.headers?.get('x-request-id') ??
+    readString(fallbackTraceId) ??
     undefined;
 
   return new ApiHttpError(
