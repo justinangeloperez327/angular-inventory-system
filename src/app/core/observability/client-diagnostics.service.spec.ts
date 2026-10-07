@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { ApiHttpError } from '../http/api-http-error';
 import { ClientDiagnosticEvent } from './client-diagnostic.model';
