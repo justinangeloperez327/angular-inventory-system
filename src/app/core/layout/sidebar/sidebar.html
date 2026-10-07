@@ -1,6 +1,6 @@
 @if (open) {
   <button
-    class="fixed inset-0 z-20 border-0 bg-black/35 p-0 lg:hidden"
+    class="fixed inset-0 z-20 border-0 bg-black/45 p-0 backdrop-blur-[1px] lg:hidden"
     type="button"
     tabindex="-1"
     aria-label="Close navigation"
@@ -10,7 +10,7 @@
 
 <aside
   id="primary-navigation"
-  class="fixed inset-y-0 left-0 z-30 w-sidebar border-r border-border bg-surface transition-transform duration-150 lg:visible lg:translate-x-0"
+  class="fixed inset-y-0 left-0 z-30 flex w-sidebar flex-col border-r border-shell-border bg-shell text-shell-foreground shadow-lg transition-transform duration-150 lg:visible lg:translate-x-0 lg:shadow-none"
   [class.invisible]="!open"
   [class.-translate-x-full]="!open"
   [class.visible]="open"
@@ -21,21 +21,24 @@
   [cdkTrapFocus]="open"
   [cdkTrapFocusAutoCapture]="open"
 >
-  <div class="flex h-header items-center gap-3 border-b border-border px-4">
+  <div class="flex h-header shrink-0 items-center gap-3 border-b border-shell-border px-4">
     <div
-      class="grid size-8 place-items-center rounded-sm border border-border-strong bg-foreground text-xs font-semibold tracking-wide text-surface"
+      class="relative grid size-8 place-items-center overflow-hidden rounded-sm bg-primary text-[0.6875rem] font-semibold tracking-[0.08em] text-white shadow-control"
       aria-hidden="true"
     >
-      IS
+      <span class="relative z-10">IS</span>
+      <span class="absolute -bottom-3 -right-2 size-6 rotate-45 border border-white/20"></span>
     </div>
 
     <div class="min-w-0">
-      <strong class="block truncate text-base font-semibold">Inventory</strong>
-      <span class="mt-0.5 block truncate text-xs text-muted-foreground">Management System</span>
+      <strong class="block truncate text-sm font-semibold tracking-[-0.01em] text-shell-foreground">
+        Inventory
+      </strong>
+      <span class="mt-0.5 block truncate text-xs text-shell-muted">Operations workspace</span>
     </div>
 
     <button
-      class="ml-auto grid size-8 place-items-center rounded-sm border-0 bg-transparent text-xl text-muted-foreground hover:bg-surface-muted hover:text-foreground lg:hidden"
+      class="ml-auto grid size-8 place-items-center rounded-sm border border-transparent bg-transparent text-xl text-shell-muted transition-colors hover:border-shell-border hover:bg-shell-hover hover:text-shell-foreground lg:hidden"
       type="button"
       aria-label="Close navigation"
       (click)="closed.emit()"
@@ -44,11 +47,11 @@
     </button>
   </div>
 
-  <nav class="h-[calc(100vh-var(--spacing-header))] overflow-y-auto px-3 py-4" aria-label="Application">
+  <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4" aria-label="Application">
     @for (section of sections(); track section.label) {
       <section class="mt-5 first:mt-0">
         <p
-          class="mb-1.5 mt-0 px-2 text-xs font-semibold uppercase tracking-wider text-subtle-foreground"
+          class="mb-1.5 mt-0 px-2.5 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-shell-subtle"
         >
           {{ section.label }}
         </p>
@@ -56,19 +59,24 @@
         <div class="grid gap-0.5">
           @for (item of section.items; track item.route) {
             <a
-              class="flex min-h-9 items-center gap-2.5 border-l-2 border-transparent px-2.5 py-1.5 text-base font-normal text-muted-foreground no-underline transition-colors hover:bg-surface-muted hover:text-foreground"
+              class="group flex min-h-9 items-center gap-2.5 rounded-sm border border-transparent px-2.5 py-1.5 text-sm font-normal text-shell-muted no-underline transition-[background-color,border-color,color] duration-100 hover:border-shell-border hover:bg-shell-hover hover:text-shell-foreground"
               [routerLink]="item.route"
               [routerLinkActive]="[
-                'border-primary',
-                'bg-surface-strong',
+                'border-shell-border',
+                'bg-shell-active',
                 'font-medium',
-                'text-foreground'
+                'text-shell-foreground'
               ]"
               [routerLinkActiveOptions]="{ exact: false }"
               ariaCurrentWhenActive="page"
               (click)="closeAfterNavigation()"
             >
-              <app-navigation-icon [name]="item.icon" />
+              <span
+                class="grid size-6 shrink-0 place-items-center rounded-xs text-current opacity-70 transition-opacity group-hover:opacity-100"
+                aria-hidden="true"
+              >
+                <app-navigation-icon [name]="item.icon" />
+              </span>
               <span class="truncate">{{ item.label }}</span>
             </a>
           }
@@ -76,4 +84,11 @@
       </section>
     }
   </nav>
+
+  <div class="shrink-0 border-t border-shell-border px-4 py-3">
+    <div class="flex items-center gap-2 text-xs text-shell-subtle">
+      <span class="size-1.5 rounded-full bg-primary" aria-hidden="true"></span>
+      <span>Operational workspace</span>
+    </div>
+  </div>
 </aside>
