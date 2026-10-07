@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 22 adds reproducible dependency and supply-chain enforcement to the frontend release gate.
+Group 23 adds production runtime and security-header verification to the frontend release gate.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm ci
 npm run check
 ```
 
-`npm run check` executes the design-system, accessibility, and production guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
+`npm run check` executes the dependency, design-system, accessibility, production, and runtime-configuration guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
 
 ## CI
 
@@ -34,11 +34,12 @@ The workflow performs:
 5. design-system guard
 6. accessibility guard
 7. production-configuration guard
-8. Vitest unit tests
-9. Angular production build
-10. Playwright critical-flow browser E2E
-11. Docker image build
-12. Docker container health smoke test
+8. runtime/Nginx configuration guard
+9. Vitest unit tests
+10. Angular production build
+11. Playwright critical-flow browser E2E
+12. Docker image build
+13. live container security/routing/cache verification
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -130,6 +131,36 @@ Cross-Origin-Opener-Policy: same-origin
 
 Use `Strict-Transport-Security` only at an HTTPS origin where the deployment team has confirmed the correct domain/subdomain policy.
 
+
+
+## Runtime security verification
+
+The repository now validates both the Nginx configuration and the behavior of the running production image.
+
+`npm run check:runtime` statically protects the Docker/Nginx contract, including security headers, SPA fallback, API proxy separation, health checks, and caching rules.
+
+After the Docker image is built, CI starts the image and runs:
+
+```bash
+bash scripts/verify-container-runtime.sh
+```
+
+The live verifier confirms:
+
+- health endpoint behavior
+- security headers on real HTTP responses
+- Nginx version suppression
+- non-cacheable HTML
+- immutable hashed JS/CSS caching
+- frontend deep-link fallback
+- `/api/` never falling through to Angular
+
+This closes the gap between "configuration exists" and "the shipped container actually emits the expected runtime behavior."
+
+The final deployed HTTPS origin still requires infrastructure-level verification because an ingress, CDN, WAF, or hosting platform can alter response headers.
+
+See `docs/runtime-security.md`.
+
 ## Authentication storage
 
 The current frontend contract uses a bearer access token stored in tab-scoped `sessionStorage`, with an in-memory fallback.
@@ -209,10 +240,11 @@ Frontend release readiness requires:
 - design-system guard green
 - accessibility guard green
 - production configuration guard green
+- runtime/Nginx configuration guard green
 - Vitest unit tests green
 - warning-clean Angular production build within configured bundle ceilings
 - Playwright critical-flow browser E2E green
-- Docker image build and container health smoke test green
+- Docker image build and live runtime security/routing/cache verification green
 - no unresolved critical/high dependency vulnerabilities after review
 - backend contracts implemented and integration-tested
 - authentication/authorization verified end-to-end
