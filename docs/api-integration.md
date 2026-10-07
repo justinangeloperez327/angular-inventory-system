@@ -14,7 +14,7 @@ Current compatibility target:
 
 ```text
 Repository  justinangeloperez327/nest-js-inventory-system
-Commit      3565f44525a15e156c0667819bf3ade04da5ae26
+Commit      fdb4387c9317e09b691e540f1b8f2a7bea0a49e4
 API prefix  /api/v1
 Backend     0.0.1
 ```
