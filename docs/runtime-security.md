@@ -97,6 +97,14 @@ immutable
 
 This validates the actual Nginx cache policy against hashed Angular output.
 
+## Build identity
+
+The Docker build accepts `APP_COMMIT_SHA` and `APP_BUILD_ID`, and CI populates them from the GitHub commit/run identifiers.
+
+The Angular build generates `/build-info.json` from those safe values. The runtime verifier confirms the endpoint contains a valid application name, Angular version, commit SHA, and build ID.
+
+See `docs/observability.md`.
+
 ## Deployment boundary
 
 Passing the container verifier proves the repository's Nginx image behaves as intended.
