@@ -86,7 +86,7 @@ assert_security_headers() {
 }
 
 for attempt in $(seq 1 20); do
-  status="$(request "/healthz" "health")"
+  status="$(request "/healthz" "health" || true)"
 
   if [[ "$status" == "200" ]]; then
     break
@@ -112,7 +112,9 @@ assert_header_contains "$TMP_DIR/spa.headers" "Cache-Control" "no-store"
 assert_security_headers "$TMP_DIR/spa.headers"
 
 asset_path="$(
-  grep -oE '(src|href)="[^"]+\.(js|css)"' "$TMP_DIR/index.body"     | head -n 1     | sed -E 's/^(src|href)="([^"]+)"/\2/'
+  {
+    grep -oE '(src|href)="[^"]+\.(js|css)"' "$TMP_DIR/index.body" || true
+  } | head -n 1 | sed -E 's/^(src|href)="([^"]+)"/\2/'
 )"
 
 [[ -n "$asset_path" ]] || fail "Could not discover a generated JavaScript/CSS asset from index.html"
