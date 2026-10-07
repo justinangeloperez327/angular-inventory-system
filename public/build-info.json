@@ -1,0 +1,7 @@
+{
+  "appName": "angular-inventory-system",
+  "version": "0.0.0",
+  "angularVersion": "22.2.1",
+  "commitSha": "development",
+  "buildId": "local"
+}
