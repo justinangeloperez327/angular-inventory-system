@@ -170,6 +170,16 @@ test.describe.serial('production frontend + pinned NestJS integration', () => {
     ).toBeVisible();
 
     await page.getByRole('button', { name: 'Sign out' }).click();
+    await expect(page).toHaveURL(/\/auth\/login$/);
+
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.sessionStorage.getItem('inventory.access-token'),
+        ),
+      )
+      .toBeNull();
+
     await page.goto('/dashboard');
 
     await expect(page).toHaveURL(
