@@ -61,6 +61,7 @@ npm run check:observability
 npm test
 npm run build:production
 npm run e2e
+npm run e2e:full-stack
 ```
 
 Install the browser once before running E2E locally:
@@ -139,6 +140,7 @@ See:
 - `docs/design-system.md`
 - `docs/accessibility.md`
 - `docs/browser-testing.md`
+- `docs/full-stack-testing.md`
 - `docs/performance.md`
 - `docs/dependencies.md`
 - `docs/runtime-security.md`
