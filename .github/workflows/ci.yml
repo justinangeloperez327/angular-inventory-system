@@ -23,6 +23,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Checkout compatible NestJS backend contract
+        uses: actions/checkout@v5
+        with:
+          repository: justinangeloperez327/nest-js-inventory-system
+          ref: 3565f44525a15e156c0667819bf3ade04da5ae26
+          path: .contract-backend
+          persist-credentials: false
+
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
@@ -38,6 +46,9 @@ jobs:
 
       - name: Dependency audit
         run: npm audit --audit-level=high
+
+      - name: Backend API contract
+        run: npm run check:api-contract
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
