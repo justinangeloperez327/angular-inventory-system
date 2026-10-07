@@ -23,7 +23,8 @@
     "check:runtime": "node scripts/check-runtime-config.mjs",
     "generate:build-info": "node scripts/generate-build-info.mjs",
     "check:observability": "node scripts/check-observability.mjs",
-    "check:api-contract": "node scripts/check-api-contract.mjs"
+    "check:api-contract": "node scripts/check-api-contract.mjs",
+    "e2e:full-stack": "playwright test --config playwright.full-stack.config.ts"
   },
   "dependencies": {
     "@angular/cdk": "^22.2.1",
