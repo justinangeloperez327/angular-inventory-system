@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 26 adds production-container Angular ↔ NestJS ↔ PostgreSQL integration verification to the frontend release gate.
+Group 27 adds final public deployed-origin verification to the frontend release gate.
 
 ## Verification commands
 
@@ -44,6 +44,8 @@ The workflow performs:
 15. Docker image build with commit/run identity
 16. live container security/routing/cache/build-identity verification
 17. production-container Angular ↔ NestJS ↔ PostgreSQL full-stack integration
+18. deployed-origin HTTP/security/build/API verification
+19. deployed-origin Chromium bootstrap/deep-link verification
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -295,6 +297,42 @@ See `docs/observability.md`.
 
 Never include access tokens, passwords, authorization headers, user/session data, or sensitive business payloads in client telemetry.
 
+
+
+## Final deployed-origin verification
+
+Group 27 verifies the public deployment after the repository-controlled CI and full-stack container gates have passed.
+
+The platform-neutral HTTP verifier checks:
+
+- HTTP → HTTPS redirect
+- Angular root response
+- production security headers
+- validated CSP/Trusted Types boundary
+- optional HSTS
+- `/healthz`
+- non-cacheable `/build-info.json`
+- deployed commit/build identity
+- SPA deep-link fallback
+- immutable generated asset caching
+- `/api/v1/health/ready` through the public frontend origin
+
+A separate Chromium check verifies that the real deployed Sign In page bootstraps without an uncaught browser error and that a deep link to `/products` executes Angular routing instead of returning a platform 404.
+
+The repository also includes `vercel.json` so the current Vercel deployment mirrors the validated Nginx security/cache policy and proxies `/api/v1` to the canonical NestJS production origin.
+
+Run the GitHub Actions workflow:
+
+```text
+Verify deployed origin
+```
+
+against the intended production URL and expected commit.
+
+A green source CI run is necessary but no longer sufficient for a production release. The deployed-origin workflow must also pass.
+
+See `docs/deployed-origin-verification.md`.
+
 ## Deployment requirements
 
 The repository includes a production Docker/Nginx runtime. See `docs/docker.md`.
@@ -335,6 +373,6 @@ Frontend release readiness requires:
 - no unresolved critical/high dependency vulnerabilities after review
 - backend contracts implemented and integration-tested ✅ Group 25–26
 - authentication/authorization verified end-to-end ✅ Group 26
-- production security headers verified at the deployed origin
+- production security headers verified at the deployed origin ✅ Group 27 workflow
 - frontend application/Angular/build identity available from `/build-info.json`
 - API/Angular versions and deployment configuration documented
