@@ -21,10 +21,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Checkout compatible NestJS backend contract
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           repository: justinangeloperez327/nest-js-inventory-system
           ref: fdb4387c9317e09b691e540f1b8f2a7bea0a49e4
