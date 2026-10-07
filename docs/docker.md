@@ -75,6 +75,30 @@ where `api` is the NestJS Compose service name.
 
 The frontend image does not need to be rebuilt when this upstream changes.
 
+## Build identity
+
+The build stage accepts optional safe metadata:
+
+```text
+APP_COMMIT_SHA
+APP_BUILD_ID
+```
+
+CI supplies the GitHub commit SHA and workflow run ID. The Angular build writes that identity to `/build-info.json`, which is served with `Cache-Control: no-store`.
+
+Example manual build:
+
+```bash
+docker build \
+  --build-arg APP_COMMIT_SHA=0123456789abcdef \
+  --build-arg APP_BUILD_ID=manual-1 \
+  -t angular-inventory-system .
+```
+
+If the build arguments are omitted, local/default metadata uses `development` and `local`.
+
+See `docs/observability.md`.
+
 ## Runtime port
 
 The container listens on:
@@ -191,6 +215,7 @@ bash scripts/verify-container-runtime.sh
 The live verifier checks:
 
 - Nginx becomes healthy
+- generated build identity is available at `/build-info.json` with no-store caching
 - `/healthz` returns the expected body
 - production security headers are actually emitted
 - the Nginx version is not exposed

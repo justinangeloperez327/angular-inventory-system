@@ -51,6 +51,12 @@ server {
     try_files $uri =404;
   }
 
+  location = /build-info.json {
+    include /etc/nginx/security-headers.conf;
+    add_header Cache-Control "no-store";
+    try_files $uri =404;
+  }
+
   location ~* \.(?:js|css)$ {
     include /etc/nginx/security-headers.conf;
     expires 1y;

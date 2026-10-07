@@ -41,6 +41,29 @@ describe('normalizeApiError', () => {
     expect(normalized.traceId).toBe('req-456');
   });
 
+
+  it('uses the outbound request ID when the backend returns no trace identifier', () => {
+    const error = new HttpErrorResponse({
+      status: 503,
+      error: { message: 'Service unavailable.' },
+    });
+
+    const normalized = normalizeApiError(error, 'client-request-789');
+
+    expect(normalized.traceId).toBe('client-request-789');
+  });
+
+  it('prefers backend trace identifiers over the outbound request ID fallback', () => {
+    const error = new HttpErrorResponse({
+      status: 500,
+      error: { traceId: 'backend-trace-123' },
+    });
+
+    const normalized = normalizeApiError(error, 'client-request-789');
+
+    expect(normalized.traceId).toBe('backend-trace-123');
+  });
+
   it('normalizes network failures without leaking implementation details', () => {
     const error = new HttpErrorResponse({ status: 0, statusText: 'Unknown Error' });
 

@@ -8,19 +8,21 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "build:production": "ng build --configuration production",
+    "build": "npm run generate:build-info && ng build",
+    "build:production": "npm run generate:build-info && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --no-progress",
     "test:watch": "ng test",
-    "check": "npm run check:dependencies && npm run check:design && npm run check:accessibility && npm run check:production && npm run check:runtime && npm run test && npm run build:production && npm run e2e",
+    "check": "npm run check:dependencies && npm run check:design && npm run check:accessibility && npm run check:production && npm run check:runtime && npm run check:observability && npm run test && npm run build:production && npm run e2e",
     "check:design": "node scripts/check-design-system.mjs",
     "check:accessibility": "node scripts/check-accessibility.mjs",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "check:production": "node scripts/check-production.mjs",
     "check:dependencies": "node scripts/check-dependencies.mjs",
-    "check:runtime": "node scripts/check-runtime-config.mjs"
+    "check:runtime": "node scripts/check-runtime-config.mjs",
+    "generate:build-info": "node scripts/generate-build-info.mjs",
+    "check:observability": "node scripts/check-observability.mjs"
   },
   "dependencies": {
     "@angular/cdk": "^22.2.1",

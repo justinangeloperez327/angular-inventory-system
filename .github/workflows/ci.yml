@@ -54,6 +54,9 @@ jobs:
       - name: Runtime configuration guard
         run: npm run check:runtime
 
+      - name: Observability guard
+        run: npm run check:observability
+
       - name: Unit tests
         run: npm test
 
@@ -64,7 +67,12 @@ jobs:
         run: npm run e2e
 
       - name: Build Docker image
-        run: docker build --tag angular-inventory-system:ci .
+        run: |
+          docker build \
+            --build-arg APP_COMMIT_SHA="${GITHUB_SHA}" \
+            --build-arg APP_BUILD_ID="${GITHUB_RUN_ID}" \
+            --tag angular-inventory-system:ci \
+            .
 
       - name: Verify Docker runtime
         run: |

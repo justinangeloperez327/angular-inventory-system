@@ -56,6 +56,7 @@ npm run check:design
 npm run check:accessibility
 npm run check:production
 npm run check:runtime
+npm run check:observability
 npm test
 npm run build:production
 npm run e2e
@@ -140,6 +141,7 @@ See:
 - `docs/performance.md`
 - `docs/dependencies.md`
 - `docs/runtime-security.md`
+- `docs/observability.md`
 - `docs/docker.md`
 - `docs/production-hardening.md`
 - `docs/http-infrastructure.md`

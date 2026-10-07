@@ -4,6 +4,12 @@ ARG NODE_VERSION=24.15.0
 
 FROM node:${NODE_VERSION}-alpine AS build
 
+ARG APP_COMMIT_SHA=development
+ARG APP_BUILD_ID=local
+
+ENV APP_COMMIT_SHA=${APP_COMMIT_SHA}
+ENV APP_BUILD_ID=${APP_BUILD_ID}
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
