@@ -34,3 +34,4 @@ Thumbs.db
 /playwright-report
 /test-results
 /blob-report
+/.contract-backend
