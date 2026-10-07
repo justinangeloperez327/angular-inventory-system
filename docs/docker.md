@@ -9,7 +9,7 @@ Angular production build
         ↓
 Nginx runtime image
         ↓
-Static SPA + /api reverse proxy
+Static SPA + /api/v1 backend route through /api/ reverse proxy
 ```
 
 ## Build
@@ -37,13 +37,13 @@ Open:
 http://localhost:8080
 ```
 
-The Angular application continues to call the same-origin path:
+The Angular application calls the versioned same-origin backend path:
 
 ```text
-/api
+/api/v1
 ```
 
-Nginx proxies that path to `API_UPSTREAM`.
+Nginx's broader `/api/` location proxies `/api/v1/...` unchanged to `API_UPSTREAM`.
 
 ## Docker Compose
 
@@ -221,7 +221,7 @@ The live verifier checks:
 - the Nginx version is not exposed
 - `index.html` is not cacheable
 - a deep SPA route resolves to Angular
-- `/api/` never falls through to Angular
+- `/api/v1/` never falls through to Angular
 - a generated JS/CSS asset has immutable one-year caching
 
 The test deliberately does not require a live NestJS backend. In CI, an API request is expected to fail upstream while remaining clearly separated from the SPA.

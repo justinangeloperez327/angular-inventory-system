@@ -8,7 +8,7 @@ The application uses a bearer access token supplied by the REST API.
 
 The token is stored in `sessionStorage`, not `localStorage`. This means the session can survive a page refresh in the same browser session but is not intentionally persisted as a long-lived browser credential. If browser storage is unavailable, the token remains available in memory for the current runtime.
 
-Only the access token is persisted. The current user remains in memory and is restored through `GET /auth/me`.
+Only the access token is persisted. The current user remains in memory and is restored through `GET /api/v1/auth/me`.
 
 Authentication state is separated from API orchestration so interceptors can safely read or invalidate the session without creating an HTTP dependency cycle.
 
@@ -17,9 +17,9 @@ Authentication state is separated from API orchestration so interceptors can saf
 The frontend currently expects:
 
 ```text
-POST /api/auth/login
-GET  /api/auth/me
-POST /api/auth/logout
+POST /api/v1/auth/login
+GET  /api/v1/auth/me
+POST /api/v1/auth/logout
 ```
 
 The login response is expected to contain an access token plus the authenticated user. The user contract may include role and permission metadata used by the Group 5 authorization layer.
@@ -48,7 +48,7 @@ An already-authenticated user attempting to open the login page is redirected to
 
 ## Session validation
 
-A persisted token is not treated as proof of a valid authenticated user. On a fresh application runtime, protected navigation calls `/auth/me`. A rejected or expired token is removed before redirecting to login.
+A persisted token is not treated as proof of a valid authenticated user. On a fresh application runtime, protected navigation calls `/api/v1/auth/me`. A rejected or expired token is removed before redirecting to login.
 
 During an active authenticated session, a protected API response with HTTP 401 clears the authentication state. If the application shell is already active, the user is redirected to login while preserving the current local URL as the return target.
 

@@ -135,9 +135,9 @@ assert_header_contains "$TMP_DIR/asset.headers" "Cache-Control" "max-age=3153600
 assert_header_contains "$TMP_DIR/asset.headers" "Cache-Control" "immutable"
 assert_security_headers "$TMP_DIR/asset.headers"
 
-api_status="$(request "/api/__runtime-verification__" "api")"
-[[ "$api_status" != "200" ]] || fail "/api/ request was incorrectly served by the Angular SPA"
-grep -q '<app-root' "$TMP_DIR/api.body" && fail "/api/ request must never fall back to index.html"
+api_status="$(request "/api/v1/__runtime-verification__" "api")"
+[[ "$api_status" != "200" ]] || fail "/api/v1/ request was incorrectly served by the Angular SPA"
+grep -q '<app-root' "$TMP_DIR/api.body" && fail "/api/v1/ request must never fall back to index.html"
 assert_security_headers "$TMP_DIR/api.headers"
 
 printf 'Runtime verification passed: health, build identity, security headers, SPA fallback, API separation, and asset caching are correct.\n'

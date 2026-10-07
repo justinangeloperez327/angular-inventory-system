@@ -1,6 +1,6 @@
 # Production Hardening
 
-Group 24 adds sanitized frontend diagnostics, request correlation, and deployable build identity to the frontend release gate.
+Group 25 adds pinned Angular ↔ NestJS API compatibility verification to the frontend release gate.
 
 ## Verification commands
 
@@ -19,7 +19,7 @@ npm ci
 npm run check
 ```
 
-`npm run check` executes the dependency, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
+`npm run check` executes the dependency, backend API-contract, design-system, accessibility, production, runtime-configuration, and observability guards, Vitest unit tests, the Angular production build, and Playwright browser E2E.
 
 ## CI
 
@@ -30,17 +30,19 @@ The workflow performs:
 1. deterministic `npm ci` installation from the committed lockfile
 2. dependency-contract validation
 3. high/critical npm vulnerability audit
-4. Playwright Chromium installation
-5. design-system guard
-6. accessibility guard
-7. production-configuration guard
-8. runtime/Nginx configuration guard
-9. observability/redaction/build-identity guard
-10. Vitest unit tests
-11. Angular production build with generated build metadata
-12. Playwright critical-flow browser E2E
-13. Docker image build with commit/run identity
-14. live container security/routing/cache/build-identity verification
+4. pinned NestJS backend contract checkout
+5. Angular ↔ NestJS route/verb compatibility guard
+6. Playwright Chromium installation
+7. design-system guard
+8. accessibility guard
+9. production-configuration guard
+10. runtime/Nginx configuration guard
+11. observability/redaction/build-identity guard
+12. Vitest unit tests
+13. Angular production build with generated build metadata
+14. Playwright critical-flow browser E2E
+15. Docker image build with commit/run identity
+16. live container security/routing/cache/build-identity verification
 
 Production bundle budgets are enforced by the Angular builder. See `docs/performance.md` for the measured baseline and ceilings.
 
@@ -63,6 +65,26 @@ npm audit --audit-level=high
 High and critical npm advisories therefore block the frontend release gate.
 
 See `docs/dependencies.md`.
+
+
+
+## Backend API compatibility
+
+The Angular application now pins a compatible NestJS backend revision and verifies its API surface in CI.
+
+Current contract:
+
+```text
+NestJS repository  justinangeloperez327/nest-js-inventory-system
+Backend commit     fdb4387c9317e09b691e540f1b8f2a7bea0a49e4
+API prefix         /api/v1
+```
+
+`npm run check:api-contract` validates the Angular environment base path and CI pin locally. In CI it additionally compares every discovered Angular `ApiClient` method/path against the HTTP decorators in the pinned NestJS controllers.
+
+This prevents the frontend and backend from independently passing tests while drifting at the REST boundary.
+
+See `docs/api-integration.md`.
 
 ## Build cleanliness and performance
 
@@ -115,7 +137,7 @@ Content-Security-Policy:
   require-trusted-types-for 'script'
 ```
 
-If the API is moved away from same-origin `/api`, explicitly add that HTTPS API origin to `connect-src`.
+If the API is moved away from the same-origin `/api/v1` contract, explicitly add the approved HTTPS API origin to `connect-src`.
 
 Do not hard-code a reusable CSP nonce.
 
@@ -180,10 +202,10 @@ Startup validates:
 - absolute API URLs use HTTP(S)
 - production absolute API URLs use HTTPS
 
-The default production endpoint remains same-origin:
+The default production endpoint remains same-origin and matches the pinned NestJS API version:
 
 ```text
-/api
+/api/v1
 ```
 
 No credentials, API secrets, or environment-specific private values belong in Angular environment files because browser bundles are public.
@@ -243,7 +265,7 @@ Whether containerized or hosted directly, the hosting platform must:
 - serve the production `dist` output
 - route non-file application paths back to `index.html`
 - serve only over HTTPS
-- proxy or route `/api` to the NestJS backend
+- proxy or route `/api/v1` through the `/api/` reverse-proxy boundary to the NestJS backend
 - preserve API status codes
 - set the production security headers
 - use immutable caching for hashed JS/CSS assets
@@ -260,6 +282,7 @@ These are privacy/search-engine hints, not access controls.
 Frontend release readiness requires:
 
 - committed lockfile and deterministic dependency contract green
+- pinned Angular ↔ NestJS API contract guard green
 - high/critical npm vulnerability audit green
 - design-system guard green
 - accessibility guard green

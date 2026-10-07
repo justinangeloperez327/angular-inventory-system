@@ -76,15 +76,15 @@ This proves refresh/deep-link routing in the actual container.
 
 ### API separation
 
-A request under:
+A request under the application contract:
 
 ```text
-/api/
+/api/v1/
 ```
 
 must never return Angular `index.html`.
 
-The CI runtime intentionally points `API_UPSTREAM` at an unavailable local backend; the expected request fails upstream instead of falling back to the SPA. The exact upstream failure status is not treated as the contract—the separation from Angular routing is.
+The CI runtime intentionally points `API_UPSTREAM` at an unavailable local backend; the expected `/api/v1/...` request fails upstream instead of falling back to the SPA. The exact upstream failure status is not treated as the contract—the separation from Angular routing is.
 
 ### Asset caching
 
