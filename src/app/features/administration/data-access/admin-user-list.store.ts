@@ -1,14 +1,11 @@
-import {
-  EMPTY_PAGINATION,
-  computed,
-  inject,
-  Injectable,
-  signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
 import { toActiveFilter } from '../../../shared/models/active-status-filter';
-import { DEFAULT_PAGINATION,
+import {
+  DEFAULT_PAGINATION,
+  EMPTY_PAGINATION,
   PaginationMeta,
 } from '../../../shared/models/pagination.model';
 import { AdminUserApiService } from './admin-user-api.service';

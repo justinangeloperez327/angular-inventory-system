@@ -1,13 +1,10 @@
-import {
-  EMPTY_PAGINATION,
-  computed,
-  inject,
-  Injectable,
-  signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
-import { DEFAULT_PAGINATION,
+import {
+  DEFAULT_PAGINATION,
+  EMPTY_PAGINATION,
   PaginationMeta,
 } from '../../../shared/models/pagination.model';
 import { AuditLogApiService } from './audit-log-api.service';
