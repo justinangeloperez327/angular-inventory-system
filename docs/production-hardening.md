@@ -76,7 +76,7 @@ Current contract:
 
 ```text
 NestJS repository  justinangeloperez327/nest-js-inventory-system
-Backend commit     3565f44525a15e156c0667819bf3ade04da5ae26
+Backend commit     fdb4387c9317e09b691e540f1b8f2a7bea0a49e4
 API prefix         /api/v1
 ```
 
