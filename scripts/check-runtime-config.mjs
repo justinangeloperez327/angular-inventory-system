@@ -22,6 +22,7 @@ requireText(nginx, /include \/etc\/nginx\/security-headers\.conf;/, 'Nginx serve
 requireText(nginx, /location = \/healthz[\s\S]*return 200 "ok\\n";/, 'Nginx must retain the explicit /healthz endpoint.');
 requireText(nginx, /location \/api\/[\s\S]*proxy_pass \$\{API_UPSTREAM\};/, 'Nginx must proxy /api/ to API_UPSTREAM.');
 requireText(nginx, /location = \/index\.html[\s\S]*Cache-Control "no-store"/, 'index.html must remain non-cacheable.');
+requireText(nginx, /location = \/build-info\.json[\s\S]*Cache-Control "no-store"/, 'build-info.json must remain non-cacheable.');
 requireText(nginx, /location ~\* \\.\(\?:js\|css\)\$[\s\S]*immutable/, 'Hashed JavaScript/CSS assets must retain immutable caching.');
 requireText(nginx, /location \/ \{[\s\S]*try_files \$uri \$uri\/ \/index\.html;/, 'SPA routes must fall back to index.html.');
 
