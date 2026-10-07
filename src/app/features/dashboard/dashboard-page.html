@@ -1,7 +1,7 @@
 <app-content-container>
   <app-page-header
     title="Dashboard"
-    description="Inventory exceptions, pending purchasing work, and recent stock activity."
+    description="Inventory health, exceptions, work queues, and the latest stock activity."
   >
     <app-button actions variant="secondary" size="sm" [loading]="store.loading()" (click)="store.refresh()">
       Refresh
@@ -17,68 +17,110 @@
   }
 
   @if (store.loading() && !store.hasData()) {
-    <section
-      class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
-      aria-label="Loading dashboard summary"
-    >
-      @for (item of [1, 2, 3, 4, 5, 6, 7]; track item) {
-        <app-skeleton height="5rem" />
-      }
+    <section class="mt-6 overflow-hidden rounded-sm border border-border bg-surface" aria-label="Loading inventory pulse">
+      <div class="border-b border-border px-4 py-3">
+        <app-skeleton width="8rem" height="1rem" />
+      </div>
+      <div class="grid gap-px bg-border sm:grid-cols-2 xl:grid-cols-6">
+        @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+          <div class="bg-surface p-4">
+            <app-skeleton width="5rem" height="0.75rem" />
+            <div class="mt-3">
+              <app-skeleton width="6rem" height="1.75rem" />
+            </div>
+          </div>
+        }
+      </div>
     </section>
 
-    <section class="mt-4 grid gap-4 xl:grid-cols-2" aria-label="Loading dashboard details">
-      <app-skeleton height="18rem" />
+    <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(20rem,0.85fr)]" aria-label="Loading dashboard work areas">
+      <app-skeleton height="24rem" />
+      <app-skeleton height="24rem" />
+    </section>
+
+    <section class="mt-6" aria-label="Loading recent movements">
       <app-skeleton height="18rem" />
     </section>
   } @else if (store.snapshot(); as dashboard) {
     <section
-      class="mt-6 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
-      aria-label="Operational summary"
+      class="mt-6 overflow-hidden rounded-sm border border-border bg-surface shadow-sm"
+      aria-labelledby="inventory-pulse-heading"
     >
-      <app-dashboard-metric-card label="Products" [value]="dashboard.metrics.totalProducts" />
-      <app-dashboard-metric-card label="Warehouses" [value]="dashboard.metrics.totalWarehouses" />
-      <app-dashboard-metric-card
-        label="Low stock"
-        [value]="dashboard.metrics.lowStockProducts"
-        emphasis="warning"
-      />
-      <app-dashboard-metric-card
-        label="Out of stock"
-        [value]="dashboard.metrics.outOfStockProducts"
-        emphasis="danger"
-      />
-      <app-dashboard-metric-card
-        label="Pending POs"
-        [value]="dashboard.metrics.pendingPurchaseOrders"
-      />
-      <app-dashboard-metric-card
-        label="Pending receipts"
-        [value]="dashboard.metrics.pendingReceipts"
-      />
-      <app-dashboard-metric-card
-        label="Inventory value"
-        [value]="
-          dashboard.metrics.inventoryValue
-            | currency: dashboard.metrics.currencyCode : 'symbol' : '1.0-0'
-        "
-      />
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+        <div>
+          <h2 id="inventory-pulse-heading" class="m-0 text-sm font-semibold text-foreground">
+            Inventory pulse
+          </h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">
+            Current operational position across the inventory estate.
+          </p>
+        </div>
+
+        <p class="m-0 text-xs text-subtle-foreground">
+          Updated {{ dashboard.generatedAt | date: 'medium' }}
+        </p>
+      </div>
+
+      <div class="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <app-dashboard-metric-card
+          label="Inventory value"
+          [value]="
+            dashboard.metrics.inventoryValue
+              | currency: dashboard.metrics.currencyCode : 'symbol' : '1.0-0'
+          "
+          supportingText="Current stock value"
+        />
+        <app-dashboard-metric-card
+          label="Products"
+          [value]="dashboard.metrics.totalProducts"
+          supportingText="Catalog records"
+        />
+        <app-dashboard-metric-card
+          label="SKUs"
+          [value]="dashboard.metrics.totalSkus"
+          supportingText="Tracked stock codes"
+        />
+        <app-dashboard-metric-card
+          label="Warehouses"
+          [value]="dashboard.metrics.totalWarehouses"
+          supportingText="Stock locations"
+        />
+        <app-dashboard-metric-card
+          label="Low stock"
+          [value]="dashboard.metrics.lowStockProducts"
+          supportingText="At reorder threshold"
+          emphasis="warning"
+        />
+        <app-dashboard-metric-card
+          label="Out of stock"
+          [value]="dashboard.metrics.outOfStockProducts"
+          supportingText="Requires action"
+          emphasis="danger"
+        />
+      </div>
     </section>
 
-    <p class="mb-0 mt-2 text-right text-xs text-subtle-foreground">
-      Snapshot updated {{ dashboard.generatedAt | date: 'medium' }}
-    </p>
-
-    <div class="mt-4 grid gap-4">
-      <section *appHasPermission="permissions.inventoryView">
-        <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
+    <div class="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(20rem,0.85fr)]">
+      <section class="min-w-0" *appHasPermission="permissions.inventoryView">
+        <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 class="m-0 text-lg font-semibold text-foreground">Stock attention</h2>
+            <div class="flex items-center gap-2">
+              <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">
+                Stock attention
+              </h2>
+              @if (dashboard.stockRisks.length > 0) {
+                <span class="rounded-sm bg-warning/10 px-1.5 py-0.5 text-xs font-semibold text-warning">
+                  {{ dashboard.stockRisks.length }}
+                </span>
+              }
+            </div>
             <p class="mb-0 mt-1 text-xs text-muted-foreground">
               Products at or below their reorder threshold.
             </p>
           </div>
+
           <a
-            class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+            class="text-sm font-medium text-primary no-underline hover:text-primary-hover"
             routerLink="/inventory"
           >
             View inventory
@@ -100,11 +142,11 @@
             <tbody>
               @for (item of dashboard.stockRisks; track item.id) {
                 <tr>
-                  <td class="font-mono text-xs">{{ item.sku }}</td>
-                  <td>{{ item.productName }}</td>
+                  <td class="font-mono text-xs text-muted-foreground">{{ item.sku }}</td>
+                  <td class="font-medium text-foreground">{{ item.productName }}</td>
                   <td>{{ item.warehouseName }}</td>
-                  <td class="text-right tabular-nums">{{ item.quantityOnHand }}</td>
-                  <td class="text-right tabular-nums">{{ item.reorderLevel }}</td>
+                  <td class="text-right font-medium tabular-nums">{{ item.quantityOnHand }}</td>
+                  <td class="text-right tabular-nums text-muted-foreground">{{ item.reorderLevel }}</td>
                   <td>
                     <app-badge [variant]="stockRiskBadge(item)">
                       {{ stockRiskLabel(item) }}
@@ -115,25 +157,33 @@
             </tbody>
           </app-table>
         } @else {
-          <app-empty-state
-            title="No stock risks"
-            description="No products are currently at or below their reorder threshold."
-          />
+          <div class="rounded-sm border border-border bg-surface">
+            <app-empty-state
+              title="No stock risks"
+              description="No products are currently at or below their reorder threshold."
+            />
+          </div>
         }
       </section>
 
-      <div class="grid gap-4 xl:grid-cols-2">
-        <section
-          class="min-w-0 border border-border bg-surface p-3.5"
-          *appHasPermission="permissions.purchaseView"
-        >
-          <div class="mb-2.5 flex items-end justify-between gap-3">
-            <div>
-              <h2 class="m-0 text-lg font-semibold text-foreground">Purchase orders</h2>
-              <p class="mb-0 mt-1 text-xs text-muted-foreground">Orders requiring attention.</p>
+      <aside class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm" aria-label="Operational work queues">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">Work queues</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Purchasing and receiving items that still need attention.
+          </p>
+        </div>
+
+        <section class="p-4" *appHasPermission="permissions.purchaseView">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <h3 class="m-0 text-sm font-semibold text-foreground">Purchase orders</h3>
+              <span class="rounded-sm bg-surface-strong px-1.5 py-0.5 text-xs font-semibold text-muted-foreground">
+                {{ dashboard.metrics.pendingPurchaseOrders }}
+              </span>
             </div>
             <a
-              class="shrink-0 text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+              class="text-xs font-medium text-primary no-underline hover:text-primary-hover"
               routerLink="/purchasing"
             >
               View all
@@ -141,14 +191,14 @@
           </div>
 
           @if (dashboard.pendingPurchaseOrders.length > 0) {
-            <div class="divide-y divide-border border-t border-border">
+            <div class="divide-y divide-border border-y border-border">
               @for (order of dashboard.pendingPurchaseOrders; track order.id) {
                 <a
-                  class="flex items-center justify-between gap-3 py-2.5 text-foreground no-underline hover:bg-surface-muted"
+                  class="-mx-1 flex items-center justify-between gap-3 px-1 py-2.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
                   [routerLink]="['/purchasing', order.id]"
                 >
                   <span class="min-w-0">
-                    <strong class="block truncate text-sm font-semibold">{{ order.number }}</strong>
+                    <strong class="block truncate text-sm font-medium">{{ order.number }}</strong>
                     <span class="mt-0.5 block truncate text-xs text-muted-foreground">
                       {{ order.supplierName }}
                     </span>
@@ -165,24 +215,25 @@
               }
             </div>
           } @else {
-            <app-empty-state
-              title="No pending purchase orders"
-              description="There are no purchase orders requiring attention."
-            />
+            <p class="mb-0 rounded-sm bg-surface-muted px-3 py-2.5 text-xs text-muted-foreground">
+              No purchase orders require attention.
+            </p>
           }
         </section>
 
         <section
-          class="min-w-0 border border-border bg-surface p-3.5"
+          class="border-t border-border p-4"
           *appHasPermission="permissions.purchaseReceive"
         >
-          <div class="mb-2.5 flex items-end justify-between gap-3">
-            <div>
-              <h2 class="m-0 text-lg font-semibold text-foreground">Receiving</h2>
-              <p class="mb-0 mt-1 text-xs text-muted-foreground">Expected or in-progress receipts.</p>
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <h3 class="m-0 text-sm font-semibold text-foreground">Receiving</h3>
+              <span class="rounded-sm bg-surface-strong px-1.5 py-0.5 text-xs font-semibold text-muted-foreground">
+                {{ dashboard.metrics.pendingReceipts }}
+              </span>
             </div>
             <a
-              class="shrink-0 text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
+              class="text-xs font-medium text-primary no-underline hover:text-primary-hover"
               routerLink="/receiving"
             >
               View all
@@ -190,14 +241,14 @@
           </div>
 
           @if (dashboard.pendingReceipts.length > 0) {
-            <div class="divide-y divide-border border-t border-border">
+            <div class="divide-y divide-border border-y border-border">
               @for (receipt of dashboard.pendingReceipts; track receipt.id) {
                 <a
-                  class="flex items-center justify-between gap-3 py-2.5 text-foreground no-underline hover:bg-surface-muted"
+                  class="-mx-1 flex items-center justify-between gap-3 px-1 py-2.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
                   [routerLink]="['/receiving', receipt.id]"
                 >
                   <span class="min-w-0">
-                    <strong class="block truncate text-sm font-semibold">{{ receipt.number }}</strong>
+                    <strong class="block truncate text-sm font-medium">{{ receipt.number }}</strong>
                     <span class="mt-0.5 block truncate text-xs text-muted-foreground">
                       {{ receipt.supplierName }} · {{ receipt.purchaseOrderNumber }}
                     </span>
@@ -216,69 +267,85 @@
               }
             </div>
           } @else {
-            <app-empty-state
-              title="No pending receipts"
-              description="There are no goods receipts waiting to be processed."
-            />
+            <p class="mb-0 rounded-sm bg-surface-muted px-3 py-2.5 text-xs text-muted-foreground">
+              No receipts are waiting to be processed.
+            </p>
           }
         </section>
+      </aside>
+    </div>
+
+    <section class="mt-6" *appHasPermission="permissions.inventoryView">
+      <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">
+            Recent movements
+          </h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">
+            Latest inbound and outbound stock activity.
+          </p>
+        </div>
+        <a
+          class="text-sm font-medium text-primary no-underline hover:text-primary-hover"
+          routerLink="/stock-movements"
+        >
+          View movements
+        </a>
       </div>
 
-      <section *appHasPermission="permissions.inventoryView">
-        <div class="mb-2.5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 class="m-0 text-lg font-semibold text-foreground">Recent movements</h2>
-            <p class="mb-0 mt-1 text-xs text-muted-foreground">
-              Latest inbound and outbound inventory activity.
-            </p>
-          </div>
-          <a
-            class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-            routerLink="/stock-movements"
-          >
-            View movements
-          </a>
-        </div>
-
-        @if (dashboard.recentMovements.length > 0) {
-          <app-table>
-            <thead>
+      @if (dashboard.recentMovements.length > 0) {
+        <app-table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>Warehouse</th>
+              <th>Movement</th>
+              <th class="text-right">Quantity</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (movement of dashboard.recentMovements; track movement.id) {
               <tr>
-                <th>Time</th>
-                <th>SKU</th>
-                <th>Product</th>
-                <th>Warehouse</th>
-                <th>Movement</th>
-                <th class="text-right">Quantity</th>
-                <th>Reference</th>
+                <td class="whitespace-nowrap text-muted-foreground">
+                  {{ movement.occurredAt | date: 'short' }}
+                </td>
+                <td class="font-mono text-xs text-muted-foreground">{{ movement.sku }}</td>
+                <td class="font-medium text-foreground">{{ movement.productName }}</td>
+                <td>{{ movement.warehouseName }}</td>
+                <td>
+                  <span class="inline-flex items-center gap-1.5">
+                    <span
+                      class="size-1.5 rounded-full"
+                      [class.bg-danger]="isOutbound(movement.type)"
+                      [class.bg-primary]="!isOutbound(movement.type)"
+                      aria-hidden="true"
+                    ></span>
+                    {{ movementLabel(movement.type) }}
+                  </span>
+                </td>
+                <td
+                  class="text-right font-semibold tabular-nums"
+                  [class.text-danger]="isOutbound(movement.type)"
+                  [class.text-primary]="!isOutbound(movement.type)"
+                >
+                  {{ signedQuantity(movement.type, movement.quantity) }}
+                </td>
+                <td class="text-muted-foreground">{{ movement.reference || '—' }}</td>
               </tr>
-            </thead>
-            <tbody>
-              @for (movement of dashboard.recentMovements; track movement.id) {
-                <tr>
-                  <td class="whitespace-nowrap">{{ movement.occurredAt | date: 'short' }}</td>
-                  <td class="font-mono text-xs">{{ movement.sku }}</td>
-                  <td>{{ movement.productName }}</td>
-                  <td>{{ movement.warehouseName }}</td>
-                  <td>{{ movementLabel(movement.type) }}</td>
-                  <td
-                    class="text-right font-semibold tabular-nums"
-                    [class.text-danger]="isOutbound(movement.type)"
-                  >
-                    {{ signedQuantity(movement.type, movement.quantity) }}
-                  </td>
-                  <td>{{ movement.reference || '—' }}</td>
-                </tr>
-              }
-            </tbody>
-          </app-table>
-        } @else {
+            }
+          </tbody>
+        </app-table>
+      } @else {
+        <div class="rounded-sm border border-border bg-surface">
           <app-empty-state
             title="No recent movements"
             description="Stock movement activity will appear here once inventory transactions are posted."
           />
-        }
-      </section>
-    </div>
+        </div>
+      }
+    </section>
   }
 </app-content-container>
