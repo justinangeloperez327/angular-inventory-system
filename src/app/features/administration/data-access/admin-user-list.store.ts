@@ -1,8 +1,16 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import {
+  EMPTY_PAGINATION,
+  computed,
+  inject,
+  Injectable,
+  signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
-import { DEFAULT_PAGINATION, PaginationMeta } from '../../../shared/models/pagination.model';
+import { toActiveFilter } from '../../../shared/models/active-status-filter';
+import { DEFAULT_PAGINATION,
+  PaginationMeta,
+} from '../../../shared/models/pagination.model';
 import { AdminUserApiService } from './admin-user-api.service';
 import {
   AdminUserFormOptions,
@@ -13,12 +21,6 @@ import {
   AdminUserQuery,
 } from '../models/admin-user-query.model';
 
-const EMPTY_PAGINATION: PaginationMeta = {
-  page: 1,
-  pageSize: DEFAULT_PAGINATION.pageSize,
-  totalItems: 0,
-  totalPages: 0,
-};
 
 @Injectable()
 export class AdminUserListStore {
@@ -68,7 +70,7 @@ export class AdminUserListStore {
       page: 1,
       search: filters.search.trim() || undefined,
       roleId: filters.roleId || undefined,
-      active: filters.status === '' ? undefined : filters.status === 'active',
+      active: toActiveFilter(filters.status),
     }));
     this.load();
   }

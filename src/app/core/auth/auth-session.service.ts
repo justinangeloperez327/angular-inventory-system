@@ -49,6 +49,7 @@ export class AuthSessionService {
 
     return this.api.logout().pipe(
       catchError(() => of(undefined)),
+      tap(() => this.state.clear()),
       finalize(() => this.state.clear()),
     );
   }

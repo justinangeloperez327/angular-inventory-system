@@ -1,8 +1,16 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize, forkJoin } from 'rxjs';
+import {
+  EMPTY_PAGINATION,
+  computed,
+  inject,
+  Injectable,
+  signal } from '@angular/core';
+import { finalize,
+  forkJoin } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
-import { DEFAULT_PAGINATION, PaginationMeta } from '../../../shared/models/pagination.model';
+import { DEFAULT_PAGINATION,
+  PaginationMeta,
+} from '../../../shared/models/pagination.model';
 import { SalesOrderApiService } from './sales-order-api.service';
 import {
   SalesOrderFormOptions,
@@ -14,12 +22,6 @@ import {
   SalesOrderQuery,
 } from '../models/sales-order-query.model';
 
-const EMPTY_PAGINATION: PaginationMeta = {
-  page: 1,
-  pageSize: DEFAULT_PAGINATION.pageSize,
-  totalItems: 0,
-  totalPages: 0,
-};
 
 @Injectable()
 export class SalesOrderListStore {
