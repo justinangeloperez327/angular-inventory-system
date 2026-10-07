@@ -78,13 +78,13 @@ async function seedSession(page: Page): Promise<void> {
 }
 
 async function mockCurrentUser(page: Page, user = fullAccessUser): Promise<void> {
-  await page.route('**/api/auth/me', async (route) => {
+  await page.route('**/api/v1/auth/me', async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) });
   });
 }
 
 async function mockDashboard(page: Page): Promise<void> {
-  await page.route('**/api/dashboard', async (route) => {
+  await page.route('**/api/v1/dashboard', async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -103,7 +103,7 @@ test('redirects an anonymous protected route to sign in with a return URL', asyn
 test('shows client-side validation before a sign-in request is sent', async ({ page }) => {
   let loginRequests = 0;
 
-  await page.route('**/api/auth/login', async (route) => {
+  await page.route('**/api/v1/auth/login', async (route) => {
     loginRequests += 1;
     await route.abort();
   });
@@ -117,7 +117,7 @@ test('shows client-side validation before a sign-in request is sent', async ({ p
 });
 
 test('signs in and renders the operational dashboard against a mocked REST boundary', async ({ page }) => {
-  await page.route('**/api/auth/login', async (route) => {
+  await page.route('**/api/v1/auth/login', async (route) => {
     expect(route.request().postDataJSON()).toEqual({
       email: 'operator@example.com',
       password: 'correct-password',
@@ -181,7 +181,7 @@ test('signs out, clears the session, and protects subsequent navigation', async 
   await seedSession(page);
   await mockCurrentUser(page);
   await mockDashboard(page);
-  await page.route('**/api/auth/logout', async (route) => {
+  await page.route('**/api/v1/auth/logout', async (route) => {
     await route.fulfill({ status: 204, body: '' });
   });
 
