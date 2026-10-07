@@ -36,3 +36,7 @@ Thumbs.db
 /blob-report
 /.contract-backend
 /deployment-verification-report.json
+
+# Generated build metadata
+/src/app/core/observability/build-info.generated.ts
+/public/build-info.json

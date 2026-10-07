@@ -1,21 +1,46 @@
 # Inventory
 
-Inventory screens present current stock state. They do not directly edit quantity.
+Inventory screens present backend-authoritative stock state. Angular does not directly edit inventory quantity.
 
-## Principle
+## Model
 
-A product does not own inventory quantity.
+Inventory is a balance for a specific product and warehouse rather than a quantity owned by the product master record.
 
-Inventory is represented by a product/warehouse balance derived from posted business transactions.
+A balance exposes:
 
-The Angular inventory feature is read-only and expects the backend to provide authoritative:
-
+- product and warehouse identity
+- unit
 - quantity on hand
 - quantity reserved
 - quantity available
 - reorder level
 - stock status
 - last updated timestamp
+
+Status values are backend-defined:
+
+```text
+in-stock
+low-stock
+out-of-stock
+```
+
+Angular does not independently recalculate availability or stock status. Future allocation, quarantine, hold, or other rules may make those values more complex than simple arithmetic.
+
+## API contract
+
+The frontend expects:
+
+```text
+GET /api/v1/inventory/balances
+GET /api/v1/inventory/form-options
+GET /api/v1/inventory/products/:productId
+GET /api/v1/inventory/warehouses/:warehouseId
+```
+
+The balance list supports paging, search, sorting, product/warehouse filtering, and stock-status filtering.
+
+Form options return active warehouses. Product discovery remains server-side so the screen does not download the entire catalog into a select control.
 
 ## Views
 
@@ -25,20 +50,22 @@ The feature provides:
 - product inventory across warehouses
 - warehouse inventory across products
 
-Product and warehouse drill-down screens include summary totals and link to filtered Stock Movements.
+Product and warehouse drill-down views include aggregate totals and links to filtered Stock Movements.
 
-## Group 9 design migration
+## Mutation boundary
 
-Inventory is presented as a stock-position workspace:
+Quantity changes happen through authoritative business transactions such as:
 
-- compact filters
-- table-first layout
-- monospace SKU/warehouse codes
-- right-aligned quantity columns
-- tabular numerals
-- status color only for stock exceptions
-- compact summary strip on drill-down pages
+- receiving
+- inventory adjustments
+- inventory transfers
+- sales dispatch/returns
+- stock counts
 
-The summary strip shows on-hand, reserved, available, low-stock lines, and out-of-stock lines without decorative icons or charts.
+Those workflows post backend transactions and movements; the read-only inventory views display the resulting state.
 
-Inventory remains read-only. Quantity corrections continue to happen through authorized receiving, adjustment, transfer, sales/return, or stock-count workflows.
+## Presentation
+
+Inventory uses a compact table-first workspace with monospace business identifiers, right-aligned/tabular quantities, restrained status color, and summary totals on drill-down pages.
+
+No direct inventory mutation controls belong on these pages.

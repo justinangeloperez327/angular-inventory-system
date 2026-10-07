@@ -1,127 +1,59 @@
 # Dependency Management
 
-Group 22 makes frontend dependency resolution reproducible across local verification, GitHub Actions, and Docker builds.
+The frontend uses npm with a committed lockfile so local development, CI, and Docker resolve the same dependency graph.
 
-## Package manager
+## Runtime and package manager
 
-The repository records:
+The supported Node.js range is declared in `package.json`:
 
 ```text
-npm 11.12.1
+^22.22.3 || ^24.15.0 || ^26.0.0
 ```
 
-through the `packageManager` field in `package.json`.
-
-CI uses Node 24.15.0 and the npm version bundled with that pinned runtime.
+CI uses Node 24.15.0. The repository records `npm@11.12.1` through the `packageManager` field.
 
 ## Lockfile
 
-`package-lock.json` is committed and uses lockfile version 3.
+`package-lock.json` is committed and is part of the source contract.
 
-The lockfile is part of the source contract. Do not delete it or regenerate it casually.
-
-For a clean install of the committed dependency graph, use:
+Use:
 
 ```bash
 npm ci
 ```
 
-`npm ci` fails when `package.json` and `package-lock.json` disagree instead of silently rewriting dependency resolution.
+for clean/reproducible installs. `npm ci` fails when `package.json` and `package-lock.json` disagree instead of silently changing dependency resolution.
 
-## Adding or updating dependencies
+For an intentional dependency change use `npm install` or `npm install -D`, review the lockfile diff, and commit both manifest files.
 
-For an intentional dependency change:
+## CI and Docker
 
-```bash
-npm install <package>
-```
-
-or:
-
-```bash
-npm install -D <package>
-```
-
-The repository `.npmrc` enables `save-exact=true` for newly added direct dependencies.
-
-Commit both:
-
-```text
-package.json
-package-lock.json
-```
-
-The existing historical semver ranges remain represented in the lockfile, while the resolved graph itself is deterministic.
-
-## CI
-
-GitHub Actions uses:
+GitHub Actions installs with:
 
 ```bash
 npm ci --no-audit --no-fund
-```
-
-Dependency installation and vulnerability review are intentionally separate steps.
-
-CI then runs:
-
-```bash
-npm run check:dependencies
 npm audit --audit-level=high
 ```
 
-The audit fails the release gate when npm reports a high- or critical-severity vulnerability in the installed dependency graph.
+The vulnerability audit is a separate release gate so install behavior remains deterministic.
 
-Low/moderate findings still require review during maintenance, but they do not automatically block the frontend release gate.
-
-## Docker
-
-The Docker build copies both manifests before dependency installation:
+The Docker build follows the same lockfile:
 
 ```dockerfile
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 ```
 
-This provides reproducible dependency layers and allows Docker to reuse the dependency-install layer when application source changes without dependency changes.
-
-## Dependency contract guard
-
-Run:
-
-```bash
-npm run check:dependencies
-```
-
-The guard verifies:
-
-- `packageManager` remains `npm@11.12.1`
-- the lockfile remains version 3
-- root dependency declarations match between `package.json` and `package-lock.json`
-- CI uses `npm ci`, not `npm install`
-- Docker copies the lockfile before installation
-- Docker uses `npm ci`, not `npm install`
-
-This is a repository-policy check. npm remains authoritative for validating the full lockfile graph during `npm ci`.
+No additional repository script duplicates npm's own package/lockfile consistency checks.
 
 ## Dependabot
 
-Dependabot remains enabled for:
+Dependabot remains enabled for npm packages and GitHub Actions.
 
-- npm dependencies weekly
-- Angular packages grouped together
-- GitHub Actions monthly
+Dependency updates must preserve the lockfile and pass the normal release gate:
 
-Dependabot changes must update and preserve the lockfile and pass the same CI/audit gates as application changes.
+```bash
+npm run check
+```
 
-## Supply-chain rule
-
-Do not bypass the lockfile or audit gate to make CI green.
-
-When a vulnerability or dependency conflict appears:
-
-1. identify whether it affects runtime or build tooling
-2. update the smallest relevant dependency set
-3. review the resulting lockfile diff
-4. run the full release gate
-5. document any accepted residual risk explicitly
+Do not weaken the audit or bypass the lockfile to make CI pass.

@@ -1090,9 +1090,7 @@ Any JavaScript file
 
 These limits provide controlled headroom without allowing accidental large eager dependencies.
 
-### Production guard
+### Production build enforcement
 
-`npm run check:production` verifies that source maps stay disabled, output hashing and Angular automatic CSP stay enabled, extended diagnostics stay fatal, and bundle ceilings are not silently loosened.
-
-The actual production build remains authoritative for generated bundle-size enforcement.
+The Angular production build is the authoritative enforcement point for compiler diagnostics and configured bundle budgets. Source maps, output hashing, and automatic CSP remain explicit production settings in `angular.json` and are reviewed as normal configuration rather than duplicated by a regex-based guard script.
 

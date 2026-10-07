@@ -13,6 +13,7 @@ Operational inventory-management frontend built with Angular 22.
 - Angular CDK accessibility primitives
 - Custom Angular UI components
 - Vitest + jsdom
+- Playwright
 
 The frontend consumes the separate NestJS inventory-system REST API.
 
@@ -50,34 +51,29 @@ Configure the development reverse proxy/hosting path to the NestJS backend as ap
 
 ## Verification
 
+The normal local release gate is:
+
 ```bash
-npm run check:dependencies
-npm run check:api-contract
-npm run check:design
-npm run check:accessibility
-npm run check:production
-npm run check:runtime
-npm run check:observability
-npm run check:deployment
-npm test
-npm run build:production
-npm run e2e
+npm run check
+```
+
+It runs the backend API-contract check, design-system/accessibility guards, unit tests, production build, and mocked-browser E2E.
+
+Additional integration and deployment checks:
+
+```bash
 npm run e2e:full-stack
 npm run verify:deployed-origin
 npm run e2e:deployed
 ```
 
-Install the browser once before running E2E locally:
+Install Chromium once before running Playwright locally:
 
 ```bash
 npx playwright install chromium
 ```
 
-Or run the complete release gate:
-
-```bash
-npm run check
-```
+CI additionally builds the production Docker image, verifies its live HTTP behavior, and runs the Angular + NestJS + PostgreSQL full-stack integration.
 
 ## Architecture
 
@@ -110,19 +106,20 @@ Inventory balances are consequences of authoritative backend transactions. Angul
 
 ## Design system
 
-The visual layer uses:
+The visual layer uses Tailwind CSS v4, Angular CDK/Aria, and custom Angular UI components. Application components do not create feature-level stylesheet files; shared primitives and Tailwind utilities provide the visual system.
+
+See `docs/design-system.md`.
+
+## Generated build metadata
+
+`npm start`, `npm test`, watch builds, and production builds generate:
 
 ```text
-Tailwind CSS v4
-+
-Angular CDK / Angular Aria
-+
-custom Angular UI components
+src/app/core/observability/build-info.generated.ts
+public/build-info.json
 ```
 
-Application components do not create feature-level stylesheet files. New components are scaffolded without a stylesheet and CI enforces the Tailwind-only component model.
-
-See `docs/design-system.md` for semantic tokens, component rules, and the design-system guard.
+These files are build artifacts and are intentionally ignored by Git.
 
 ## Docker
 
@@ -134,26 +131,22 @@ docker compose up --build
 
 The frontend is available at `http://localhost:8080` and proxies `/api/v1` through the runtime `/api/` reverse-proxy boundary to `API_UPSTREAM`.
 
-See `docs/docker.md` for standalone Docker, Compose, health checks, caching, reverse-proxy behavior, and backend-network configuration.
+See `docs/docker.md`.
 
-## Production
+## Production documentation
 
-See:
+Start with:
 
+- `docs/architecture.md`
 - `docs/design-system.md`
-- `docs/accessibility.md`
+- `docs/api-integration.md`
+- `docs/authentication.md`
+- `docs/authorization.md`
 - `docs/browser-testing.md`
 - `docs/full-stack-testing.md`
 - `docs/deployed-origin-verification.md`
-- `docs/performance.md`
 - `docs/dependencies.md`
-- `docs/runtime-security.md`
-- `docs/api-integration.md`
 - `docs/observability.md`
-- `docs/docker.md`
 - `docs/production-hardening.md`
-- `docs/http-infrastructure.md`
-- `docs/authentication.md`
-- `docs/authorization.md`
 
 Production builds use hashed output and Angular CLI automatic CSP script hardening. Hosting infrastructure remains responsible for HTTPS, SPA fallback routing, security response headers, and the `/api/v1` backend route.

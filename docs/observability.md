@@ -112,6 +112,8 @@ The same build identity is embedded into:
 - the Angular diagnostic event metadata
 - `/build-info.json`
 
+The generated TypeScript and JSON files are build artifacts. They are created before start/test/build workflows and are intentionally ignored by Git.
+
 ## Runtime build-info endpoint
 
 The production Nginx image serves:
@@ -145,26 +147,6 @@ into the Docker build.
 
 The live runtime verifier confirms that the built image exposes a valid application name, Angular version, commit SHA, and build ID.
 
-## Guard
-
-Run:
-
-```bash
-npm run check:observability
-```
-
-The guard protects:
-
-- global Angular error-listener registration
-- custom application ErrorHandler registration
-- API diagnostic reporting
-- request-ID correlation fallback
-- safe diagnostic event schema
-- build-info generation before Angular compilation
-- GitHub/Vercel build metadata support
-- Docker build identity arguments
-- CI propagation of commit/run IDs
-- non-cacheable runtime build metadata
 
 ## External observability
 

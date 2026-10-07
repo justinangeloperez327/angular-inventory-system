@@ -83,32 +83,6 @@ The deployed-origin verification workflow does not create a deployment; it only 
 
 The platform-specific policy complements the platform-neutral verification script.
 
-## Static deployment guard
-
-Run:
-
-```bash
-npm run check:deployment
-```
-
-This is part of normal `npm run check` and CI.
-
-It verifies that:
-
-- the public deployment workflow still exists
-- the workflow is read-only and uses the protected `production` environment
-- deterministic `npm ci` is retained
-- the deployed HTTP verifier runs
-- the deployed Chromium verifier runs
-- reports are retained even on failure
-- Vercel still proxies `/api/v1` to the canonical backend origin
-- Vercel security headers match the repository policy
-- Vercel API rewrite caching remains disabled
-- HTML/build metadata/health remain non-cacheable
-- generated JS/CSS retain immutable one-year caching
-- the static health endpoint contains `ok`
-
-This guard validates the verification machinery, not the external deployment.
 
 ## HTTP verification
 

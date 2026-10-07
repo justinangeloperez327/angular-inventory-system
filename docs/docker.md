@@ -200,13 +200,7 @@ For formal production releases, the runtime Nginx base image should also be pinn
 
 CI builds and starts the Docker image after the Angular unit, production-build, and browser gates.
 
-The static runtime guard first verifies the Nginx/Docker configuration:
-
-```bash
-npm run check:runtime
-```
-
-The running image is then verified with:
+The running image is verified directly with:
 
 ```bash
 bash scripts/verify-container-runtime.sh
@@ -226,4 +220,4 @@ The live verifier checks:
 
 The test deliberately does not require a live NestJS backend. In CI, an API request is expected to fail upstream while remaining clearly separated from the SPA.
 
-See `docs/runtime-security.md`.
+See `docs/production-hardening.md`.

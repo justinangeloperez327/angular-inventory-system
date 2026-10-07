@@ -2,8 +2,12 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/guards/auth.guard';
 import { permissionGuard } from './core/auth/guards/permission.guard';
-import { PERMISSIONS } from './core/auth/permissions';
+import { FEATURE_ACCESS, FeatureAccess } from './core/config/feature-access';
 import { ROUTE_PATHS } from './core/config/route-paths';
+
+function accessGuard(access: FeatureAccess) {
+  return permissionGuard(access.permissions, access.permissionMode);
+}
 
 export const routes: Routes = [
   {
@@ -19,43 +23,43 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: ROUTE_PATHS.dashboard },
       {
         path: ROUTE_PATHS.dashboard,
-        canActivate: [permissionGuard(PERMISSIONS.dashboardView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.dashboard)],
         loadChildren: () =>
           import('./features/dashboard/dashboard.routes').then((routes) => routes.DASHBOARD_ROUTES),
       },
       {
         path: ROUTE_PATHS.products,
-        canActivate: [permissionGuard(PERMISSIONS.productView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.products)],
         loadChildren: () =>
           import('./features/products/products.routes').then((routes) => routes.PRODUCTS_ROUTES),
       },
       {
         path: ROUTE_PATHS.masterData,
-        canActivate: [permissionGuard(PERMISSIONS.masterDataView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.masterData)],
         loadChildren: () =>
           import('./features/master-data/master-data.routes').then((routes) => routes.MASTER_DATA_ROUTES),
       },
       {
         path: ROUTE_PATHS.suppliers,
-        canActivate: [permissionGuard(PERMISSIONS.supplierView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.suppliers)],
         loadChildren: () =>
           import('./features/suppliers/suppliers.routes').then((routes) => routes.SUPPLIERS_ROUTES),
       },
       {
         path: ROUTE_PATHS.customers,
-        canActivate: [permissionGuard(PERMISSIONS.customerView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.customers)],
         loadChildren: () =>
           import('./features/customers/customers.routes').then((routes) => routes.CUSTOMERS_ROUTES),
       },
       {
         path: ROUTE_PATHS.inventory,
-        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.inventory)],
         loadChildren: () =>
           import('./features/inventory/inventory.routes').then((routes) => routes.INVENTORY_ROUTES),
       },
       {
         path: ROUTE_PATHS.stockMovements,
-        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.stockMovements)],
         loadChildren: () =>
           import('./features/stock-movements/stock-movements.routes').then(
             (routes) => routes.STOCK_MOVEMENTS_ROUTES,
@@ -63,7 +67,7 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_PATHS.adjustments,
-        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.adjustments)],
         loadChildren: () =>
           import('./features/inventory-adjustments/inventory-adjustments.routes').then(
             (routes) => routes.INVENTORY_ADJUSTMENTS_ROUTES,
@@ -71,7 +75,7 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_PATHS.transfers,
-        canActivate: [permissionGuard(PERMISSIONS.inventoryView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.transfers)],
         loadChildren: () =>
           import('./features/inventory-transfers/inventory-transfers.routes').then(
             (routes) => routes.INVENTORY_TRANSFERS_ROUTES,
@@ -79,52 +83,37 @@ export const routes: Routes = [
       },
       {
         path: ROUTE_PATHS.purchasing,
-        canActivate: [permissionGuard(PERMISSIONS.purchaseView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.purchasing)],
         loadChildren: () =>
           import('./features/purchasing/purchasing.routes').then((routes) => routes.PURCHASING_ROUTES),
       },
       {
         path: ROUTE_PATHS.receiving,
-        canActivate: [permissionGuard(PERMISSIONS.purchaseReceive)],
+        canActivate: [accessGuard(FEATURE_ACCESS.receiving)],
         loadChildren: () =>
           import('./features/receiving/receiving.routes').then((routes) => routes.RECEIVING_ROUTES),
       },
       {
         path: ROUTE_PATHS.stockCounts,
-        canActivate: [
-          permissionGuard(
-            [PERMISSIONS.inventoryCount, PERMISSIONS.inventoryCountApprove],
-            'any',
-          ),
-        ],
+        canActivate: [accessGuard(FEATURE_ACCESS.stockCounts)],
         loadChildren: () =>
           import('./features/stock-counts/stock-counts.routes').then((routes) => routes.STOCK_COUNTS_ROUTES),
       },
       {
         path: ROUTE_PATHS.sales,
-        canActivate: [permissionGuard(PERMISSIONS.salesView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.sales)],
         loadChildren: () =>
           import('./features/sales/sales.routes').then((routes) => routes.SALES_ROUTES),
       },
       {
         path: ROUTE_PATHS.reports,
-        canActivate: [permissionGuard(PERMISSIONS.reportsView)],
+        canActivate: [accessGuard(FEATURE_ACCESS.reports)],
         loadChildren: () =>
           import('./features/reports/reports.routes').then((routes) => routes.REPORTS_ROUTES),
       },
       {
         path: ROUTE_PATHS.administration,
-        canActivate: [
-          permissionGuard(
-            [
-              PERMISSIONS.userManage,
-              PERMISSIONS.roleManage,
-              PERMISSIONS.settingsManage,
-              PERMISSIONS.auditView,
-            ],
-            'any',
-          ),
-        ],
+        canActivate: [accessGuard(FEATURE_ACCESS.administration)],
         loadChildren: () =>
           import('./features/administration/administration.routes').then(
             (routes) => routes.ADMINISTRATION_ROUTES,

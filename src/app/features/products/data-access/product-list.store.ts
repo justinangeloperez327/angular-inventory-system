@@ -2,17 +2,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize, forkJoin } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
-import { DEFAULT_PAGINATION, PaginationMeta } from '../../../shared/models/pagination.model';
+import { toActiveFilter } from '../../../shared/models/active-status-filter';
+import {
+  DEFAULT_PAGINATION,
+  EMPTY_PAGINATION,
+  PaginationMeta,
+} from '../../../shared/models/pagination.model';
 import { ProductApiService } from './product-api.service';
 import { ProductFormOptions, ProductSummary } from '../models/product.model';
 import { ProductQuery } from '../models/product-query.model';
-
-const EMPTY_PAGINATION: PaginationMeta = {
-  page: 1,
-  pageSize: DEFAULT_PAGINATION.pageSize,
-  totalItems: 0,
-  totalPages: 0,
-};
 
 export interface ProductFilters {
   readonly search: string;
@@ -80,16 +78,13 @@ export class ProductListStore {
   }
 
   applyFilters(filters: ProductFilters): void {
-    const active =
-      filters.status === '' ? undefined : filters.status === 'active';
-
     this.queryState.update((query) => ({
       ...query,
       page: 1,
       search: filters.search.trim() || undefined,
       categoryId: filters.categoryId || undefined,
       unitId: filters.unitId || undefined,
-      active,
+      active: toActiveFilter(filters.status),
     }));
 
     this.load();

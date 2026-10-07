@@ -22,3 +22,10 @@ export const DEFAULT_PAGINATION: PaginationQuery = {
   page: 1,
   pageSize: 25,
 };
+
+export const EMPTY_PAGINATION: PaginationMeta = {
+  page: 1,
+  pageSize: DEFAULT_PAGINATION.pageSize,
+  totalItems: 0,
+  totalPages: 0,
+};

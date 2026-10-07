@@ -53,24 +53,11 @@ Compiler-detectable template issues therefore fail the production build instead 
 
 Do not suppress a diagnostic globally to make CI green. Fix the template/type contract unless a specific diagnostic has a documented false-positive case.
 
-## Production configuration guard
+## Production configuration
 
-Run:
+The production build itself is authoritative for bundle budgets and compiler diagnostics. Production source maps remain disabled, output hashing and Angular automatic CSP remain enabled, and the configured bundle ceilings stay in `angular.json`.
 
-```bash
-npm run check:production
-```
-
-The guard verifies that:
-
-- production source maps remain disabled
-- output hashing remains enabled for all build artifacts
-- Angular automatic CSP remains enabled
-- initial bundle ceilings are not loosened beyond the agreed limits
-- per-script bundle ceilings are not loosened beyond the agreed limits
-- Angular extended diagnostics remain build-breaking
-
-Actual generated bundle sizes are still enforced by Angular itself during `npm run build:production`.
+Do not duplicate those settings in a text-matching guard; review configuration changes directly and let `npm run build:production` enforce generated bundle limits.
 
 ## Performance policy
 

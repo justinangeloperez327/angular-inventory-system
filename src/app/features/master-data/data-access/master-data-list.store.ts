@@ -1,25 +1,26 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { computed, signal } from '@angular/core';
+import { finalize, Observable } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
 import { toActiveFilter } from '../../../shared/models/active-status-filter';
 import {
-  DEFAULT_PAGINATION,
   EMPTY_PAGINATION,
+  PaginatedResponse,
   PaginationMeta,
 } from '../../../shared/models/pagination.model';
-import { CustomerApiService } from './customer-api.service';
-import { CustomerSummary } from '../models/customer.model';
-import { CustomerFilters, CustomerQuery } from '../models/customer-query.model';
+import { MasterDataFilters, MasterDataQuery } from '../models/master-data-query.model';
 
-@Injectable()
-export class CustomerListStore {
-  private readonly api = inject(CustomerApiService);
+export interface MasterDataListApi<T> {
+  list(query: MasterDataQuery): Observable<PaginatedResponse<T>>;
+  setActive(id: string, active: boolean): Observable<unknown>;
+}
 
-  private readonly itemsState = signal<readonly CustomerSummary[]>([]);
+export abstract class MasterDataListStore<T> {
+  private readonly itemsState = signal<readonly T[]>([]);
   private readonly paginationState = signal<PaginationMeta>(EMPTY_PAGINATION);
-  private readonly queryState = signal<CustomerQuery>({
-    ...DEFAULT_PAGINATION,
+  private readonly queryState = signal<MasterDataQuery>({
+    page: 1,
+    pageSize: EMPTY_PAGINATION.pageSize,
     sort: 'name',
     direction: 'asc',
     active: true,
@@ -34,6 +35,11 @@ export class CustomerListStore {
   readonly statusUpdatingId = this.statusUpdatingState.asReadonly();
   readonly error = this.errorState.asReadonly();
   readonly hasItems = computed(() => this.itemsState().length > 0);
+
+  protected constructor(
+    private readonly api: MasterDataListApi<T>,
+    private readonly resourceLabel: string,
+  ) {}
 
   load(): void {
     if (this.loadingState()) {
@@ -55,7 +61,7 @@ export class CustomerListStore {
       });
   }
 
-  applyFilters(filters: CustomerFilters): void {
+  applyFilters(filters: MasterDataFilters): void {
     this.queryState.update((query) => ({
       ...query,
       page: 1,
@@ -90,7 +96,9 @@ export class CustomerListStore {
 
   private setError(error: unknown): void {
     this.errorState.set(
-      error instanceof ApiHttpError ? error.message : 'Unable to load customers.',
+      error instanceof ApiHttpError
+        ? error.message
+        : `Unable to load ${this.resourceLabel}.`,
     );
   }
 }

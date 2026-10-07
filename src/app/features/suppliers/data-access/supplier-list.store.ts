@@ -2,20 +2,15 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
 import { ApiHttpError } from '../../../core/http/api-http-error';
+import { toActiveFilter } from '../../../shared/models/active-status-filter';
 import {
   DEFAULT_PAGINATION,
+  EMPTY_PAGINATION,
   PaginationMeta,
 } from '../../../shared/models/pagination.model';
 import { SupplierApiService } from './supplier-api.service';
 import { SupplierSummary } from '../models/supplier.model';
 import { SupplierFilters, SupplierQuery } from '../models/supplier-query.model';
-
-const EMPTY_PAGINATION: PaginationMeta = {
-  page: 1,
-  pageSize: DEFAULT_PAGINATION.pageSize,
-  totalItems: 0,
-  totalPages: 0,
-};
 
 @Injectable()
 export class SupplierListStore {
@@ -61,14 +56,11 @@ export class SupplierListStore {
   }
 
   applyFilters(filters: SupplierFilters): void {
-    const active =
-      filters.status === '' ? undefined : filters.status === 'active';
-
     this.queryState.update((query) => ({
       ...query,
       page: 1,
       search: filters.search.trim() || undefined,
-      active,
+      active: toActiveFilter(filters.status),
     }));
 
     this.load();

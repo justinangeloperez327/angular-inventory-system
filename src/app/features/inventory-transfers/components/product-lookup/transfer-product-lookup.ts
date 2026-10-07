@@ -5,11 +5,10 @@ import {
   inject,
   Input,
   Output,
-  signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
 
+import { SearchLookupState } from '../../../../shared/data-access/search-lookup.state';
 import { ButtonComponent } from '../../../../shared/ui/button/button';
 import { InputComponent } from '../../../../shared/ui/input/input';
 import { InventoryTransferApiService } from '../../data-access/inventory-transfer-api.service';
@@ -23,49 +22,30 @@ import { InventoryTransferProductOption } from '../../models/inventory-transfer.
 })
 export class TransferProductLookupComponent {
   private readonly api = inject(InventoryTransferApiService);
+  private readonly lookup = new SearchLookupState<InventoryTransferProductOption>();
 
   @Input() sourceWarehouseId = '';
   @Output() readonly selected = new EventEmitter<InventoryTransferProductOption>();
 
-  readonly search = new FormControl('', { nonNullable: true });
-  readonly results = signal<readonly InventoryTransferProductOption[]>([]);
-  readonly loading = signal(false);
-  readonly error = signal('');
+  readonly search = this.lookup.search;
+  readonly results = this.lookup.results;
+  readonly loading = this.lookup.loading;
+  readonly error = this.lookup.error;
 
   find(): void {
-    const term = this.search.value.trim();
-
     if (!this.sourceWarehouseId) {
-      this.error.set('Select a source warehouse first.');
-      this.results.set([]);
+      this.lookup.fail('Select a source warehouse first.');
       return;
     }
 
-    if (term.length < 2) {
-      this.error.set('Enter at least 2 characters.');
-      this.results.set([]);
-      return;
-    }
-
-    this.loading.set(true);
-    this.error.set('');
-
-    this.api
-      .searchProducts(this.sourceWarehouseId, term)
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: (results) => this.results.set(results),
-        error: () => {
-          this.results.set([]);
-          this.error.set('Unable to search products.');
-        },
-      });
+    this.lookup.searchWith(
+      (term) => this.api.searchProducts(this.sourceWarehouseId, term),
+      { failureMessage: 'Unable to search products.' },
+    );
   }
 
   choose(product: InventoryTransferProductOption): void {
     this.selected.emit(product);
-    this.results.set([]);
-    this.search.setValue('');
-    this.error.set('');
+    this.lookup.reset();
   }
 }

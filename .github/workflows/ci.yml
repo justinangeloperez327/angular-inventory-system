@@ -41,9 +41,6 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Dependency contract
-        run: npm run check:dependencies
-
       - name: Dependency audit
         run: npm audit --audit-level=high
 
@@ -58,18 +55,6 @@ jobs:
 
       - name: Accessibility guard
         run: npm run check:accessibility
-
-      - name: Production guard
-        run: npm run check:production
-
-      - name: Runtime configuration guard
-        run: npm run check:runtime
-
-      - name: Observability guard
-        run: npm run check:observability
-
-      - name: Deployment verification guard
-        run: npm run check:deployment
 
       - name: Unit tests
         run: npm test

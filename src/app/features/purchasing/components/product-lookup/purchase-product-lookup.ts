@@ -4,11 +4,10 @@ import {
   EventEmitter,
   inject,
   Output,
-  signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { finalize } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
 
+import { SearchLookupState } from '../../../../shared/data-access/search-lookup.state';
 import { ButtonComponent } from '../../../../shared/ui/button/button';
 import { InputComponent } from '../../../../shared/ui/input/input';
 import { PurchaseOrderApiService } from '../../data-access/purchase-order-api.service';
@@ -22,38 +21,24 @@ import { PurchaseOrderProductOption } from '../../models/purchase-order.model';
 })
 export class PurchaseProductLookupComponent {
   private readonly api = inject(PurchaseOrderApiService);
+  private readonly lookup = new SearchLookupState<PurchaseOrderProductOption>();
 
   @Output() readonly selected = new EventEmitter<PurchaseOrderProductOption>();
 
-  readonly search = new FormControl('', { nonNullable: true });
-  readonly results = signal<readonly PurchaseOrderProductOption[]>([]);
-  readonly loading = signal(false);
-  readonly error = signal('');
+  readonly search = this.lookup.search;
+  readonly results = this.lookup.results;
+  readonly loading = this.lookup.loading;
+  readonly error = this.lookup.error;
 
   find(): void {
-    const term = this.search.value.trim();
-    if (term.length < 2) {
-      this.error.set('Enter at least 2 characters.');
-      this.results.set([]);
-      return;
-    }
-
-    this.loading.set(true);
-    this.error.set('');
-
-    this.api.searchProducts(term).pipe(finalize(() => this.loading.set(false))).subscribe({
-      next: (results) => this.results.set(results),
-      error: () => {
-        this.results.set([]);
-        this.error.set('Unable to search products.');
-      },
-    });
+    this.lookup.searchWith(
+      (term) => this.api.searchProducts(term),
+      { failureMessage: 'Unable to search products.' },
+    );
   }
 
   choose(item: PurchaseOrderProductOption): void {
     this.selected.emit(item);
-    this.results.set([]);
-    this.search.setValue('');
-    this.error.set('');
+    this.lookup.reset();
   }
 }
