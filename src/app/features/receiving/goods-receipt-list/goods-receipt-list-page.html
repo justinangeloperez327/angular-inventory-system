@@ -1,29 +1,29 @@
 <app-content-container>
   <app-page-header
     title="Receiving"
-    description="Record goods received against approved purchase orders and post them into inventory."
+    description="Record approved purchase-order deliveries and post them into inventory."
   >
     <a
       actions
       [routerLink]="['new']"
       [queryParams]="purchaseOrderId ? { purchaseOrderId: purchaseOrderId } : null"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New receipt
     </a>
   </app-page-header>
 
   @if (purchaseOrderId) {
-    <div class="mt-3 border-l-[3px] border-l-primary bg-surface px-3 py-2 text-sm text-muted-foreground">
-      Showing receipts for a selected purchase order.
-      <a routerLink="/receiving" class="ml-1 font-medium text-foreground no-underline hover:underline">
-        Clear PO filter
-      </a>
+    <div class="mt-3 flex flex-wrap items-center gap-2 rounded-sm border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
+      <span class="size-1.5 rounded-full bg-primary" aria-hidden="true"></span>
+      Showing receipts for the selected purchase order.
+      <a routerLink="/receiving" class="font-medium text-primary no-underline hover:text-primary-hover">Clear filter</a>
     </div>
   }
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input type="search" label="Search" placeholder="Receipt, PO, supplier, delivery reference" formControlName="search" />
+    <app-input type="search" label="Search" placeholder="Receipt, PO, supplier, reference" formControlName="search" />
     <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
     <app-select
       label="Status"
@@ -37,7 +37,6 @@
     />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
     <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
@@ -45,21 +44,22 @@
   </form>
 
   @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
   }
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Receiving unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Receiving unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="receipt-records-heading">
+      <div class="mb-2 flex items-baseline gap-2">
+        <h2 id="receipt-records-heading" class="m-0 text-sm font-semibold text-foreground">Receipt register</h2>
+        <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
@@ -77,39 +77,36 @@
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
+              <td><a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.number }}</a></td>
+              <td><a [routerLink]="['/purchasing', item.purchaseOrderId]" class="font-medium text-primary no-underline hover:text-primary-hover">{{ item.purchaseOrderNumber }}</a></td>
               <td>
-                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">{{ item.number }}</a>
+                <span class="font-medium text-foreground">{{ item.supplierName }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.supplierCode }}</span>
               </td>
-              <td>
-                <a [routerLink]="['/purchasing', item.purchaseOrderId]" class="font-medium text-foreground no-underline hover:underline">
-                  {{ item.purchaseOrderNumber }}
-                </a>
-              </td>
-              <td>
-                {{ item.supplierName }}
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.supplierCode }}</span>
-              </td>
-              <td>
+              <td class="text-muted-foreground">
                 {{ item.warehouseName }}
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.warehouseCode }}</span>
               </td>
-              <td class="whitespace-nowrap">{{ item.receiptDate | date: 'mediumDate' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.receiptDate | date: 'mediumDate' }}</td>
               <td class="text-right tabular-nums">{{ item.lineCount }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td class="whitespace-nowrap">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
-              <td>
-                @if (item.status === 'draft') {
-                  <a [routerLink]="[item.id, 'edit']" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Edit</a>
-                }
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="item.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  @if (item.status === 'draft') {
+                    <a [routerLink]="[item.id, 'edit']" class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground">Edit</a>
+                  }
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} receipts</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"
@@ -117,8 +114,6 @@
       />
     </div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state title="No goods receipts found" description="No receipts match the current filters." />
-    </div>
+    <div class="mt-4"><app-empty-state title="No goods receipts found" description="No receipts match the current filters." /></div>
   }
 </app-content-container>

@@ -1,14 +1,15 @@
 <app-content-container>
   <app-page-header
     title="Transfers"
-    description="Move inventory between warehouses through controlled, auditable transfer transactions."
+    description="Move inventory between warehouses through controlled, auditable transactions."
   >
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px"
       *appHasPermission="permissions.inventoryTransfer"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New transfer
     </a>
   </app-page-header>
@@ -29,7 +30,6 @@
     />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
     <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
@@ -37,26 +37,28 @@
   </form>
 
   @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
   }
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Transfers unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Transfers unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="transfer-records-heading">
+      <div class="mb-2 flex items-baseline gap-2">
+        <h2 id="transfer-records-heading" class="m-0 text-sm font-semibold text-foreground">Transfer register</h2>
+        <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
-            <th>Number</th>
+            <th>Transfer</th>
             <th>Source</th>
+            <th></th>
             <th>Destination</th>
             <th class="text-right">Lines</th>
             <th>Status</th>
@@ -68,40 +70,42 @@
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
+              <td><a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.number }}</a></td>
               <td>
-                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">{{ item.number }}</a>
+                <span class="font-medium text-foreground">{{ item.sourceWarehouseName }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.sourceWarehouseCode }}</span>
               </td>
+              <td class="w-8 text-center text-subtle-foreground" aria-hidden="true">→</td>
               <td>
-                {{ item.sourceWarehouseName }}
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.sourceWarehouseCode }}</span>
-              </td>
-              <td>
-                {{ item.destinationWarehouseName }}
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.destinationWarehouseCode }}</span>
+                <span class="font-medium text-foreground">{{ item.destinationWarehouseName }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.destinationWarehouseCode }}</span>
               </td>
               <td class="text-right tabular-nums">{{ item.lineCount }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td class="whitespace-nowrap">{{ item.createdAt | date: 'short' }}</td>
-              <td class="whitespace-nowrap">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
-              <td>
-                @if (item.status === 'draft') {
-                  <a
-                    [routerLink]="[item.id, 'edit']"
-                    class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                    *appHasPermission="permissions.inventoryTransfer"
-                  >
-                    Edit
-                  </a>
-                }
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.createdAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="item.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  @if (item.status === 'draft') {
+                    <a
+                      [routerLink]="[item.id, 'edit']"
+                      class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground"
+                      *appHasPermission="permissions.inventoryTransfer"
+                    >
+                      Edit
+                    </a>
+                  }
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} transfers</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"
@@ -109,8 +113,6 @@
       />
     </div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state title="No transfers found" description="No inventory transfers match the current filters." />
-    </div>
+    <div class="mt-4"><app-empty-state title="No transfers found" description="No inventory transfers match the current filters." /></div>
   }
 </app-content-container>

@@ -7,13 +7,13 @@
     <app-skeleton height="26rem" />
   } @else if (store.item(); as item) {
     <app-page-header [title]="item.number" [description]="'Inventory adjustment · ' + item.productName">
-      <a actions routerLink="/adjustments" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All adjustments</a>
+      <a actions routerLink="/adjustments" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-medium text-foreground no-underline shadow-control transition-colors hover:border-border-strong hover:bg-surface-muted">All adjustments</a>
 
       @if (item.status === 'draft') {
         <a
           actions
           [routerLink]="['edit']"
-          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
+          class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-medium text-foreground no-underline shadow-control transition-colors hover:border-border-strong hover:bg-surface-muted"
           *appHasPermission="permissions.inventoryAdjust"
         >
           Edit
@@ -29,109 +29,103 @@
       }
     </app-page-header>
 
-    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-      <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
-      <app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge>
-      <strong
-        class="text-lg font-semibold text-foreground tabular-nums"
-        [class.text-danger]="item.direction === 'decrease'"
-      >
-        {{ signedQuantity(item.direction, item.quantity) }}
-        @if (item.unitSymbol) {
-          <span class="text-sm font-normal text-muted-foreground">{{ item.unitSymbol }}</span>
-        }
-      </strong>
-      @if (item.status === 'posted') {
-        <span>Immutable posted transaction</span>
-      }
-    </div>
+    <section class="mt-4 overflow-hidden rounded-sm border border-border bg-surface shadow-sm" aria-label="Adjustment summary">
+      <div class="grid gap-px bg-border sm:grid-cols-3">
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Status</span>
+          <div class="mt-2"><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></div>
+        </div>
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Direction</span>
+          <div class="mt-2"><app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge></div>
+        </div>
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Quantity</span>
+          <strong
+            class="mt-2 block text-xl font-semibold tabular-nums"
+            [class.text-danger]="item.direction === 'decrease'"
+            [class.text-success]="item.direction === 'increase'"
+          >
+            {{ signedQuantity(item.direction, item.quantity) }}
+            @if (item.unitSymbol) {
+              <span class="text-sm font-normal text-muted-foreground">{{ item.unitSymbol }}</span>
+            }
+          </strong>
+        </div>
+      </div>
+    </section>
 
-    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Inventory correction</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 border-t border-border py-2.5 first:border-t-0 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+    @if (item.status === 'posted') {
+      <p class="mb-0 mt-2 text-xs text-subtle-foreground">Posted adjustments are immutable.</p>
+    }
+
+    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Inventory correction</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Product, warehouse, quantity, and business reason.</p>
+        </div>
+        <dl class="m-0 px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Product</dt>
             <dd class="m-0 text-sm">
-              <a [routerLink]="['/products', item.productId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.productName }}</a>
-              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.sku }}</span>
+              <a [routerLink]="['/products', item.productId]" class="font-medium text-foreground no-underline hover:text-primary">{{ item.productName }}</a>
+              <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.sku }}</span>
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Warehouse</dt>
             <dd class="m-0 text-sm">
-              <a [routerLink]="['/inventory/warehouses', item.warehouseId]" class="font-semibold text-foreground no-underline hover:underline">{{ item.warehouseName }}</a>
-              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+              <a [routerLink]="['/inventory/warehouses', item.warehouseId]" class="font-medium text-foreground no-underline hover:text-primary">{{ item.warehouseName }}</a>
+              <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.warehouseCode }}</span>
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Direction</dt>
-            <dd class="m-0 text-sm">{{ item.direction }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Quantity</dt>
-            <dd class="m-0 text-right text-sm font-semibold tabular-nums" [class.text-danger]="item.direction === 'decrease'">
-              {{ signedQuantity(item.direction, item.quantity) }}
-            </dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Reason</dt>
             <dd class="m-0 text-sm">{{ item.reasonLabel }}</dd>
           </div>
-        </dl>
-      </section>
-
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Posting audit</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 border-t border-border py-2.5 first:border-t-0 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Status</dt>
-            <dd class="m-0 text-sm">{{ item.status }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Balance before</dt>
-            <dd class="m-0 text-right text-sm tabular-nums">{{ item.balanceBefore ?? '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Balance after</dt>
-            <dd class="m-0 text-right text-sm tabular-nums">{{ item.balanceAfter ?? '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Created</dt>
-            <dd class="m-0 text-sm">{{ item.createdAt | date: 'medium' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Created by</dt>
-            <dd class="m-0 text-sm">{{ item.createdBy?.name || 'System' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Posted</dt>
-            <dd class="m-0 text-sm">{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Posted by</dt>
-            <dd class="m-0 text-sm">{{ item.postedBy?.name || '—' }}</dd>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+            <dt class="text-xs text-muted-foreground">Notes</dt>
+            <dd class="m-0 text-sm leading-5 text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</dd>
           </div>
         </dl>
       </section>
 
-      <section class="border-t border-border pt-4 lg:col-span-2">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
-        <p class="mb-0 mt-3 max-w-4xl text-base leading-6 text-muted-foreground">{{ item.notes || 'No notes recorded.' }}</p>
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Posting result</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Balance impact and audit trail.</p>
+        </div>
+        <div class="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          <div class="bg-surface px-4 py-4">
+            <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Balance before</span>
+            <strong class="mt-2 block text-xl font-semibold tabular-nums">{{ item.balanceBefore ?? '—' }}</strong>
+          </div>
+          <div class="bg-surface px-4 py-4">
+            <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Balance after</span>
+            <strong class="mt-2 block text-xl font-semibold text-primary tabular-nums">{{ item.balanceAfter ?? '—' }}</strong>
+          </div>
+        </div>
+        <dl class="m-0 border-t border-border px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Created</dt><dd class="m-0 text-sm">{{ item.createdAt | date: 'medium' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Created by</dt><dd class="m-0 text-sm">{{ item.createdBy?.name || 'System' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Posted</dt><dd class="m-0 text-sm">{{ item.postedAt ? (item.postedAt | date: 'medium') : '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Posted by</dt><dd class="m-0 text-sm">{{ item.postedBy?.name || '—' }}</dd></div>
+        </dl>
       </section>
-
-      @if (item.movement) {
-        <section class="border-t border-border pt-4 lg:col-span-2">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Resulting movement</h2>
-          <p class="mb-0 mt-3 text-base text-muted-foreground">
-            Posting created an immutable stock movement.
-            <a [routerLink]="['/stock-movements', item.movement.id]" class="font-semibold text-foreground no-underline hover:underline">
-              {{ item.movement.number || 'View stock movement' }}
-            </a>
-          </p>
-        </section>
-      }
     </div>
+
+    @if (item.movement) {
+      <section class="mt-5 rounded-sm border border-primary/20 bg-primary/5 p-4">
+        <span class="block text-xs font-medium text-muted-foreground">Resulting movement</span>
+        <p class="mb-0 mt-1 text-sm text-muted-foreground">
+          Posting created an immutable stock movement.
+          <a [routerLink]="['/stock-movements', item.movement.id]" class="font-medium text-primary no-underline hover:text-primary-hover">
+            {{ item.movement.number || 'View stock movement' }}
+          </a>
+        </p>
+      </section>
+    }
 
     <app-confirmation-dialog
       [open]="confirmPost()"

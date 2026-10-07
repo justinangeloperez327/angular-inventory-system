@@ -7,27 +7,14 @@
     <app-skeleton height="30rem" />
   } @else if (store.count(); as count) {
     <app-page-header [title]="count.number" [description]="'Stock count · ' + count.warehouseName">
-      <a actions routerLink="/stock-counts" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted">All counts</a>
+      <a actions routerLink="/stock-counts" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-medium text-foreground no-underline shadow-control transition-colors hover:border-border-strong hover:bg-surface-muted">All counts</a>
 
       @if (count.status === 'draft') {
-        <app-button
-          actions
-          [loading]="store.action() === 'start'"
-          (click)="confirmAction.set('start')"
-        >
-          Start count
-        </app-button>
+        <app-button actions [loading]="store.action() === 'start'" (click)="confirmAction.set('start')">Start count</app-button>
       }
 
       @if (count.status === 'counting') {
-        <app-button
-          actions
-          [disabled]="!store.allCounted()"
-          [loading]="store.action() === 'submit'"
-          (click)="confirmAction.set('submit')"
-        >
-          Submit for review
-        </app-button>
+        <app-button actions [disabled]="!store.allCounted()" [loading]="store.action() === 'submit'" (click)="confirmAction.set('submit')">Submit for review</app-button>
       }
 
       @if (count.status === 'submitted') {
@@ -42,22 +29,28 @@
       }
     </app-page-header>
 
-    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-      <app-badge [variant]="statusVariant(count.status)">{{ count.status }}</app-badge>
-      <span class="tabular-nums">
-        <strong class="font-medium text-foreground">{{ count.countedLineCount }}</strong>
-        / {{ count.lineCount }} counted
-      </span>
-      <span
-        class="tabular-nums"
-        [class.text-warning]="count.varianceLineCount > 0"
-      >
-        {{ count.varianceLineCount }} variance lines
-      </span>
-      @if (count.status === 'posted') {
-        <span>Immutable posted count</span>
-      }
-    </div>
+    <section class="mt-4 overflow-hidden rounded-sm border border-border bg-surface shadow-sm" aria-label="Stock count summary">
+      <div class="grid gap-px bg-border sm:grid-cols-3">
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Status</span>
+          <div class="mt-2"><app-badge [variant]="statusVariant(count.status)">{{ count.status }}</app-badge></div>
+        </div>
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Progress</span>
+          <strong class="mt-2 block text-xl font-semibold tabular-nums">
+            {{ count.countedLineCount }} <span class="text-sm font-normal text-muted-foreground">/ {{ count.lineCount }}</span>
+          </strong>
+        </div>
+        <div class="bg-surface px-4 py-3.5" [class.border-t-2]="count.varianceLineCount > 0" [class.border-t-warning]="count.varianceLineCount > 0">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Variance lines</span>
+          <strong class="mt-2 block text-xl font-semibold tabular-nums" [class.text-warning]="count.varianceLineCount > 0">{{ count.varianceLineCount }}</strong>
+        </div>
+      </div>
+    </section>
+
+    @if (count.status === 'posted') {
+      <p class="mb-0 mt-2 text-xs text-subtle-foreground">Posted counts are immutable.</p>
+    }
 
     @if (count.status === 'draft') {
       <div class="mt-4">
@@ -75,100 +68,62 @@
       </div>
     }
 
-    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Session</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
+    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Session</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Warehouse scope and workflow timestamps.</p>
+        </div>
+        <dl class="m-0 px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Warehouse</dt>
             <dd class="m-0 text-sm">
-              <a
-                [routerLink]="['/inventory/warehouses', count.warehouseId]"
-                class="font-semibold text-foreground no-underline hover:underline"
-              >
-                {{ count.warehouseName }}
-              </a>
-              <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
-                {{ count.warehouseCode }}
-              </span>
+              <a [routerLink]="['/inventory/warehouses', count.warehouseId]" class="font-medium text-foreground no-underline hover:text-primary">{{ count.warehouseName }}</a>
+              <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ count.warehouseCode }}</span>
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Created</dt>
-            <dd class="m-0 text-sm">{{ count.createdAt | date: 'medium' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Started</dt>
-            <dd class="m-0 text-sm">{{ count.startedAt ? (count.startedAt | date: 'medium') : '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Submitted</dt>
-            <dd class="m-0 text-sm">{{ count.submittedAt ? (count.submittedAt | date: 'medium') : '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Approved</dt>
-            <dd class="m-0 text-sm">{{ count.approvedAt ? (count.approvedAt | date: 'medium') : '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Posted</dt>
-            <dd class="m-0 text-sm">{{ count.postedAt ? (count.postedAt | date: 'medium') : '—' }}</dd>
-          </div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Created</dt><dd class="m-0 text-sm">{{ count.createdAt | date: 'medium' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Started</dt><dd class="m-0 text-sm">{{ count.startedAt ? (count.startedAt | date: 'medium') : '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Submitted</dt><dd class="m-0 text-sm">{{ count.submittedAt ? (count.submittedAt | date: 'medium') : '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Approved</dt><dd class="m-0 text-sm">{{ count.approvedAt ? (count.approvedAt | date: 'medium') : '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Posted</dt><dd class="m-0 text-sm">{{ count.postedAt ? (count.postedAt | date: 'medium') : '—' }}</dd></div>
         </dl>
       </section>
 
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Audit & notes</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Created by</dt>
-            <dd class="m-0 text-sm">{{ count.createdBy?.name || 'System' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Started by</dt>
-            <dd class="m-0 text-sm">{{ count.startedBy?.name || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Submitted by</dt>
-            <dd class="m-0 text-sm">{{ count.submittedBy?.name || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Approved by</dt>
-            <dd class="m-0 text-sm">{{ count.approvedBy?.name || '—' }}</dd>
-          </div>
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Audit & notes</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">People responsible for each stage.</p>
+        </div>
+        <dl class="m-0 px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Created by</dt><dd class="m-0 text-sm">{{ count.createdBy?.name || 'System' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Started by</dt><dd class="m-0 text-sm">{{ count.startedBy?.name || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Submitted by</dt><dd class="m-0 text-sm">{{ count.submittedBy?.name || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8.5rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Approved by</dt><dd class="m-0 text-sm">{{ count.approvedBy?.name || '—' }}</dd></div>
         </dl>
-
-        <div class="mt-4 border-t border-border pt-3">
+        <div class="border-t border-border px-4 py-3">
           <span class="block text-xs text-muted-foreground">Notes</span>
-          <p class="mb-0 mt-1.5 text-base leading-6 text-muted-foreground">
-            {{ count.notes || 'No notes recorded.' }}
-          </p>
+          <p class="mb-0 mt-1.5 text-sm leading-5 text-muted-foreground">{{ count.notes || 'No notes recorded.' }}</p>
         </div>
       </section>
     </div>
 
-    <section class="mt-5 border-t border-border pt-4">
+    <section class="mt-5">
       <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2 class="m-0 text-lg font-semibold text-foreground">Count lines</h2>
+          <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">Count lines</h2>
           <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
-            Lines are server-paginated so large warehouses do not become one giant browser form.
+            Server-paginated for large warehouses.
             @if (count.status === 'counting') {
               Save the current page before changing filters or pages.
             }
           </p>
         </div>
 
-        <form
-          (ngSubmit)="applyLineFilter()"
-          class="flex flex-col gap-2 sm:flex-row sm:items-end"
-        >
+        <form (ngSubmit)="applyLineFilter()" class="flex flex-col gap-2 sm:flex-row sm:items-end">
           <app-input type="search" placeholder="SKU or product" [formControl]="search" />
-          <label class="flex min-h-control items-center gap-2 whitespace-nowrap text-sm text-muted-foreground">
-            <input
-              type="checkbox"
-              class="size-4 rounded-xs border-border accent-primary"
-              [formControl]="varianceOnly"
-            />
+          <label class="flex min-h-control items-center gap-2 whitespace-nowrap text-xs font-medium text-muted-foreground">
+            <input type="checkbox" class="size-4 rounded-xs border-border accent-primary" [formControl]="varianceOnly" />
             Variances only
           </label>
           <app-button type="submit" variant="secondary" size="sm">Filter</app-button>
@@ -177,9 +132,7 @@
 
       @if (lineMessage()) {
         <div class="mt-3">
-          <app-alert variant="warning" title="Count page requires attention">
-            {{ lineMessage() }}
-          </app-alert>
+          <app-alert variant="warning" title="Count page requires attention">{{ lineMessage() }}</app-alert>
         </div>
       }
 
@@ -199,19 +152,14 @@
             <tbody>
               @for (line of store.lines(); track line.id; let index = $index) {
                 <tr>
-                  <td class="font-mono text-xs">{{ line.sku }}</td>
+                  <td class="font-mono text-xs text-muted-foreground">{{ line.sku }}</td>
                   <td>
-                    <a
-                      [routerLink]="['/products', line.productId]"
-                      class="font-semibold text-foreground no-underline hover:underline"
-                    >
-                      {{ line.productName }}
-                    </a>
+                    <a [routerLink]="['/products', line.productId]" class="font-medium text-foreground no-underline hover:text-primary">{{ line.productName }}</a>
                     @if (line.unitSymbol) {
-                      <span class="mt-0.5 block text-xs text-subtle-foreground">{{ line.unitSymbol }}</span>
+                      <span class="mt-0.5 block text-[0.6875rem] text-subtle-foreground">{{ line.unitSymbol }}</span>
                     }
                   </td>
-                  <td class="text-right tabular-nums">{{ line.expectedQuantity }}</td>
+                  <td class="text-right tabular-nums text-muted-foreground">{{ line.expectedQuantity }}</td>
                   <td class="text-right tabular-nums">
                     @if (count.status === 'counting') {
                       <div class="ml-auto w-32 text-left">
@@ -224,7 +172,7 @@
                         />
                       </div>
                     } @else {
-                      {{ line.countedQuantity ?? '—' }}
+                      <span class="font-semibold text-foreground">{{ line.countedQuantity ?? '—' }}</span>
                     }
                   </td>
                   <td
@@ -242,12 +190,7 @@
                   </td>
                   <td>
                     @if (line.movement) {
-                      <a
-                        [routerLink]="['/stock-movements', line.movement.id]"
-                        class="font-medium text-foreground no-underline hover:underline"
-                      >
-                        {{ line.movement.number || 'Stock count movement' }}
-                      </a>
+                      <a [routerLink]="['/stock-movements', line.movement.id]" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">{{ line.movement.number || 'Stock count movement' }}</a>
                     } @else {
                       —
                     }
@@ -273,12 +216,7 @@
           />
         </div>
       } @else {
-        <div class="mt-3">
-          <app-empty-state
-            title="No count lines"
-            description="No count lines match the current filter."
-          />
-        </div>
+        <div class="mt-3"><app-empty-state title="No count lines" description="No count lines match the current filter." /></div>
       }
     </section>
 

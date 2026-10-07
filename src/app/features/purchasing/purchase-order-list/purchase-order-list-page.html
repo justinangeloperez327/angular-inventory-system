@@ -1,20 +1,21 @@
 <app-content-container>
   <app-page-header
     title="Purchase Orders"
-    description="Create, review, submit, approve, and receive supplier purchase orders."
+    description="Create, review, approve, and receive supplier purchase orders."
   >
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px"
       *appHasPermission="permissions.purchaseCreate"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New purchase order
     </a>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input type="search" label="Search" placeholder="PO number, supplier, SKU, product" formControlName="search" />
+    <app-input type="search" label="Search" placeholder="PO, supplier, SKU, product" formControlName="search" />
     <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
     <app-select
       label="Status"
@@ -39,25 +40,29 @@
   </form>
 
   @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
   }
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Purchase orders unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Purchase orders unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="purchase-order-records-heading">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2">
+          <h2 id="purchase-order-records-heading" class="m-0 text-sm font-semibold text-foreground">Purchase order register</h2>
+          <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+        </div>
+        <span class="hidden text-xs text-subtle-foreground sm:inline">Draft → submitted → approved → received</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
-            <th>PO number</th>
+            <th>Purchase order</th>
             <th>Supplier</th>
             <th>Warehouse</th>
             <th>Order date</th>
@@ -72,44 +77,43 @@
           @for (item of store.items(); track item.id) {
             <tr>
               <td>
-                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">
-                  {{ item.number }}
-                </a>
+                <a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.number }}</a>
               </td>
               <td>
                 <span class="font-medium text-foreground">{{ item.supplierName }}</span>
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.supplierCode }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.supplierCode }}</span>
               </td>
-              <td>
+              <td class="text-muted-foreground">
                 {{ item.warehouseName }}
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.warehouseCode }}</span>
               </td>
-              <td class="whitespace-nowrap">{{ item.orderDate | date: 'mediumDate' }}</td>
-              <td class="whitespace-nowrap">{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.orderDate | date: 'mediumDate' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.expectedDate ? (item.expectedDate | date: 'mediumDate') : '—' }}</td>
               <td class="text-right tabular-nums">{{ item.lineCount }}</td>
-              <td class="text-right font-medium tabular-nums">
-                {{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}
-              </td>
+              <td class="text-right font-semibold tabular-nums">{{ item.subtotal | currency: item.currencyCode : 'symbol' : '1.2-2' }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td>
-                @if (item.status === 'draft') {
-                  <a
-                    [routerLink]="[item.id, 'edit']"
-                    class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                    *appHasPermission="permissions.purchaseCreate"
-                  >
-                    Edit
-                  </a>
-                }
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="item.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  @if (item.status === 'draft') {
+                    <a
+                      [routerLink]="[item.id, 'edit']"
+                      class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground"
+                      *appHasPermission="permissions.purchaseCreate"
+                    >
+                      Edit
+                    </a>
+                  }
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} purchase orders</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"

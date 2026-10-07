@@ -1,14 +1,15 @@
 <app-content-container>
   <app-page-header
     title="Adjustments"
-    description="Controlled inventory corrections. Posted adjustments are immutable and create stock movements."
+    description="Controlled inventory corrections. Posted adjustments are immutable."
   >
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px"
       *appHasPermission="permissions.inventoryAdjust"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New adjustment
     </a>
   </app-page-header>
@@ -37,7 +38,6 @@
     />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
     <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
@@ -45,25 +45,26 @@
   </form>
 
   @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
   }
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Adjustments unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Adjustments unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="adjustment-records-heading">
+      <div class="mb-2 flex items-baseline gap-2">
+        <h2 id="adjustment-records-heading" class="m-0 text-sm font-semibold text-foreground">Adjustment register</h2>
+        <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
-            <th>Number</th>
+            <th>Adjustment</th>
             <th>Product</th>
             <th>Warehouse</th>
             <th>Direction</th>
@@ -77,53 +78,51 @@
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td>
-                <a [routerLink]="item.id" class="font-semibold text-foreground no-underline hover:underline">
-                  {{ item.number }}
-                </a>
-              </td>
+              <td><a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.number }}</a></td>
               <td>
                 <span class="font-medium text-foreground">{{ item.productName }}</span>
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.sku }}</span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.sku }}</span>
               </td>
-              <td>
-                <span>{{ item.warehouseName }}</span>
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ item.warehouseCode }}</span>
+              <td class="text-muted-foreground">
+                {{ item.warehouseName }}
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.warehouseCode }}</span>
               </td>
-              <td>
-                <app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge>
-              </td>
+              <td><app-badge [variant]="directionVariant(item.direction)">{{ item.direction }}</app-badge></td>
               <td
                 class="text-right font-semibold tabular-nums"
                 [class.text-danger]="item.direction === 'decrease'"
+                [class.text-success]="item.direction === 'increase'"
               >
                 {{ signedQuantity(item.direction, item.quantity) }}
                 @if (item.unitSymbol) {
                   <span class="ml-1 text-xs font-normal text-muted-foreground">{{ item.unitSymbol }}</span>
                 }
               </td>
-              <td>{{ item.reasonLabel }}</td>
+              <td class="text-muted-foreground">{{ item.reasonLabel }}</td>
               <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
-              <td class="whitespace-nowrap">{{ item.createdAt | date: 'short' }}</td>
-              <td>
-                @if (item.status === 'draft') {
-                  <a
-                    [routerLink]="[item.id, 'edit']"
-                    class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                    *appHasPermission="permissions.inventoryAdjust"
-                  >
-                    Edit
-                  </a>
-                }
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.createdAt | date: 'short' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="item.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  @if (item.status === 'draft') {
+                    <a
+                      [routerLink]="[item.id, 'edit']"
+                      class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground"
+                      *appHasPermission="permissions.inventoryAdjust"
+                    >
+                      Edit
+                    </a>
+                  }
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} adjustments</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"
@@ -131,8 +130,6 @@
       />
     </div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state title="No adjustments found" description="No inventory adjustments match the current filters." />
-    </div>
+    <div class="mt-4"><app-empty-state title="No adjustments found" description="No inventory adjustments match the current filters." /></div>
   }
 </app-content-container>

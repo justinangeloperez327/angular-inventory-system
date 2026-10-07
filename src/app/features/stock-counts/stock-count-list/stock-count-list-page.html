@@ -1,24 +1,17 @@
 <app-content-container>
   <app-page-header
     title="Stock Counts"
-    description="Warehouse physical counts, variance review, and auditable inventory reconciliation."
+    description="Physical count sessions, variance review, and auditable inventory reconciliation."
   >
-    <a actions routerLink="new" class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover">New stock count</a>
+    <a actions routerLink="new" class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
+      New stock count
+    </a>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input
-      type="search"
-      label="Search"
-      placeholder="Count number or warehouse"
-      formControlName="search"
-    />
-    <app-select
-      label="Warehouse"
-      placeholder="All warehouses"
-      [options]="warehouseOptions()"
-      formControlName="warehouseId"
-    />
+    <app-input type="search" label="Search" placeholder="Count number or warehouse" formControlName="search" />
+    <app-select label="Warehouse" placeholder="All warehouses" [options]="warehouseOptions()" formControlName="warehouseId" />
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -33,33 +26,32 @@
     />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
     <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">
-        Apply
-      </app-button>
-      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">
-        Clear
-      </app-button>
+      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
+      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
     </div>
   </form>
 
   @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div>
   }
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Stock counts unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Stock counts unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="count-records-heading">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2">
+          <h2 id="count-records-heading" class="m-0 text-sm font-semibold text-foreground">Count sessions</h2>
+          <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+        </div>
+        <span class="hidden text-xs text-subtle-foreground sm:inline">Progress and variance are the primary review signals</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
@@ -76,44 +68,30 @@
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td>
-                <a
-                  [routerLink]="item.id"
-                  class="font-semibold text-foreground no-underline hover:underline"
-                >
-                  {{ item.number }}
-                </a>
-              </td>
+              <td><a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.number }}</a></td>
               <td>
                 <span class="font-medium text-foreground">{{ item.warehouseName }}</span>
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
-                  {{ item.warehouseCode }}
-                </span>
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ item.warehouseCode }}</span>
               </td>
-              <td>
-                <app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge>
-              </td>
+              <td><app-badge [variant]="statusVariant(item.status)">{{ item.status }}</app-badge></td>
               <td class="text-right tabular-nums">
-                <span class="font-medium text-foreground">{{ item.countedLineCount }}</span>
+                <span class="font-semibold text-foreground">{{ item.countedLineCount }}</span>
                 <span class="text-muted-foreground"> / {{ item.lineCount }}</span>
               </td>
-              <td
-                class="text-right font-medium tabular-nums"
-                [class.text-warning]="item.varianceLineCount > 0"
-              >
+              <td class="text-right font-semibold tabular-nums" [class.text-warning]="item.varianceLineCount > 0">
                 {{ item.varianceLineCount }}
               </td>
-              <td class="whitespace-nowrap">{{ item.createdAt | date: 'short' }}</td>
-              <td class="whitespace-nowrap">{{ item.startedAt ? (item.startedAt | date: 'short') : '—' }}</td>
-              <td class="whitespace-nowrap">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.createdAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.startedAt ? (item.startedAt | date: 'short') : '—' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.postedAt ? (item.postedAt | date: 'short') : '—' }}</td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} counts</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"
@@ -121,11 +99,6 @@
       />
     </div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state
-        title="No stock counts found"
-        description="No stock-count sessions match the current filters."
-      />
-    </div>
+    <div class="mt-4"><app-empty-state title="No stock counts found" description="No stock-count sessions match the current filters." /></div>
   }
 </app-content-container>
