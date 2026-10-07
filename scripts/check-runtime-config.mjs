@@ -44,11 +44,16 @@ for (const directive of [
   "frame-ancestors 'none'",
   "form-action 'self'",
   "trusted-types angular angular#bundler",
-  "require-trusted-types-for 'script'",
 ]) {
   if (!headers.includes(directive)) {
     violations.push(`Content-Security-Policy must retain: ${directive}.`);
   }
+}
+
+if (headers.includes("require-trusted-types-for 'script'")) {
+  violations.push(
+    "Content-Security-Policy must not enforce require-trusted-types-for 'script' while Angular security.autoCsp uses its pre-bootstrap string script loader.",
+  );
 }
 
 if (violations.length > 0) {
