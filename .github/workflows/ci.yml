@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: justinangeloperez327/nest-js-inventory-system
-          ref: 3565f44525a15e156c0667819bf3ade04da5ae26
+          ref: fdb4387c9317e09b691e540f1b8f2a7bea0a49e4
           path: .contract-backend
           persist-credentials: false
 
