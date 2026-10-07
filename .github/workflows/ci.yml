@@ -17,7 +17,7 @@ jobs:
   verify:
     name: Test and production build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -100,3 +100,6 @@ jobs:
           trap cleanup EXIT
 
           bash scripts/verify-container-runtime.sh
+
+      - name: Full-stack Angular NestJS integration
+        run: bash scripts/run-full-stack-integration.sh
