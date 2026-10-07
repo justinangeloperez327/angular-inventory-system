@@ -146,3 +146,16 @@ Do not point CI at an unpinned backend branch such as `main`; compatibility chec
 This guard proves route/verb compatibility and the shared versioned base path.
 
 It does not prove database state, transactional business rules, or production infrastructure connectivity. Those remain backend/integration/deployment responsibilities.
+
+
+## Full-stack verification
+
+Group 26 extends the source-level compatibility guard with a real runtime integration test.
+
+CI boots the pinned NestJS revision with PostgreSQL, migrations, seed data, and a CI-only Administrator. The already-built Angular production container then proxies `/api/v1` to that live backend over the Docker network.
+
+The Playwright integration suite verifies real login, `/auth/me` session restoration, Angular-facing Administration routes, backend HTTP 403 enforcement, matching Angular route-guard behavior, and logout/session clearing.
+
+This closes the authentication/authorization end-to-end item in the frontend release checklist.
+
+See `docs/full-stack-testing.md`.
