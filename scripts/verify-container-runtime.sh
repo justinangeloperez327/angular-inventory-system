@@ -75,7 +75,13 @@ assert_security_headers() {
   assert_header_exact "$file" "X-Frame-Options" "DENY"
   assert_header_contains "$file" "Content-Security-Policy" "frame-ancestors 'none'"
   assert_header_contains "$file" "Content-Security-Policy" "trusted-types angular angular#bundler"
-  assert_header_contains "$file" "Content-Security-Policy" "require-trusted-types-for 'script'"
+
+  local csp
+  csp="$(header_lines "$file" "Content-Security-Policy" | tail -n 1)"
+
+  if [[ "$csp" == *"require-trusted-types-for 'script'"* ]]; then
+    fail "Content-Security-Policy must not enforce Trusted Types before Angular autoCSP bootstrap"
+  fi
 
   local server
   server="$(header_lines "$file" "Server" | tail -n 1)"
