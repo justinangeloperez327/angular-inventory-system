@@ -1,25 +1,47 @@
 <section
-  class="mt-4 grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2"
+  class="mt-5 overflow-hidden rounded-sm border border-border bg-surface shadow-sm"
   aria-label="Inventory totals"
 >
-  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
-    <span class="block text-xs font-medium text-muted-foreground">On hand</span>
-    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityOnHand }}</strong>
-  </article>
-  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
-    <span class="block text-xs font-medium text-muted-foreground">Reserved</span>
-    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityReserved }}</strong>
-  </article>
-  <article class="min-h-20 border border-border border-l-[3px] border-l-border-strong bg-surface px-3 py-2.5">
-    <span class="block text-xs font-medium text-muted-foreground">Available</span>
-    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.quantityAvailable }}</strong>
-  </article>
-  <article class="min-h-20 border border-border border-l-[3px] border-l-warning bg-surface px-3 py-2.5">
-    <span class="block text-xs font-medium text-muted-foreground">Low-stock lines</span>
-    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.lowStockLines }}</strong>
-  </article>
-  <article class="min-h-20 border border-border border-l-[3px] border-l-danger bg-surface px-3 py-2.5">
-    <span class="block text-xs font-medium text-muted-foreground">Out-of-stock lines</span>
-    <strong class="mt-1.5 block text-xl font-semibold tabular-nums">{{ totals.outOfStockLines }}</strong>
-  </article>
+  <div class="grid gap-px bg-border sm:grid-cols-2 lg:grid-cols-5">
+    <article class="bg-surface px-4 py-3.5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">
+        On hand
+      </span>
+      <strong class="mt-2 block text-2xl font-semibold tracking-[-0.03em] tabular-nums">
+        {{ totals.quantityOnHand }}
+      </strong>
+    </article>
+    <article class="bg-surface px-4 py-3.5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">
+        Reserved
+      </span>
+      <strong class="mt-2 block text-2xl font-semibold tracking-[-0.03em] tabular-nums">
+        {{ totals.quantityReserved }}
+      </strong>
+    </article>
+    <article class="bg-surface px-4 py-3.5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">
+        Available
+      </span>
+      <strong class="mt-2 block text-2xl font-semibold tracking-[-0.03em] text-primary tabular-nums">
+        {{ totals.quantityAvailable }}
+      </strong>
+    </article>
+    <article class="border-t-2 border-t-warning bg-surface px-4 py-3.5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">
+        Low stock
+      </span>
+      <strong class="mt-2 block text-2xl font-semibold tracking-[-0.03em] text-warning tabular-nums">
+        {{ totals.lowStockLines }}
+      </strong>
+    </article>
+    <article class="border-t-2 border-t-danger bg-surface px-4 py-3.5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">
+        Out of stock
+      </span>
+      <strong class="mt-2 block text-2xl font-semibold tracking-[-0.03em] text-danger tabular-nums">
+        {{ totals.outOfStockLines }}
+      </strong>
+    </article>
+  </div>
 </section>

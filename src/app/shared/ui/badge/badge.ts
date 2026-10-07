@@ -3,14 +3,14 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export type BadgeVariant = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
 const BASE_CLASSES =
-  'inline-flex min-h-6 items-center rounded-full border px-2 py-0.5 text-xs font-semibold';
+  'inline-flex min-h-5 items-center rounded-sm border px-1.5 py-0.5 text-[0.6875rem] font-semibold leading-4 tracking-[0.01em]';
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   neutral: 'border-border bg-surface-muted text-muted-foreground',
-  success: 'border-success bg-surface text-success',
-  warning: 'border-warning bg-surface text-warning',
-  danger: 'border-danger bg-surface text-danger',
-  info: 'border-primary bg-surface text-primary',
+  success: 'border-success/20 bg-success/10 text-success',
+  warning: 'border-warning/20 bg-warning/10 text-warning',
+  danger: 'border-danger/20 bg-danger/10 text-danger',
+  info: 'border-primary/20 bg-primary/10 text-primary',
 };
 
 @Component({

@@ -1,14 +1,15 @@
 <app-content-container>
   <app-page-header
     title="Products"
-    description="Product identity, classification, pricing, and reorder settings."
+    description="Manage product identity, classification, pricing, and reorder settings."
   >
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-[background-color,border-color,transform] hover:border-primary-hover hover:bg-primary-hover active:translate-y-px"
       *appHasPermission="permissions.productCreate"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       Add product
     </a>
   </app-page-header>
@@ -54,9 +55,23 @@
   }
 
   @if (store.loading() && !store.hasProducts()) {
-    <div class="mt-4"><app-skeleton height="20rem" /></div>
+    <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasProducts()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="product-records-heading">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2">
+          <h2 id="product-records-heading" class="m-0 text-sm font-semibold text-foreground">
+            Product records
+          </h2>
+          <span class="text-xs text-subtle-foreground">
+            {{ store.pagination().totalItems }} total
+          </span>
+        </div>
+        <span class="hidden text-xs text-subtle-foreground sm:inline">
+          Open a product for full record details
+        </span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
@@ -65,7 +80,7 @@
             <th>Category</th>
             <th>Unit</th>
             <th class="text-right">Cost</th>
-            <th class="text-right">Selling price</th>
+            <th class="text-right">Selling</th>
             <th class="text-right">Reorder</th>
             <th>Status</th>
             <th>Updated</th>
@@ -75,52 +90,62 @@
         <tbody>
           @for (product of store.products(); track product.id) {
             <tr>
-              <td class="font-mono text-xs">{{ product.sku }}</td>
+              <td class="font-mono text-xs text-muted-foreground">{{ product.sku }}</td>
               <td>
                 <a
                   [routerLink]="product.id"
-                  class="font-semibold text-foreground no-underline hover:underline"
+                  class="font-medium text-foreground no-underline hover:text-primary"
                 >
                   {{ product.name }}
                 </a>
                 @if (product.barcode) {
-                  <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                  <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">
                     {{ product.barcode }}
                   </span>
                 }
               </td>
-              <td>{{ product.categoryName || '—' }}</td>
-              <td>{{ product.unitName || '—' }}</td>
+              <td class="text-muted-foreground">{{ product.categoryName || '—' }}</td>
+              <td class="text-muted-foreground">{{ product.unitName || '—' }}</td>
               <td class="text-right tabular-nums">
                 {{ product.costPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}
               </td>
-              <td class="text-right tabular-nums">
+              <td class="text-right font-medium tabular-nums">
                 {{ product.sellingPrice | currency: currencyCode() : 'symbol' : '1.2-2' }}
               </td>
-              <td class="text-right tabular-nums">{{ product.reorderLevel }}</td>
+              <td class="text-right tabular-nums text-muted-foreground">{{ product.reorderLevel }}</td>
               <td>
                 <app-badge [variant]="product.active ? 'success' : 'neutral'">
                   {{ product.active ? 'Active' : 'Inactive' }}
                 </app-badge>
               </td>
-              <td class="whitespace-nowrap">{{ product.updatedAt | date: 'mediumDate' }}</td>
-              <td>
-                <a
-                  [routerLink]="[product.id, 'edit']"
-                  class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                  *appHasPermission="permissions.productUpdate"
-                >
-                  Edit
-                </a>
+              <td class="whitespace-nowrap text-muted-foreground">
+                {{ product.updatedAt | date: 'mediumDate' }}
+              </td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a
+                    [routerLink]="product.id"
+                    class="text-xs font-medium text-primary no-underline hover:text-primary-hover"
+                  >
+                    Open
+                  </a>
+                  <a
+                    [routerLink]="[product.id, 'edit']"
+                    class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground"
+                    *appHasPermission="permissions.productUpdate"
+                  >
+                    Edit
+                  </a>
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} products</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"
@@ -132,9 +157,10 @@
       <app-empty-state title="No products found" description="No products match the current filters.">
         <a
           routerLink="new"
-          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+          class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover"
           *appHasPermission="permissions.productCreate"
         >
+          <span class="text-lg leading-none" aria-hidden="true">+</span>
           Add product
         </a>
       </app-empty-state>

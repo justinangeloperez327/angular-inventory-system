@@ -1,7 +1,7 @@
 <app-content-container>
   <app-page-header
     title="Inventory"
-    description="Current product balances by warehouse. Quantities are transaction-derived and read-only."
+    description="Live product balances by warehouse. Quantities are transaction-derived and read-only."
   >
     <app-button
       actions
@@ -17,7 +17,7 @@
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input
       type="search"
-      label="Search products"
+      label="Search"
       placeholder="SKU or product name"
       formControlName="search"
     />
@@ -55,9 +55,23 @@
   }
 
   @if (store.loading() && !store.hasBalances()) {
-    <div class="mt-4"><app-skeleton height="22rem" /></div>
+    <div class="mt-4"><app-skeleton height="24rem" /></div>
   } @else if (store.hasBalances()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="inventory-records-heading">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2">
+          <h2 id="inventory-records-heading" class="m-0 text-sm font-semibold text-foreground">
+            Stock position
+          </h2>
+          <span class="text-xs text-subtle-foreground">
+            {{ store.pagination().totalItems }} balance lines
+          </span>
+        </div>
+        <span class="hidden text-xs text-subtle-foreground sm:inline">
+          Available = on hand − reserved
+        </span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
@@ -75,16 +89,16 @@
         <tbody>
           @for (balance of store.balances(); track balance.id) {
             <tr>
-              <td class="font-mono text-xs">{{ balance.sku }}</td>
+              <td class="font-mono text-xs text-muted-foreground">{{ balance.sku }}</td>
               <td>
                 <a
                   [routerLink]="['products', balance.productId]"
-                  class="font-semibold text-foreground no-underline hover:underline"
+                  class="font-medium text-foreground no-underline hover:text-primary"
                 >
                   {{ balance.productName }}
                 </a>
                 @if (balance.unitSymbol || balance.unitName) {
-                  <span class="mt-0.5 block text-xs text-subtle-foreground">
+                  <span class="mt-0.5 block text-[0.6875rem] text-subtle-foreground">
                     {{ balance.unitSymbol || balance.unitName }}
                   </span>
                 }
@@ -92,32 +106,36 @@
               <td>
                 <a
                   [routerLink]="['warehouses', balance.warehouseId]"
-                  class="font-semibold text-foreground no-underline hover:underline"
+                  class="font-medium text-foreground no-underline hover:text-primary"
                 >
                   {{ balance.warehouseName }}
                 </a>
-                <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">
+                <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">
                   {{ balance.warehouseCode }}
                 </span>
               </td>
               <td class="text-right tabular-nums">{{ balance.quantityOnHand }}</td>
-              <td class="text-right tabular-nums">{{ balance.quantityReserved }}</td>
-              <td class="text-right font-medium tabular-nums">{{ balance.quantityAvailable }}</td>
-              <td class="text-right tabular-nums">{{ balance.reorderLevel }}</td>
+              <td class="text-right tabular-nums text-muted-foreground">{{ balance.quantityReserved }}</td>
+              <td class="text-right font-semibold tabular-nums text-foreground">
+                {{ balance.quantityAvailable }}
+              </td>
+              <td class="text-right tabular-nums text-muted-foreground">{{ balance.reorderLevel }}</td>
               <td>
                 <app-badge [variant]="statusVariant(balance.status)">
                   {{ statusLabel(balance.status) }}
                 </app-badge>
               </td>
-              <td class="whitespace-nowrap">{{ balance.updatedAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">
+                {{ balance.updatedAt | date: 'short' }}
+              </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
+    </section>
 
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} balance lines</span>
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
       <app-pagination
         [page]="store.pagination().page"
         [totalPages]="store.pagination().totalPages"

@@ -1,24 +1,28 @@
 <nav
-  class="flex items-center justify-end gap-2 text-sm text-muted-foreground"
+  class="flex items-center justify-end gap-1.5 text-xs text-muted-foreground"
   aria-label="Pagination"
 >
   <button
-    class="min-h-control-sm rounded-sm border border-border bg-surface px-2.5 font-medium text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40"
+    class="grid size-8 place-items-center rounded-sm border border-border bg-surface text-base font-medium text-foreground shadow-control transition-[background-color,border-color] hover:border-border-strong hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-35"
     type="button"
+    aria-label="Previous page"
     [disabled]="page <= 1"
     (click)="goTo(page - 1)"
   >
-    Previous
+    ‹
   </button>
 
-  <span class="min-w-20 text-center tabular-nums">Page {{ page }} of {{ totalPages }}</span>
+  <span class="min-w-20 px-1 text-center tabular-nums">
+    {{ page }} / {{ totalPages }}
+  </span>
 
   <button
-    class="min-h-control-sm rounded-sm border border-border bg-surface px-2.5 font-medium text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40"
+    class="grid size-8 place-items-center rounded-sm border border-border bg-surface text-base font-medium text-foreground shadow-control transition-[background-color,border-color] hover:border-border-strong hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-35"
     type="button"
+    aria-label="Next page"
     [disabled]="page >= totalPages"
     (click)="goTo(page + 1)"
   >
-    Next
+    ›
   </button>
 </nav>
