@@ -76,19 +76,15 @@
             [error]="fieldError('reasonCode')"
           />
 
-          <div
-            class="md:col-span-2 rounded-sm border px-3 py-2.5 text-sm"
-            [class.border-success/20]="form.controls.direction.value === 'increase'"
-            [class.bg-success/5]="form.controls.direction.value === 'increase'"
-            [class.text-success]="form.controls.direction.value === 'increase'"
-            [class.border-danger/20]="form.controls.direction.value === 'decrease'"
-            [class.bg-danger/5]="form.controls.direction.value === 'decrease'"
-            [class.text-danger]="form.controls.direction.value === 'decrease'"
-          >
-            {{ form.controls.direction.value === 'increase'
-              ? 'This draft will add stock when it is posted.'
-              : 'This draft will remove stock when it is posted.' }}
-          </div>
+          @if (form.controls.direction.value === 'increase') {
+            <div class="md:col-span-2 rounded-sm border border-success/20 bg-success/5 px-3 py-2.5 text-sm text-success">
+              This draft will add stock when it is posted.
+            </div>
+          } @else {
+            <div class="md:col-span-2 rounded-sm border border-danger/20 bg-danger/5 px-3 py-2.5 text-sm text-danger">
+              This draft will remove stock when it is posted.
+            </div>
+          }
         </div>
       </section>
 
