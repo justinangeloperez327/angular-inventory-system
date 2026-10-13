@@ -4,7 +4,7 @@
   } @else {
     <app-page-header
       title="New stock count"
-      description="Create the session first. Starting it captures the backend's expected warehouse snapshot."
+      description="Create the count session now. The inventory snapshot is captured only when the session is started."
     />
 
     @if (error()) {
@@ -13,16 +13,19 @@
       </div>
     }
 
-    <form class="mt-6 max-w-3xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Count scope</h2>
-          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
-            The selected warehouse becomes the count boundary. Expected quantities are captured only when the session starts.
-          </p>
+    <form class="mt-6 grid max-w-5xl gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">01</span>
+          <div>
+            <h2 class="m-0 text-sm font-semibold text-foreground">Count scope</h2>
+            <p class="mb-0 mt-0.5 text-xs leading-5 text-muted-foreground">
+              The selected warehouse becomes the physical count boundary.
+            </p>
+          </div>
         </div>
 
-        <div class="grid gap-3">
+        <div class="grid gap-4 p-4">
           <app-select
             label="Warehouse"
             placeholder="Select warehouse"
@@ -31,22 +34,30 @@
             [error]="fieldError('warehouseId')"
           />
           <app-textarea
-            label="Notes"
-            hint="Optional instructions or scope notes for the count."
+            label="Instructions"
+            hint="Optional instructions or scope notes for the count team."
             formControlName="notes"
             [error]="fieldError('notes')"
           />
         </div>
       </section>
 
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a
-          routerLink="/stock-counts"
-          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
-        >
-          Cancel
-        </a>
-        <app-button type="submit" [loading]="saving()">Create draft</app-button>
+      <aside class="rounded-sm border border-border bg-surface p-4 shadow-sm" aria-label="Stock count workflow">
+        <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">What happens next</span>
+        <ol class="mb-0 mt-3 grid gap-3 pl-5 text-sm text-muted-foreground">
+          <li><span class="text-foreground">Create draft</span> — define the warehouse scope.</li>
+          <li><span class="text-foreground">Start count</span> — capture expected quantities.</li>
+          <li><span class="text-foreground">Count & submit</span> — lock physical results for review.</li>
+          <li><span class="text-foreground">Approve & post</span> — reconcile variances into inventory.</li>
+        </ol>
+      </aside>
+
+      <div class="sticky bottom-0 z-[5] flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md lg:col-span-2">
+        <span class="text-xs text-muted-foreground">Creating the draft does not snapshot inventory yet.</span>
+        <div class="flex items-center gap-3">
+          <a routerLink="/stock-counts" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Cancel</a>
+          <app-button type="submit" [loading]="saving()">Create draft</app-button>
+        </div>
       </div>
     </form>
   }

@@ -18,6 +18,9 @@
         >
           Edit
         </a>
+      }
+
+      @if (item.status === 'draft') {
         <app-button
           actions
           *appHasPermission="permissions.purchaseCreate"

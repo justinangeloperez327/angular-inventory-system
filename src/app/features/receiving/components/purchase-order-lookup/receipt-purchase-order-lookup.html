@@ -1,39 +1,19 @@
 <div class="grid gap-1.5">
-  <span class="text-sm font-semibold text-foreground">Purchase order</span>
+  <span class="text-xs font-medium text-muted-foreground">Purchase order</span>
 
   @if (selectedLabel) {
-    <div class="flex min-h-control items-center justify-between gap-4 rounded-sm border border-border bg-surface px-2.5">
-      <strong class="min-w-0 truncate text-sm font-semibold text-foreground">{{ selectedLabel }}</strong>
+    <div class="flex min-h-control items-center justify-between gap-4 rounded-sm border border-primary/20 bg-primary/5 px-3 shadow-control">
+      <strong class="min-w-0 truncate text-sm font-medium text-foreground">{{ selectedLabel }}</strong>
       @if (!locked) {
-        <button
-          type="button"
-          class="shrink-0 border-0 bg-transparent p-0 text-sm font-medium text-muted-foreground hover:text-foreground"
-          (click)="clear()"
-        >
-          Change
-        </button>
+        <button type="button" class="shrink-0 border-0 bg-transparent p-0 text-xs font-medium text-primary hover:text-primary-hover" (click)="clear()">Change</button>
       } @else {
-        <span class="shrink-0 text-xs text-muted-foreground">Fixed for this draft</span>
+        <span class="shrink-0 text-[0.6875rem] text-subtle-foreground">Fixed for draft</span>
       }
     </div>
   } @else {
     <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-      <app-input
-        type="search"
-        placeholder="Search approved PO number or supplier"
-        [formControl]="search"
-        [disabled]="locked"
-        (keyup.enter)="find()"
-      />
-      <app-button
-        type="button"
-        variant="secondary"
-        [disabled]="locked"
-        [loading]="loading()"
-        (click)="find()"
-      >
-        Search
-      </app-button>
+      <app-input type="search" placeholder="Search approved PO or supplier" [formControl]="search" [disabled]="locked" (keyup.enter)="find()" />
+      <app-button type="button" variant="secondary" [disabled]="locked" [loading]="loading()" (click)="find()">Search</app-button>
     </div>
 
     @if (searchError()) {
@@ -41,16 +21,16 @@
     }
 
     @if (results().length > 0) {
-      <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
+      <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface shadow-md">
         @for (item of results(); track item.id) {
           <button
             type="button"
-            class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-2.5 py-2 text-left text-foreground last:border-b-0 hover:bg-surface-muted sm:grid-cols-[8rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
+            class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-3 py-2.5 text-left text-foreground transition-colors last:border-b-0 hover:bg-primary/5 sm:grid-cols-[8rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
             (click)="choose(item)"
           >
             <span class="font-mono text-xs text-muted-foreground">{{ item.number }}</span>
-            <strong class="text-sm font-semibold">{{ item.supplierName }}</strong>
-            <small class="text-xs text-muted-foreground">{{ item.warehouseName }}</small>
+            <strong class="text-sm font-medium">{{ item.supplierName }}</strong>
+            <small class="text-xs text-subtle-foreground">{{ item.warehouseName }}</small>
           </button>
         }
       </div>

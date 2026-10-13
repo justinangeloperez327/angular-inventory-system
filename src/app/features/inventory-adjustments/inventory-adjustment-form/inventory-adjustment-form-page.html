@@ -4,7 +4,7 @@
   } @else {
     <app-page-header
       [title]="editing ? 'Edit adjustment' : 'New adjustment'"
-      description="Save as draft first. Posting is a separate irreversible inventory action."
+      description="Define the correction and evidence here. Posting remains a separate irreversible action."
     />
 
     @if (error()) {
@@ -13,16 +13,17 @@
       </div>
     }
 
-    <form class="mt-6 max-w-4xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Inventory correction</h2>
-          <p class="mb-0 mt-1 text-xs leading-5 text-muted-foreground">
-            Select the product, warehouse, direction, positive quantity, and controlled reason.
-          </p>
+    <form class="mt-6 grid max-w-5xl gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">01</span>
+          <div>
+            <h2 class="m-0 text-sm font-semibold text-foreground">Correction target</h2>
+            <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Choose the product and warehouse position to correct.</p>
+          </div>
         </div>
 
-        <div class="grid gap-3 md:grid-cols-2">
+        <div class="grid gap-4 p-4 md:grid-cols-2">
           <app-adjustment-product-lookup
             class="md:col-span-2"
             [selectedLabel]="selectedProductLabel()"
@@ -46,6 +47,19 @@
             formControlName="direction"
             [error]="fieldError('direction')"
           />
+        </div>
+      </section>
+
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">02</span>
+          <div>
+            <h2 class="m-0 text-sm font-semibold text-foreground">Adjustment value</h2>
+            <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Enter the quantity and controlled business reason.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-4 p-4 md:grid-cols-2">
           <app-input
             type="number"
             label="Quantity"
@@ -61,8 +75,33 @@
             formControlName="reasonCode"
             [error]="fieldError('reasonCode')"
           />
+
+          <div
+            class="md:col-span-2 rounded-sm border px-3 py-2.5 text-sm"
+            [class.border-success/20]="form.controls.direction.value === 'increase'"
+            [class.bg-success/5]="form.controls.direction.value === 'increase'"
+            [class.text-success]="form.controls.direction.value === 'increase'"
+            [class.border-danger/20]="form.controls.direction.value === 'decrease'"
+            [class.bg-danger/5]="form.controls.direction.value === 'decrease'"
+            [class.text-danger]="form.controls.direction.value === 'decrease'"
+          >
+            {{ form.controls.direction.value === 'increase'
+              ? 'This draft will add stock when it is posted.'
+              : 'This draft will remove stock when it is posted.' }}
+          </div>
+        </div>
+      </section>
+
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">03</span>
+          <div>
+            <h2 class="m-0 text-sm font-semibold text-foreground">Evidence & notes</h2>
+            <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Document why this inventory correction is required.</p>
+          </div>
+        </div>
+        <div class="p-4">
           <app-textarea
-            class="md:col-span-2"
             label="Notes"
             hint="Explain the business reason and evidence for the correction."
             formControlName="notes"
@@ -71,14 +110,12 @@
         </div>
       </section>
 
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a
-          [routerLink]="id ? ['/adjustments', id] : ['/adjustments']"
-          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
-        >
-          Cancel
-        </a>
-        <app-button type="submit" [loading]="saving()">Save draft</app-button>
+      <div class="sticky bottom-0 z-[5] flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md">
+        <span class="text-xs text-muted-foreground">Saving does not change inventory.</span>
+        <div class="flex items-center gap-3">
+          <a [routerLink]="id ? ['/adjustments', id] : ['/adjustments']" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Cancel</a>
+          <app-button type="submit" [loading]="saving()">Save draft</app-button>
+        </div>
       </div>
     </form>
   }
