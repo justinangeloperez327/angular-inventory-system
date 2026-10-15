@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AlertComponent } from '../../../shared/ui/alert/alert';
 import { BadgeComponent } from '../../../shared/ui/badge/badge';
@@ -108,7 +108,20 @@ export class StockMovementListPage implements OnInit {
     }
 
     this.filterError.set('');
-    this.store.applyFilters(value);
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: value.search.trim() || null,
+        warehouseId: value.warehouseId || null,
+        type: value.type || null,
+        dateFrom: value.dateFrom || null,
+        dateTo: value.dateTo || null,
+        reference: value.reference.trim() || null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   clearFilters(): void {

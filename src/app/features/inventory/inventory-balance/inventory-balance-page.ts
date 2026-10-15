@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AlertComponent } from '../../../shared/ui/alert/alert';
 import { BadgeComponent, BadgeVariant } from '../../../shared/ui/badge/badge';
@@ -84,7 +84,18 @@ export class InventoryBalancePage implements OnInit {
   }
 
   applyFilters(): void {
-    this.store.applyFilters(this.filters.getRawValue());
+    const value = this.filters.getRawValue();
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: value.search.trim() || null,
+        warehouseId: value.warehouseId || null,
+        status: value.status || null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   clearFilters(): void {

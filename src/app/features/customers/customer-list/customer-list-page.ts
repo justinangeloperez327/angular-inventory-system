@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { PERMISSIONS } from '../../../core/auth/permissions';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
@@ -58,7 +58,17 @@ export class CustomerListPage implements OnInit {
   }
 
   applyFilters(): void {
-    this.store.applyFilters(this.filters.getRawValue());
+    const value = this.filters.getRawValue();
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: value.search.trim() || null,
+        status: value.status === 'active' ? null : value.status || null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   clearFilters(): void {

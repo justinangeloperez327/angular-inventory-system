@@ -1,7 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { PERMISSIONS } from '../../../core/auth/permissions';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
@@ -50,7 +50,7 @@ export class SalesOrderListPage implements OnInit {
   readonly store = inject(SalesOrderListStore);
   readonly permissions = PERMISSIONS;
   readonly filterError = signal('');
-  readonly customerId = this.route.snapshot.queryParamMap.get('customerId') ?? '';
+  readonly customerId = signal('');
 
   readonly filters = this.formBuilder.nonNullable.group({
     search: [this.route.snapshot.queryParamMap.get('search') ?? ''],
@@ -91,12 +91,26 @@ export class SalesOrderListPage implements OnInit {
 
   applyFilters(): void {
     const value = this.filters.getRawValue();
+
     if (value.dateFrom && value.dateTo && value.dateFrom > value.dateTo) {
       this.filterError.set('From date cannot be after To date.');
       return;
     }
+
     this.filterError.set('');
-    this.store.applyFilters(value);
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: value.search.trim() || null,
+        warehouseId: value.warehouseId || null,
+        status: value.status || null,
+        dateFrom: value.dateFrom || null,
+        dateTo: value.dateTo || null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   clearFilters(): void {

@@ -93,6 +93,52 @@ async function mockDashboard(page: Page): Promise<void> {
   });
 }
 
+async function mockProducts(page: Page): Promise<void> {
+  await page.route('**/api/v1/products/form-options', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        categories: [],
+        units: [],
+        currencyCode: 'AED',
+      }),
+    });
+  });
+
+  await page.route('**/api/v1/products?**', async (route) => {
+    const search = new URL(route.request().url()).searchParams.get('search') ?? '';
+    const name = search.toLowerCase().includes('valve')
+      ? 'Isolation Valve'
+      : 'High-temp Gasket';
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: [
+          {
+            id: 'product-1',
+            sku: search.toLowerCase().includes('valve') ? 'VAL-001' : 'GSK-001',
+            name,
+            costPrice: 25,
+            sellingPrice: 40,
+            reorderLevel: 10,
+            active: true,
+            updatedAt: '2026-10-15T08:00:00.000Z',
+          },
+        ],
+        pagination: {
+          page: 1,
+          pageSize: 25,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      }),
+    });
+  });
+}
+
 test('redirects an anonymous protected route to sign in with a return URL', async ({ page }) => {
   await page.goto('/products');
 
@@ -175,6 +221,57 @@ test('mobile navigation traps focus and restores focus after Escape', async ({ p
 
   await expect(navigationDialog).toBeHidden();
   await expect(openNavigation).toBeFocused();
+});
+
+test('opens the command palette and reapplies routed search on the current module', async ({ page }) => {
+  await seedSession(page);
+  await mockCurrentUser(page);
+  await mockDashboard(page);
+  await mockProducts(page);
+
+  await page.goto('/dashboard');
+  await page.keyboard.press('Control+k');
+
+  const palette = page.getByRole('dialog', { name: 'Command palette' });
+  const search = page.getByLabel('Search pages, records, and actions');
+
+  await expect(palette).toBeVisible();
+  await search.fill('Gasket');
+  await page.getByRole('option', { name: /Search products for “Gasket”/ }).click();
+
+  await expect(page).toHaveURL(/\/products\?search=Gasket$/);
+  await expect(page.getByRole('heading', { name: 'Products' })).toBeVisible();
+  await expect(page.getByLabel('Search').first()).toHaveValue('Gasket');
+  await expect(page.getByText('High-temp Gasket')).toBeVisible();
+
+  await page.keyboard.press('Control+k');
+  await search.fill('Valve');
+  await page.getByRole('option', { name: /Search products for “Valve”/ }).click();
+
+  await expect(page).toHaveURL(/\/products\?search=Valve$/);
+  await expect(page.getByLabel('Search').first()).toHaveValue('Valve');
+  await expect(page.getByText('Isolation Valve')).toBeVisible();
+});
+
+test('persists the selected dark theme across reloads', async ({ page }) => {
+  await seedSession(page);
+  await mockCurrentUser(page);
+  await mockDashboard(page);
+
+  await page.goto('/dashboard');
+
+  const darkModeButton = page.getByRole('button', { name: 'Switch to dark mode' });
+  await darkModeButton.click();
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  expect(
+    await page.evaluate(() => window.localStorage.getItem('inventory-system-theme')),
+  ).toBe('dark');
+
+  await page.reload();
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: 'Switch to light mode' })).toBeVisible();
 });
 
 test('signs out, clears the session, and protects subsequent navigation', async ({ page }) => {

@@ -14,7 +14,7 @@
     </a>
   </app-page-header>
 
-  @if (customerId) {
+  @if (customerId()) {
     <div class="mt-3 flex flex-wrap items-center gap-2 rounded-sm border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-muted-foreground">
       <span class="size-1.5 rounded-full bg-primary" aria-hidden="true"></span>
       Customer filter applied.
