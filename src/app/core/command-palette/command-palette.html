@@ -1,0 +1,72 @@
+@if (open) {
+  <div
+    class="fixed inset-0 z-[90] flex items-start justify-center bg-black/45 px-3 pt-[8vh] backdrop-blur-[2px] sm:px-4 sm:pt-[12vh]"
+    (click)="onBackdrop($event)"
+  >
+    <section
+      class="w-full max-w-2xl overflow-hidden rounded-md border border-border bg-surface shadow-lg"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="command-palette-title"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+    >
+      <header class="border-b border-border">
+        <h2 id="command-palette-title" class="sr-only">Command palette</h2>
+        <div class="flex items-center gap-3 px-4">
+          <span class="text-lg text-subtle-foreground" aria-hidden="true">⌕</span>
+          <input
+            #searchInput
+            class="min-h-12 min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-foreground outline-none placeholder:text-subtle-foreground"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search pages, records, and actions"
+            placeholder="Search pages, records, and actions…"
+            [value]="query()"
+            (input)="updateQuery($event)"
+            (keydown)="handleKeydown($event)"
+          />
+          <kbd class="hidden rounded-xs border border-border bg-surface-muted px-1.5 py-0.5 text-[0.6875rem] font-medium text-muted-foreground sm:inline">Esc</kbd>
+        </div>
+      </header>
+
+      <div id="command-results" class="max-h-[min(28rem,62vh)] overflow-y-auto p-2">
+        @if (results().length > 0) {
+          <div class="grid gap-0.5" role="listbox" aria-label="Command results">
+            @for (command of results(); track command.id; let index = $index) {
+              <button
+                type="button"
+                role="option"
+                class="group grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-sm border border-transparent bg-transparent px-3 py-2.5 text-left transition-colors hover:bg-surface-muted"
+                [class.bg-surface-muted]="index === activeIndex()"
+                [class.border-border]="index === activeIndex()"
+                [attr.aria-selected]="index === activeIndex()"
+                (mouseenter)="select(index)"
+                (click)="run(command)"
+              >
+                <span class="min-w-0">
+                  <strong class="block truncate text-sm font-medium text-foreground group-hover:text-primary">{{ command.label }}</strong>
+                  <span class="mt-0.5 block truncate text-xs text-muted-foreground">{{ command.description }}</span>
+                </span>
+                <span class="rounded-xs border border-border bg-surface px-1.5 py-0.5 text-[0.6875rem] font-medium text-subtle-foreground">{{ command.group }}</span>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="px-4 py-10 text-center">
+            <p class="m-0 text-sm font-medium text-foreground">No matching command</p>
+            <p class="mb-0 mt-1 text-xs text-muted-foreground">Try a page name, action, SKU, supplier, customer, PO, or warehouse term.</p>
+          </div>
+        }
+      </div>
+
+      <footer class="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border bg-surface-muted/60 px-4 py-2 text-[0.6875rem] text-subtle-foreground">
+        <span><kbd class="font-mono">↑↓</kbd> Navigate</span>
+        <span><kbd class="font-mono">Enter</kbd> Open</span>
+        <span><kbd class="font-mono">Esc</kbd> Close</span>
+        <span class="ml-auto hidden sm:inline"><kbd class="font-mono">/</kbd> or <kbd class="font-mono">F</kbd> Search · <kbd class="font-mono">N</kbd> Create</span>
+      </footer>
+    </section>
+  </div>
+}

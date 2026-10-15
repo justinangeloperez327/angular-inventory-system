@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
   selector: 'app-table',
   template: `
-    <div class="w-full overflow-x-auto rounded-sm border border-border bg-surface shadow-sm">
+    <div class="w-full overflow-x-auto overscroll-x-contain rounded-sm border border-border bg-surface shadow-sm">
       <table
         class="w-full min-w-max border-collapse text-left text-sm tabular-nums
           [&_th]:h-9 [&_th]:whitespace-nowrap [&_th]:border-b [&_th]:border-border

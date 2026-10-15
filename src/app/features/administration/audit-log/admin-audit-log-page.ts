@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { AlertComponent } from '../../../shared/ui/alert/alert';
+import { BadgeComponent } from '../../../shared/ui/badge/badge';
 import { ButtonComponent } from '../../../shared/ui/button/button';
 import { ContentContainerComponent } from '../../../shared/ui/content-container/content-container';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state';
@@ -20,6 +21,7 @@ import { AuditLogStore } from '../data-access/audit-log.store';
     DatePipe,
     ReactiveFormsModule,
     AlertComponent,
+    BadgeComponent,
     ButtonComponent,
     ContentContainerComponent,
     EmptyStateComponent,

@@ -53,15 +53,23 @@ export class SalesOrderListPage implements OnInit {
   readonly customerId = this.route.snapshot.queryParamMap.get('customerId') ?? '';
 
   readonly filters = this.formBuilder.nonNullable.group({
-    search: [''],
-    warehouseId: [''],
-    status: [''],
-    dateFrom: [''],
-    dateTo: [''],
+    search: [this.route.snapshot.queryParamMap.get('search') ?? ''],
+    warehouseId: [this.route.snapshot.queryParamMap.get('warehouseId') ?? ''],
+    status: [this.route.snapshot.queryParamMap.get('status') ?? ''],
+    dateFrom: [this.route.snapshot.queryParamMap.get('dateFrom') ?? ''],
+    dateTo: [this.route.snapshot.queryParamMap.get('dateTo') ?? ''],
   });
 
   ngOnInit(): void {
-    this.store.initialize(this.customerId || undefined);
+    const value = this.filters.getRawValue();
+
+    if (value.dateFrom && value.dateTo && value.dateFrom > value.dateTo) {
+      this.filterError.set('From date cannot be after To date.');
+      this.filters.controls.dateFrom.setValue('');
+      this.filters.controls.dateTo.setValue('');
+    }
+
+    this.store.initialize(this.customerId || undefined, this.filters.getRawValue());
   }
 
   warehouseOptions(): readonly SelectOption[] {

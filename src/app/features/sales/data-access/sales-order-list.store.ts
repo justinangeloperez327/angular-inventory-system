@@ -41,10 +41,18 @@ export class SalesOrderListStore {
   readonly error = this.errorState.asReadonly();
   readonly hasItems = computed(() => this.itemsState().length > 0);
 
-  initialize(customerId?: string): void {
-    if (customerId) {
-      this.queryState.update((query) => ({ ...query, customerId, page: 1 }));
-    }
+  initialize(customerId?: string, filters?: SalesOrderFilters): void {
+    this.queryState.update((query) => ({
+      ...query,
+      page: 1,
+      customerId: customerId || undefined,
+      search: filters?.search.trim() || undefined,
+      warehouseId: filters?.warehouseId || undefined,
+      status: this.toStatus(filters?.status ?? ''),
+      dateFrom: filters?.dateFrom || undefined,
+      dateTo: filters?.dateTo || undefined,
+    }));
+
     this.load();
   }
 

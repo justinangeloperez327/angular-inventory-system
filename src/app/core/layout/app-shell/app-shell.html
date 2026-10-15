@@ -1,20 +1,18 @@
 <div class="min-h-screen bg-background text-foreground">
   <a
-    class="fixed left-2 top-2 z-50 -translate-y-24 rounded-sm bg-foreground px-3 py-2 text-base font-semibold text-surface no-underline transition-transform focus:translate-y-0"
+    class="fixed left-2 top-2 z-[110] -translate-y-24 rounded-sm bg-foreground px-3 py-2 text-base font-semibold text-surface no-underline transition-transform focus:translate-y-0"
     href="#main-content"
   >
     Skip to main content
   </a>
 
-  <app-sidebar
-    [open]="mobileNavigationOpen()"
-    (closed)="closeNavigation()"
-  />
+  <app-sidebar [open]="mobileNavigationOpen()" (closed)="closeNavigation()" />
 
   <div class="min-h-screen min-w-0 lg:ml-sidebar">
     <app-header
       [navigationOpen]="mobileNavigationOpen()"
       (menuRequested)="openNavigation()"
+      (commandRequested)="openCommandPalette($event)"
     />
 
     <main
@@ -25,6 +23,12 @@
       <router-outlet />
     </main>
   </div>
+
+  <app-command-palette
+    [open]="commandPaletteOpen()"
+    [initialQuery]="commandPaletteSeed()"
+    (closed)="closeCommandPalette()"
+  />
 
   <app-toast-outlet />
 </div>

@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { AlertComponent } from '../../../shared/ui/alert/alert';
 import { BadgeComponent, BadgeVariant } from '../../../shared/ui/badge/badge';
@@ -41,16 +41,17 @@ import { InventoryStockStatus } from '../models/inventory.model';
 })
 export class InventoryBalancePage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
   readonly store = inject(InventoryBalanceStore);
 
   readonly filters = this.formBuilder.nonNullable.group({
-    search: [''],
-    warehouseId: [''],
-    status: [''],
+    search: [this.route.snapshot.queryParamMap.get('search') ?? ''],
+    warehouseId: [this.route.snapshot.queryParamMap.get('warehouseId') ?? ''],
+    status: [this.route.snapshot.queryParamMap.get('status') ?? ''],
   });
 
   ngOnInit(): void {
-    this.store.load();
+    this.store.applyFilters(this.filters.getRawValue());
   }
 
   warehouseOptions(): readonly SelectOption[] {

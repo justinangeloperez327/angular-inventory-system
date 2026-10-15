@@ -1,7 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { PERMISSIONS } from '../../../core/auth/permissions';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
@@ -33,15 +33,30 @@ import { PurchaseOrderStatus } from '../models/purchase-order.model';
 })
 export class PurchaseOrderListPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
   readonly store = inject(PurchaseOrderListStore);
   readonly permissions = PERMISSIONS;
   readonly filterError = signal('');
 
   readonly filters = this.formBuilder.nonNullable.group({
-    search: [''], warehouseId: [''], status: [''], dateFrom: [''], dateTo: [''],
+    search: [this.route.snapshot.queryParamMap.get('search') ?? ''],
+    warehouseId: [this.route.snapshot.queryParamMap.get('warehouseId') ?? ''],
+    status: [this.route.snapshot.queryParamMap.get('status') ?? ''],
+    dateFrom: [this.route.snapshot.queryParamMap.get('dateFrom') ?? ''],
+    dateTo: [this.route.snapshot.queryParamMap.get('dateTo') ?? ''],
   });
 
-  ngOnInit(): void { this.store.load(); }
+  ngOnInit(): void {
+    const value = this.filters.getRawValue();
+
+    if (value.dateFrom && value.dateTo && value.dateFrom > value.dateTo) {
+      this.filterError.set('From date cannot be after To date.');
+      this.filters.controls.dateFrom.setValue('');
+      this.filters.controls.dateTo.setValue('');
+    }
+
+    this.store.applyFilters(this.filters.getRawValue());
+  }
 
   warehouseOptions(): readonly SelectOption[] {
     return (this.store.options()?.warehouses ?? []).map((item) => ({

@@ -1,26 +1,18 @@
-<section
-  class="border border-dashed border-border-strong bg-surface px-6 py-10 text-center"
->
+<section class="rounded-sm border border-dashed border-border-strong bg-surface px-5 py-9 text-center sm:px-6 sm:py-10">
+  <span class="mx-auto block h-0.5 w-8 bg-primary" aria-hidden="true"></span>
+
   @if (eyebrow) {
-    <p class="m-0 text-xs font-semibold uppercase tracking-wider text-subtle-foreground">
-      {{ eyebrow }}
-    </p>
+    <p class="mb-0 mt-3 text-xs font-semibold uppercase tracking-wider text-subtle-foreground">{{ eyebrow }}</p>
   }
 
   @if (page) {
-    <h1 class="m-0 text-xl font-semibold text-foreground" [class.mt-2]="eyebrow">
-      {{ title }}
-    </h1>
+    <h1 class="m-0 mt-3 text-xl font-semibold text-foreground">{{ title }}</h1>
   } @else {
-    <h2 class="m-0 text-lg font-semibold text-foreground" [class.mt-2]="eyebrow">
-      {{ title }}
-    </h2>
+    <h2 class="m-0 mt-3 text-lg font-semibold text-foreground">{{ title }}</h2>
   }
 
   @if (description) {
-    <p class="mx-auto mb-0 mt-2 max-w-lg text-base leading-5 text-muted-foreground">
-      {{ description }}
-    </p>
+    <p class="mx-auto mb-0 mt-2 max-w-lg text-base leading-5 text-muted-foreground">{{ description }}</p>
   }
 
   <div class="mt-4 flex flex-wrap justify-center gap-2 empty:mt-0">

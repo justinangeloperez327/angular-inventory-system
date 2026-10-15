@@ -47,6 +47,41 @@
   --shadow-lg: 0 20px 50px rgb(15 23 42 / 16%);
 }
 
+:root[data-theme='dark'] {
+  --color-bg: #0d1015;
+  --color-surface: #13171d;
+  --color-surface-muted: #171c23;
+  --color-surface-strong: #222832;
+  --color-border: #29313b;
+  --color-border-strong: #3a4552;
+  --color-text: #edf1f6;
+  --color-text-muted: #a5afbc;
+  --color-text-subtle: #747f8d;
+  --color-primary: #5b8ff9;
+  --color-primary-hover: #76a3ff;
+  --color-primary-foreground: #07111f;
+  --color-focus: #60a5fa;
+  --color-success: #56b586;
+  --color-warning: #dda348;
+  --color-danger: #e36a74;
+
+  --color-shell: #080a0e;
+  --color-shell-raised: #0f1217;
+  --color-shell-hover: #171b22;
+  --color-shell-active: #1d232c;
+  --color-shell-border: #222933;
+  --color-shell-text: #f3f6f9;
+  --color-shell-muted: #9aa5b3;
+  --color-shell-subtle: #687382;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 22%);
+  --shadow-control: 0 1px 1px rgb(0 0 0 / 22%), 0 1px 3px rgb(0 0 0 / 26%);
+  --shadow-md: 0 10px 28px rgb(0 0 0 / 28%);
+  --shadow-lg: 0 24px 60px rgb(0 0 0 / 38%);
+
+  color-scheme: dark;
+}
+
 @theme {
   --color-*: initial;
   --radius-*: initial;
@@ -197,7 +232,11 @@
   }
 
   ::selection {
-    background: #dbeafe;
+    background: color-mix(in srgb, var(--color-primary) 24%, transparent);
+  }
+
+  * {
+    scrollbar-color: var(--color-border-strong) transparent;
   }
 
   :focus-visible {
@@ -239,6 +278,11 @@
   }
 
   @media (max-width: 39.999rem) {
+    .filter-bar {
+      margin-top: 1rem;
+      padding: 0.625rem;
+    }
+
     .filter-bar__actions {
       justify-content: flex-start;
     }

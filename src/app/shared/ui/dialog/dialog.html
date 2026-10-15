@@ -1,10 +1,10 @@
 @if (open) {
   <div
-    class="fixed inset-0 z-[80] grid place-items-center bg-black/40 p-4"
+    class="fixed inset-0 z-[80] flex items-end justify-center bg-black/45 p-0 backdrop-blur-[1px] sm:items-center sm:p-4"
     (click)="onBackdrop($event)"
   >
     <section
-      class="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-md border border-border bg-surface shadow-lg"
+      class="max-h-[calc(100vh-1rem)] w-full max-w-lg overflow-y-auto rounded-t-md border border-border bg-surface shadow-lg sm:max-h-[calc(100vh-2rem)] sm:rounded-md"
       role="dialog"
       aria-modal="true"
       [attr.aria-labelledby]="titleId"
@@ -16,12 +16,9 @@
         <div class="min-w-0">
           <h2 class="m-0 text-lg font-semibold text-foreground" [id]="titleId">{{ title }}</h2>
           @if (description) {
-            <p class="mb-0 mt-1.5 text-sm leading-5 text-muted-foreground" [id]="descriptionId">
-              {{ description }}
-            </p>
+            <p class="mb-0 mt-1.5 text-sm leading-5 text-muted-foreground" [id]="descriptionId">{{ description }}</p>
           }
         </div>
-
         <button
           class="ml-auto grid size-8 shrink-0 place-items-center rounded-sm border-0 bg-transparent text-xl text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
           type="button"
@@ -31,7 +28,6 @@
           ×
         </button>
       </header>
-
       <div class="p-4"><ng-content /></div>
     </section>
   </div>

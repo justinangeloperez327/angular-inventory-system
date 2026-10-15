@@ -1,22 +1,18 @@
 @if (open) {
-  <div
-    class="fixed inset-0 z-[70] bg-black/40"
-    (click)="closed.emit()"
-    aria-hidden="true"
-  ></div>
+  <div class="fixed inset-0 z-[70] bg-black/45 backdrop-blur-[1px]" (click)="closed.emit()" aria-hidden="true"></div>
 
   <aside
-    class="fixed inset-y-0 right-0 z-[80] w-[min(28rem,92vw)] border-l border-border bg-surface shadow-lg"
+    class="fixed inset-y-0 right-0 z-[80] w-[min(30rem,94vw)] border-l border-border bg-surface shadow-lg"
     role="dialog"
     aria-modal="true"
     [attr.aria-labelledby]="titleId"
     cdkTrapFocus
     [cdkTrapFocusAutoCapture]="true"
   >
-    <header class="flex min-h-16 items-center border-b border-border px-4 py-3">
+    <header class="flex min-h-14 items-center border-b border-border px-4 py-3">
       <h2 class="m-0 text-lg font-semibold text-foreground" [id]="titleId">{{ title }}</h2>
       <button
-        class="ml-auto grid size-8 place-items-center border-0 bg-transparent p-0 text-xl text-muted-foreground hover:text-foreground"
+        class="ml-auto grid size-8 place-items-center rounded-sm border-0 bg-transparent p-0 text-xl text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
         type="button"
         aria-label="Close drawer"
         (click)="closed.emit()"
@@ -25,7 +21,7 @@
       </button>
     </header>
 
-    <div class="h-[calc(100vh-4rem)] overflow-y-auto p-4">
+    <div class="h-[calc(100vh-3.5rem)] overflow-y-auto p-3 sm:p-4">
       <ng-content />
     </div>
   </aside>

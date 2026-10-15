@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthSessionService } from '../../auth/auth-session.service';
+import { ThemeService } from '../../theme/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -21,18 +22,28 @@ import { AuthSessionService } from '../../auth/auth-session.service';
 })
 export class HeaderComponent {
   private readonly router = inject(Router);
+
   readonly session = inject(AuthSessionService);
+  readonly theme = inject(ThemeService);
 
   @Input() navigationOpen = false;
   @Output() readonly menuRequested = new EventEmitter<void>();
+  @Output() readonly commandRequested = new EventEmitter<string>();
 
   @ViewChild('menuButton')
   private menuButton?: ElementRef<HTMLButtonElement>;
+
+  @ViewChild('commandButton')
+  private commandButton?: ElementRef<HTMLButtonElement>;
 
   readonly loggingOut = signal(false);
 
   focusMenuButton(): void {
     this.menuButton?.nativeElement.focus();
+  }
+
+  focusCommandButton(): void {
+    this.commandButton?.nativeElement.focus();
   }
 
   logout(): void {

@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { PERMISSIONS } from '../../../core/auth/permissions';
 import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
@@ -43,17 +43,18 @@ import { CustomerListStore } from '../data-access/customer-list.store';
 })
 export class CustomerListPage implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
 
   readonly store = inject(CustomerListStore);
   readonly permissions = PERMISSIONS;
 
   readonly filters = this.formBuilder.nonNullable.group({
-    search: [''],
-    status: ['active'],
+    search: [this.route.snapshot.queryParamMap.get('search') ?? ''],
+    status: [this.route.snapshot.queryParamMap.get('status') ?? 'active'],
   });
 
   ngOnInit(): void {
-    this.store.load();
+    this.store.applyFilters(this.filters.getRawValue());
   }
 
   applyFilters(): void {

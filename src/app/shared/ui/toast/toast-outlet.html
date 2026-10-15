@@ -1,10 +1,10 @@
 <section
-  class="fixed bottom-4 right-4 z-[100] grid w-[min(22rem,calc(100vw-2rem))] gap-2"
+  class="fixed bottom-3 right-3 z-[100] grid w-[min(22rem,calc(100vw-1.5rem))] gap-2 sm:bottom-4 sm:right-4"
   aria-label="Notifications"
 >
   @for (toast of toastService.messages(); track toast.id) {
     <div
-      class="flex items-start gap-3 border border-border border-l-[3px] bg-surface p-3 text-sm shadow-md"
+      class="flex items-start gap-3 rounded-sm border border-border border-l-[3px] bg-surface p-3 text-sm shadow-md"
       [class.border-l-primary]="toast.variant === 'info'"
       [class.border-l-success]="toast.variant === 'success'"
       [class.border-l-warning]="toast.variant === 'warning'"
