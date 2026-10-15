@@ -1,36 +1,30 @@
 <app-content-container>
-  <app-page-header
-    title="Master Data"
-    description="Reference data used by products and inventory operations."
-  />
+  <app-page-header title="Master Data" description="Reference data that defines how products and inventory operations are classified." />
 
-  <nav class="mt-6 grid gap-2 lg:grid-cols-3" aria-label="Master data sections">
-    <a
-      routerLink="categories"
-      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
-    >
-      <strong class="block text-base font-semibold">Categories</strong>
-      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
-        Product classification and reporting groups.
+  <nav class="mt-6 grid gap-4 lg:grid-cols-3" aria-label="Master data sections">
+    <a routerLink="categories" class="group rounded-sm border border-border bg-surface p-4 text-foreground no-underline shadow-sm transition-[background-color,border-color] hover:border-border-strong hover:bg-primary/5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Product taxonomy</span>
+      <span class="mt-2 flex items-center justify-between gap-3">
+        <strong class="text-base font-semibold group-hover:text-primary">Categories</strong>
+        <span class="text-primary" aria-hidden="true">→</span>
       </span>
+      <span class="mt-1.5 block text-sm leading-5 text-muted-foreground">Product classification and reporting groups.</span>
     </a>
-    <a
-      routerLink="units"
-      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
-    >
-      <strong class="block text-base font-semibold">Units of Measure</strong>
-      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
-        Codes and symbols used for product quantities.
+    <a routerLink="units" class="group rounded-sm border border-border bg-surface p-4 text-foreground no-underline shadow-sm transition-[background-color,border-color] hover:border-border-strong hover:bg-primary/5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Quantity standards</span>
+      <span class="mt-2 flex items-center justify-between gap-3">
+        <strong class="text-base font-semibold group-hover:text-primary">Units of Measure</strong>
+        <span class="text-primary" aria-hidden="true">→</span>
       </span>
+      <span class="mt-1.5 block text-sm leading-5 text-muted-foreground">Codes and symbols used for product quantities.</span>
     </a>
-    <a
-      routerLink="warehouses"
-      class="border border-border bg-surface p-3.5 text-foreground no-underline transition-colors hover:bg-surface-muted"
-    >
-      <strong class="block text-base font-semibold">Warehouses</strong>
-      <span class="mt-1 block text-sm leading-5 text-muted-foreground">
-        Inventory locations used for balances and movements.
+    <a routerLink="warehouses" class="group rounded-sm border border-border bg-surface p-4 text-foreground no-underline shadow-sm transition-[background-color,border-color] hover:border-border-strong hover:bg-primary/5">
+      <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Inventory topology</span>
+      <span class="mt-2 flex items-center justify-between gap-3">
+        <strong class="text-base font-semibold group-hover:text-primary">Warehouses</strong>
+        <span class="text-primary" aria-hidden="true">→</span>
       </span>
+      <span class="mt-1.5 block text-sm leading-5 text-muted-foreground">Inventory locations used for balances and movements.</span>
     </a>
   </nav>
 </app-content-container>

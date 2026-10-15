@@ -6,14 +6,22 @@
     @if (error()) {
       <div class="mt-4"><app-alert variant="danger" title="Unable to save unit">{{ error() }}</app-alert></div>
     }
-    <form class="mt-6 max-w-3xl border-t border-border pt-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <div class="grid gap-3 md:grid-cols-3">
-        <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
-        <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
-        <app-input label="Symbol" formControlName="symbol" [error]="fieldError('symbol')" />
-      </div>
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a class="text-base font-medium text-muted-foreground no-underline hover:text-foreground" routerLink="/master-data/units">Cancel</a>
+
+    <form class="mt-6 grid max-w-3xl gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Unit definition</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Reference values used for inventory quantities and transaction display.</p>
+        </div>
+        <div class="grid gap-4 p-4 md:grid-cols-3">
+          <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
+          <app-input label="Name" formControlName="name" [error]="fieldError('name')" />
+          <app-input label="Symbol" formControlName="symbol" [error]="fieldError('symbol')" />
+        </div>
+      </section>
+
+      <div class="flex items-center justify-end gap-3 rounded-sm border border-border bg-surface px-4 py-3 shadow-sm">
+        <a class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground" routerLink="/master-data/units">Cancel</a>
         <app-button type="submit" [loading]="saving()">Save unit</app-button>
       </div>
     </form>

@@ -7,138 +7,99 @@
     <app-skeleton height="28rem" />
   } @else if (store.supplier(); as supplier) {
     <app-page-header [title]="supplier.name" [description]="'Supplier ' + supplier.code">
-      <a
-        actions
-        [routerLink]="['edit']"
-        class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-semibold text-foreground no-underline transition-colors hover:bg-surface-muted"
-        *appHasPermission="permissions.supplierManage"
-      >
-        Edit
-      </a>
+      <a actions [routerLink]="['edit']" class="inline-flex min-h-control items-center rounded-sm border border-border bg-surface px-3.5 text-base font-medium text-foreground no-underline shadow-control transition-colors hover:border-border-strong hover:bg-surface-muted" *appHasPermission="permissions.supplierManage">Edit</a>
 
       @if (supplier.active) {
-        <app-button
-          actions
-          variant="danger"
-          *appHasPermission="permissions.supplierManage"
-          [loading]="store.statusUpdating()"
-          (click)="confirmDeactivate.set(true)"
-        >
-          Deactivate
-        </app-button>
+        <app-button actions variant="danger" *appHasPermission="permissions.supplierManage" [loading]="store.statusUpdating()" (click)="confirmDeactivate.set(true)">Deactivate</app-button>
       } @else {
-        <app-button
-          actions
-          variant="secondary"
-          *appHasPermission="permissions.supplierManage"
-          [loading]="store.statusUpdating()"
-          (click)="store.setActive(true)"
-        >
-          Reactivate
-        </app-button>
+        <app-button actions variant="secondary" *appHasPermission="permissions.supplierManage" [loading]="store.statusUpdating()" (click)="store.setActive(true)">Reactivate</app-button>
       }
     </app-page-header>
 
-    <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-      <app-badge [variant]="supplier.active ? 'success' : 'neutral'">
-        {{ supplier.active ? 'Active' : 'Inactive' }}
-      </app-badge>
-      <span>Updated {{ supplier.updatedAt | date: 'medium' }}</span>
-    </div>
+    <section class="mt-4 overflow-hidden rounded-sm border border-border bg-surface shadow-sm" aria-label="Supplier summary">
+      <div class="grid gap-px bg-border sm:grid-cols-3">
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Status</span>
+          <div class="mt-2"><app-badge [variant]="supplier.active ? 'success' : 'neutral'">{{ supplier.active ? 'Active' : 'Inactive' }}</app-badge></div>
+        </div>
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Supplier code</span>
+          <strong class="mt-2 block font-mono text-sm font-semibold text-foreground">{{ supplier.code }}</strong>
+        </div>
+        <div class="bg-surface px-4 py-3.5">
+          <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-subtle-foreground">Last updated</span>
+          <strong class="mt-2 block text-sm font-semibold text-foreground">{{ supplier.updatedAt | date: 'mediumDate' }}</strong>
+        </div>
+      </div>
+    </section>
 
-    <div class="mt-5 grid gap-x-8 gap-y-5 lg:grid-cols-2">
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Contact</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Contact</dt>
-            <dd class="m-0 text-sm">{{ supplier.contactName || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Contact</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Primary commercial contact and tax reference.</p>
+        </div>
+        <dl class="m-0 px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Contact</dt><dd class="m-0 text-sm">{{ supplier.contactName || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Email</dt>
             <dd class="m-0 text-sm">
               @if (supplier.email) {
-                <a [href]="'mailto:' + supplier.email" class="text-foreground no-underline hover:underline">{{ supplier.email }}</a>
-              } @else {
-                —
-              }
+                <a [href]="'mailto:' + supplier.email" class="font-medium text-primary no-underline hover:text-primary-hover">{{ supplier.email }}</a>
+              } @else { — }
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Phone</dt>
             <dd class="m-0 text-sm">
               @if (supplier.phone) {
-                <a [href]="'tel:' + supplier.phone" class="text-foreground no-underline hover:underline">{{ supplier.phone }}</a>
-              } @else {
-                —
-              }
+                <a [href]="'tel:' + supplier.phone" class="font-medium text-foreground no-underline hover:text-primary">{{ supplier.phone }}</a>
+              } @else { — }
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Tax number</dt>
-            <dd class="m-0 text-sm">{{ supplier.taxNumber || '—' }}</dd>
-          </div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Tax number</dt><dd class="m-0 text-sm">{{ supplier.taxNumber || '—' }}</dd></div>
         </dl>
       </section>
 
-      <section class="border-t border-border pt-4">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Address</h2>
-        <dl class="mt-3">
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
+      <section class="rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Address</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Registered or primary business location.</p>
+        </div>
+        <dl class="m-0 px-4 py-1">
+          <div class="grid gap-1 py-3 sm:grid-cols-[8rem_1fr] sm:gap-4">
             <dt class="text-xs text-muted-foreground">Address</dt>
             <dd class="m-0 text-sm">
               {{ supplier.addressLine1 || '—' }}
-              @if (supplier.addressLine2) {
-                <span class="mt-0.5 block text-xs text-subtle-foreground">{{ supplier.addressLine2 }}</span>
-              }
+              @if (supplier.addressLine2) { <span class="mt-0.5 block text-xs text-subtle-foreground">{{ supplier.addressLine2 }}</span> }
             </dd>
           </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">City</dt>
-            <dd class="m-0 text-sm">{{ supplier.city || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">State / Province</dt>
-            <dd class="m-0 text-sm">{{ supplier.stateProvince || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Postal code</dt>
-            <dd class="m-0 text-sm">{{ supplier.postalCode || '—' }}</dd>
-          </div>
-          <div class="grid gap-1 border-t border-border py-2.5 sm:grid-cols-[8rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Country</dt>
-            <dd class="m-0 font-mono text-sm">{{ supplier.countryCode || '—' }}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="border-t border-border pt-4 lg:col-span-2">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Record</h2>
-        <dl class="mt-3 grid gap-x-8 sm:grid-cols-2">
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[7rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Created</dt>
-            <dd class="m-0 text-sm">{{ supplier.createdAt | date: 'medium' }}</dd>
-          </div>
-          <div class="grid gap-1 py-2.5 sm:grid-cols-[7rem_1fr] sm:gap-4">
-            <dt class="text-xs text-muted-foreground">Last updated</dt>
-            <dd class="m-0 text-sm">{{ supplier.updatedAt | date: 'medium' }}</dd>
-          </div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">City</dt><dd class="m-0 text-sm">{{ supplier.city || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">State / Province</dt><dd class="m-0 text-sm">{{ supplier.stateProvince || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Postal code</dt><dd class="m-0 text-sm">{{ supplier.postalCode || '—' }}</dd></div>
+          <div class="grid gap-1 border-t border-border py-3 sm:grid-cols-[8rem_1fr] sm:gap-4"><dt class="text-xs text-muted-foreground">Country</dt><dd class="m-0 font-mono text-sm">{{ supplier.countryCode || '—' }}</dd></div>
         </dl>
       </section>
     </div>
 
-    <section class="mt-5 border-t border-border pt-4" *appHasPermission="permissions.purchaseView">
-      <div class="mb-3">
-        <h2 class="m-0 text-lg font-semibold text-foreground">Purchase history</h2>
-        <p class="mb-0 mt-1 text-xs text-muted-foreground">
-          Purchase orders issued to this supplier. History failure does not block the supplier profile.
-        </p>
+    <section class="mt-5 rounded-sm border border-border bg-surface p-4 shadow-sm">
+      <h2 class="m-0 text-sm font-semibold text-foreground">Record metadata</h2>
+      <p class="mb-0 mt-1 text-xs text-muted-foreground">Created {{ supplier.createdAt | date: 'medium' }} · Updated {{ supplier.updatedAt | date: 'medium' }}</p>
+    </section>
+
+    <section class="mt-5" *appHasPermission="permissions.purchaseView">
+      <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">Purchase history</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">Purchase orders issued to this supplier.</p>
+        </div>
+        @if (store.purchaseHistory(); as history) {
+          <span class="text-xs text-subtle-foreground">{{ history.pagination.totalItems }} purchase orders</span>
+        }
       </div>
 
       @if (store.historyError()) {
-        <app-alert variant="warning" title="Purchase history unavailable">
-          {{ store.historyError() }}
-        </app-alert>
+        <app-alert variant="warning" title="Purchase history unavailable">{{ store.historyError() }}</app-alert>
       }
 
       @if (store.historyLoading() && !store.purchaseHistory()) {
@@ -146,54 +107,25 @@
       } @else if (store.purchaseHistory(); as history) {
         @if (history.data.length > 0) {
           <app-table>
-            <thead>
-              <tr>
-                <th>PO number</th>
-                <th>Order date</th>
-                <th>Expected</th>
-                <th>Status</th>
-                <th class="text-right">Total</th>
-              </tr>
-            </thead>
+            <thead><tr><th>PO number</th><th>Order date</th><th>Expected</th><th>Status</th><th class="text-right">Total</th></tr></thead>
             <tbody>
               @for (order of history.data; track order.id) {
                 <tr>
-                  <td class="font-mono text-xs">
-                    <a
-                      [routerLink]="['/purchasing', order.id]"
-                      class="font-semibold text-foreground no-underline hover:underline"
-                    >
-                      {{ order.number }}
-                    </a>
-                  </td>
-                  <td class="whitespace-nowrap">{{ order.orderDate | date: 'mediumDate' }}</td>
-                  <td class="whitespace-nowrap">{{ order.expectedDate ? (order.expectedDate | date: 'mediumDate') : '—' }}</td>
-                  <td>
-                    <app-badge [variant]="purchaseStatusVariant(order.status)">
-                      {{ order.status }}
-                    </app-badge>
-                  </td>
-                  <td class="text-right font-medium tabular-nums">
-                    {{ order.totalAmount | currency: history.currencyCode : 'symbol' : '1.2-2' }}
-                  </td>
+                  <td class="font-mono text-xs"><a [routerLink]="['/purchasing', order.id]" class="font-medium text-primary no-underline hover:text-primary-hover">{{ order.number }}</a></td>
+                  <td class="whitespace-nowrap text-muted-foreground">{{ order.orderDate | date: 'mediumDate' }}</td>
+                  <td class="whitespace-nowrap text-muted-foreground">{{ order.expectedDate ? (order.expectedDate | date: 'mediumDate') : '—' }}</td>
+                  <td><app-badge [variant]="purchaseStatusVariant(order.status)">{{ order.status }}</app-badge></td>
+                  <td class="text-right font-semibold tabular-nums">{{ order.totalAmount | currency: history.currencyCode : 'symbol' : '1.2-2' }}</td>
                 </tr>
               }
             </tbody>
           </app-table>
-
           <div class="data-footer">
-            <span>{{ history.pagination.totalItems }} purchase orders</span>
-            <app-pagination
-              [page]="history.pagination.page"
-              [totalPages]="history.pagination.totalPages"
-              (pageChange)="store.setHistoryPage($event)"
-            />
+            <span>Showing page {{ history.pagination.page }} of {{ history.pagination.totalPages }}</span>
+            <app-pagination [page]="history.pagination.page" [totalPages]="history.pagination.totalPages" (pageChange)="store.setHistoryPage($event)" />
           </div>
         } @else {
-          <app-empty-state
-            title="No purchase history"
-            description="Purchase orders for this supplier will appear here."
-          />
+          <app-empty-state title="No purchase history" description="Purchase orders for this supplier will appear here." />
         }
       }
     </section>

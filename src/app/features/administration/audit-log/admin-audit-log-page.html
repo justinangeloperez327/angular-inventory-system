@@ -1,84 +1,49 @@
 <app-content-container>
-  <app-page-header
-    title="Audit Log"
-    description="Read-only administrative and operational event history."
-  />
+  <app-page-header title="Audit Log" description="Read-only administrative and operational event history." />
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input type="search" label="Search" placeholder="Actor, action, entity, or summary" formControlName="search" />
+    <app-input type="search" label="Search" placeholder="Actor, action, entity, summary" formControlName="search" />
     <app-select label="Area" placeholder="All areas" [options]="areaOptions()" formControlName="area" />
     <app-input type="date" label="From" formControlName="dateFrom" />
     <app-input type="date" label="To" formControlName="dateTo" />
-
-    <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
-    </div>
+    <div class="filter-bar__actions"><app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button><app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button></div>
   </form>
 
-  @if (filterError()) {
-    <div class="mt-4">
-      <app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert>
-    </div>
-  }
-
-  @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Audit log unavailable">{{ store.error() }}</app-alert>
-    </div>
-  }
+  @if (filterError()) { <div class="mt-4"><app-alert variant="warning" title="Invalid date range">{{ filterError() }}</app-alert></div> }
+  @if (store.error()) { <div class="mt-4"><app-alert variant="danger" title="Audit log unavailable">{{ store.error() }}</app-alert></div> }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4">
+      <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-baseline gap-2"><h2 class="m-0 text-sm font-semibold text-foreground">Event ledger</h2><span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} events</span></div>
+        <span class="hidden text-xs text-subtle-foreground sm:inline">Read-only governance record</span>
+      </div>
       <app-table>
-        <thead>
-          <tr>
-            <th>Occurred</th>
-            <th>Actor</th>
-            <th>Area</th>
-            <th>Action</th>
-            <th>Entity</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Occurred</th><th>Actor</th><th>Area</th><th>Action</th><th>Entity</th><th>Summary</th></tr></thead>
         <tbody>
           @for (entry of store.items(); track entry.id) {
             <tr>
-              <td class="whitespace-nowrap">{{ entry.occurredAt | date: 'short' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ entry.occurredAt | date: 'short' }}</td>
               <td>
-                <span class="font-medium">{{ entry.actor?.name || 'System' }}</span>
-                @if (entry.actor?.email) {
-                  <span class="mt-0.5 block text-xs text-subtle-foreground">{{ entry.actor.email }}</span>
-                }
+                <span class="font-medium text-foreground">{{ entry.actor?.name || 'System' }}</span>
+                @if (entry.actor?.email) { <span class="mt-0.5 block text-[0.6875rem] text-subtle-foreground">{{ entry.actor.email }}</span> }
               </td>
-              <td>{{ entry.area }}</td>
-              <td class="font-medium">{{ entry.action }}</td>
+              <td><app-badge variant="neutral">{{ entry.area }}</app-badge></td>
+              <td class="font-medium text-foreground">{{ entry.action }}</td>
               <td>
-                {{ entry.entityLabel || entry.entityType || '—' }}
-                @if (entry.entityId) {
-                  <span class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ entry.entityId }}</span>
-                }
+                <span class="text-foreground">{{ entry.entityLabel || entry.entityType || '—' }}</span>
+                @if (entry.entityId) { <span class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ entry.entityId }}</span> }
               </td>
               <td class="max-w-xl text-muted-foreground">{{ entry.summary }}</td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
-
-    <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} events</span>
-      <app-pagination
-        [page]="store.pagination().page"
-        [totalPages]="store.pagination().totalPages"
-        (pageChange)="store.setPage($event)"
-      />
-    </div>
+    </section>
+    <div class="data-footer"><span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span><app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" /></div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state title="No audit events found" description="No audit events match the current filters." />
-    </div>
+    <div class="mt-4"><app-empty-state title="No audit events found" description="No audit events match the current filters." /></div>
   }
 </app-content-container>

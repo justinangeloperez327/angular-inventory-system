@@ -1,25 +1,18 @@
 <app-content-container>
-  <app-page-header
-    title="Customers"
-    description="Customer identity and contact data used by sales orders."
-  >
+  <app-page-header title="Customers" description="Customer identity and contact records used by the sales workflow.">
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover"
       *appHasPermission="permissions.customerManage"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New customer
     </a>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input
-      type="search"
-      label="Search"
-      placeholder="Code, name, contact, email, or phone"
-      formControlName="search"
-    />
+    <app-input type="search" label="Search" placeholder="Code, name, contact, email, phone" formControlName="search" />
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -29,7 +22,6 @@
       ]"
       formControlName="status"
     />
-
     <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
@@ -37,95 +29,72 @@
   </form>
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Customers unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Customers unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="20rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="customer-register-heading">
+      <div class="mb-2 flex items-baseline gap-2">
+        <h2 id="customer-register-heading" class="m-0 text-sm font-semibold text-foreground">Customer register</h2>
+        <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
-            <th>Code</th>
-            <th>Customer</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Updated</th>
-            <th><span class="sr-only">Actions</span></th>
+            <th>Code</th><th>Customer</th><th>Contact</th><th>Email</th><th>Phone</th><th>Status</th><th>Updated</th><th><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           @for (item of store.items(); track item.id) {
             <tr>
-              <td class="font-mono text-xs">{{ item.code }}</td>
-              <td>
-                <a
-                  [routerLink]="item.id"
-                  class="font-semibold text-foreground no-underline hover:underline"
-                >
-                  {{ item.name }}
-                </a>
-              </td>
-              <td>{{ item.contactName || '—' }}</td>
+              <td class="font-mono text-xs text-muted-foreground">{{ item.code }}</td>
+              <td><a [routerLink]="item.id" class="font-medium text-foreground no-underline hover:text-primary">{{ item.name }}</a></td>
+              <td class="text-muted-foreground">{{ item.contactName || '—' }}</td>
               <td>
                 @if (item.email) {
-                  <a [href]="'mailto:' + item.email" class="text-foreground no-underline hover:underline">{{ item.email }}</a>
-                } @else {
-                  —
-                }
+                  <a [href]="'mailto:' + item.email" class="text-primary no-underline hover:text-primary-hover">{{ item.email }}</a>
+                } @else { — }
               </td>
-              <td>
+              <td class="text-muted-foreground">
                 @if (item.phone) {
-                  <a [href]="'tel:' + item.phone" class="text-foreground no-underline hover:underline">{{ item.phone }}</a>
-                } @else {
-                  —
-                }
+                  <a [href]="'tel:' + item.phone" class="text-foreground no-underline hover:text-primary">{{ item.phone }}</a>
+                } @else { — }
               </td>
-              <td>
-                <app-badge [variant]="item.active ? 'success' : 'neutral'">
-                  {{ item.active ? 'Active' : 'Inactive' }}
-                </app-badge>
-              </td>
-              <td class="whitespace-nowrap">{{ item.updatedAt | date: 'mediumDate' }}</td>
-              <td>
-                <a
-                  [routerLink]="[item.id, 'edit']"
-                  class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                  *appHasPermission="permissions.customerManage"
-                >
-                  Edit
-                </a>
+              <td><app-badge [variant]="item.active ? 'success' : 'neutral'">{{ item.active ? 'Active' : 'Inactive' }}</app-badge></td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ item.updatedAt | date: 'mediumDate' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="item.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  <a
+                    [routerLink]="[item.id, 'edit']"
+                    class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground"
+                    *appHasPermission="permissions.customerManage"
+                  >
+                    Edit
+                  </a>
+                </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
-
+    </section>
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} customers</span>
-      <app-pagination
-        [page]="store.pagination().page"
-        [totalPages]="store.pagination().totalPages"
-        (pageChange)="store.setPage($event)"
-      />
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
+      <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
     </div>
   } @else if (!store.loading()) {
     <div class="mt-4">
-      <app-empty-state
-        title="No customers found"
-        description="No customers match the current filters."
-      >
+      <app-empty-state title="No customers found" description="No customers match the current filters.">
         <a
           routerLink="new"
-          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+          class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover"
           *appHasPermission="permissions.customerManage"
         >
+          <span class="text-lg leading-none" aria-hidden="true">+</span>
           New customer
         </a>
       </app-empty-state>

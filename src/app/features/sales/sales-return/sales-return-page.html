@@ -2,89 +2,72 @@
   @if (loading()) {
     <app-skeleton height="26rem" />
   } @else if (order(); as item) {
-    <app-page-header
-      [title]="'Return against ' + item.number"
-      [description]="'Customer return · ' + item.customerName"
-    />
+    <app-page-header [title]="'Return against ' + item.number" [description]="'Customer return · ' + item.customerName" />
 
-    <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground">
-      <span>Warehouse <strong class="font-medium text-foreground">{{ item.warehouseName }}</strong></span>
-      <span>Only dispatched quantity that has not already been returned is eligible.</span>
+    <div class="mt-4 grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-2">
+      <div class="bg-surface px-4 py-3">
+        <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-subtle-foreground">Return warehouse</span>
+        <strong class="mt-1.5 block text-sm font-medium text-foreground">{{ item.warehouseName }}</strong>
+      </div>
+      <div class="bg-surface px-4 py-3">
+        <span class="block text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-subtle-foreground">Eligibility</span>
+        <strong class="mt-1.5 block text-sm font-medium text-foreground">Dispatched, not previously returned</strong>
+      </div>
     </div>
 
     @if (error()) {
-      <div class="mt-4">
-        <app-alert variant="danger" title="Return error">{{ error() }}</app-alert>
-      </div>
+      <div class="mt-4"><app-alert variant="danger" title="Return error">{{ error() }}</app-alert></div>
     }
 
-    <form class="mt-6" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Return quantities</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Posting a return increases inventory in the original fulfillment warehouse and records return movements.
-          </p>
+    <form class="mt-5 grid gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Return quantities</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Posting returns stock to the original fulfillment warehouse.</p>
         </div>
 
         @if (lineError()) {
-          <div class="mb-3 text-xs font-medium text-danger">{{ lineError() }}</div>
+          <div class="border-b border-border bg-danger/5 px-4 py-2 text-xs font-medium text-danger">{{ lineError() }}</div>
         }
 
         @if (lines.length > 0) {
-          <div class="overflow-x-auto border-y border-border">
-            <div
-              class="grid min-w-[44rem] grid-cols-[7rem_minmax(14rem,2fr)_9rem_10rem] items-center gap-3 bg-surface-muted px-3 py-2 text-xs font-semibold text-muted-foreground"
-              aria-hidden="true"
-            >
-              <span>SKU</span>
-              <span>Product</span>
-              <span class="text-right">Returnable</span>
-              <span>Return now</span>
-            </div>
-
-            @for (line of lines.controls; track line.controls.salesOrderLineId.value; let index = $index) {
-              <div class="grid min-w-[44rem] grid-cols-[7rem_minmax(14rem,2fr)_9rem_10rem] items-center gap-3 border-t border-border px-3 py-2.5 text-sm">
-                <span class="font-mono text-xs">{{ line.controls.sku.value }}</span>
-                <span>
-                  <strong class="font-semibold">{{ line.controls.productName.value }}</strong>
-                  @if (line.controls.unitSymbol.value) {
-                    <small class="ml-1 text-xs text-muted-foreground">{{ line.controls.unitSymbol.value }}</small>
-                  }
-                </span>
-                <span class="text-right tabular-nums">
-                  {{ line.controls.returnableQuantity.value }} {{ line.controls.unitSymbol.value }}
-                </span>
-                <app-input
-                  type="number"
-                  [min]="0"
-                  [max]="line.controls.returnableQuantity.value"
-                  step="any"
-                  [formControl]="line.controls.quantity"
-                  [error]="quantityError(index)"
-                />
+          <div class="overflow-x-auto">
+            <div class="min-w-[44rem]">
+              <div class="grid grid-cols-[7rem_minmax(14rem,2fr)_9rem_10rem] items-center gap-3 border-b border-border bg-surface-muted px-4 py-2 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-subtle-foreground" aria-hidden="true">
+                <span>SKU</span><span>Product</span><span class="text-right">Returnable</span><span>Return now</span>
               </div>
-            }
+              @for (line of lines.controls; track line.controls.salesOrderLineId.value; let index = $index) {
+                <div class="grid grid-cols-[7rem_minmax(14rem,2fr)_9rem_10rem] items-center gap-3 border-b border-border px-4 py-2.5 last:border-b-0">
+                  <span class="font-mono text-xs text-muted-foreground">{{ line.controls.sku.value }}</span>
+                  <span>
+                    <strong class="block text-sm font-medium text-foreground">{{ line.controls.productName.value }}</strong>
+                    @if (line.controls.unitSymbol.value) {
+                      <small class="mt-0.5 block text-[0.6875rem] text-subtle-foreground">{{ line.controls.unitSymbol.value }}</small>
+                    }
+                  </span>
+                  <strong class="text-right text-sm font-semibold tabular-nums">{{ line.controls.returnableQuantity.value }} {{ line.controls.unitSymbol.value }}</strong>
+                  <app-input type="number" [min]="0" [max]="line.controls.returnableQuantity.value" step="any" [formControl]="line.controls.quantity" [error]="quantityError(index)" />
+                </div>
+              }
+            </div>
           </div>
         }
       </section>
 
-      <section class="mt-5 border-t border-border pt-5">
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Notes</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">Optional return reason or inspection notes.</p>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Return evidence</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Optional return reason or inspection notes.</p>
         </div>
-        <app-textarea formControlName="notes" [error]="notesError()" />
+        <div class="p-4"><app-textarea formControlName="notes" [error]="notesError()" /></div>
       </section>
 
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a
-          [routerLink]="['/sales', orderId]"
-          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
-        >
-          Cancel
-        </a>
-        <app-button type="submit" [disabled]="lines.length === 0" [loading]="saving()">Post return</app-button>
+      <div class="sticky bottom-0 z-[5] flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md">
+        <span class="text-xs text-muted-foreground">Posting creates immutable return movements immediately.</span>
+        <div class="flex items-center gap-3">
+          <a [routerLink]="['/sales', orderId]" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Cancel</a>
+          <app-button type="submit" [disabled]="lines.length === 0" [loading]="saving()">Post return</app-button>
+        </div>
       </div>
     </form>
   }

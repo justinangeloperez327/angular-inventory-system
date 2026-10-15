@@ -4,23 +4,20 @@
     description="Read-only operational reporting across inventory, purchasing, and sales."
   />
 
-  <div class="mt-6 grid gap-8 xl:grid-cols-3">
+  <div class="mt-6 grid gap-4 xl:grid-cols-3">
     @for (category of categories; track category) {
-      <section>
-        <div class="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-          <h2 class="m-0 text-lg font-semibold text-foreground">{{ category }}</h2>
-          <span class="text-xs text-muted-foreground">{{ reportsFor(category).length }} reports</span>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">{{ category }}</h2>
+          <span class="text-xs text-subtle-foreground">{{ reportsFor(category).length }} reports</span>
         </div>
 
         <div class="divide-y divide-border">
           @for (report of reportsFor(category); track report.id) {
-            <a
-              class="group grid gap-1 py-3 text-foreground no-underline"
-              [routerLink]="report.id"
-            >
+            <a class="group grid gap-1.5 px-4 py-3.5 text-foreground no-underline transition-colors hover:bg-primary/5" [routerLink]="report.id">
               <span class="flex items-center justify-between gap-3">
-                <strong class="text-sm font-semibold group-hover:underline">{{ report.title }}</strong>
-                <span aria-hidden="true" class="text-muted-foreground">→</span>
+                <strong class="text-sm font-medium group-hover:text-primary">{{ report.title }}</strong>
+                <span aria-hidden="true" class="text-primary">→</span>
               </span>
               <span class="text-xs leading-5 text-muted-foreground">{{ report.description }}</span>
             </a>

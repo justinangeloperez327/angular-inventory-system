@@ -1,44 +1,28 @@
 <div class="grid gap-1.5">
-  <span class="text-sm font-semibold text-foreground">Add product</span>
+  <span class="text-xs font-medium text-muted-foreground">Add product</span>
 
   <div class="grid items-end gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-    <app-input
-      type="search"
-      placeholder="Search SKU or product name"
-      [formControl]="search"
-      [disabled]="!warehouseId"
-      (keyup.enter)="find()"
-    />
-    <app-button
-      type="button"
-      variant="secondary"
-      [disabled]="!warehouseId"
-      [loading]="loading()"
-      (click)="find()"
-    >
-      Search
-    </app-button>
+    <app-input type="search" placeholder="Search SKU or product name" [formControl]="search" [disabled]="!warehouseId" (keyup.enter)="find()" />
+    <app-button type="button" variant="secondary" [disabled]="!warehouseId" [loading]="loading()" (click)="find()">Search</app-button>
   </div>
 
   @if (!warehouseId) {
-    <span class="text-xs text-muted-foreground">Select a warehouse before adding products.</span>
+    <span class="text-xs text-muted-foreground">Select a fulfillment warehouse before adding products.</span>
   } @else if (error()) {
     <span class="text-xs text-danger">{{ error() }}</span>
   }
 
   @if (results().length > 0) {
-    <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface">
+    <div class="max-h-64 overflow-auto rounded-sm border border-border bg-surface shadow-md">
       @for (item of results(); track item.id) {
         <button
           type="button"
-          class="grid w-full grid-cols-[7rem_minmax(0,1fr)_auto] items-center gap-3 border-0 border-b border-border bg-transparent px-3 py-2.5 text-left text-foreground last:border-b-0 hover:bg-surface-muted"
+          class="grid w-full gap-1 border-0 border-b border-border bg-transparent px-3 py-2.5 text-left text-foreground transition-colors last:border-b-0 hover:bg-primary/5 sm:grid-cols-[7rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3"
           (click)="choose(item)"
         >
           <span class="font-mono text-xs text-muted-foreground">{{ item.sku }}</span>
-          <strong class="text-sm font-semibold">{{ item.name }}</strong>
-          <small class="text-right text-xs text-muted-foreground">
-            Available {{ item.quantityAvailable }} {{ item.unitSymbol || '' }}
-          </small>
+          <strong class="text-sm font-medium">{{ item.name }}</strong>
+          <small class="text-right text-xs tabular-nums text-subtle-foreground">Available {{ item.quantityAvailable }} {{ item.unitSymbol || '' }}</small>
         </button>
       }
     </div>

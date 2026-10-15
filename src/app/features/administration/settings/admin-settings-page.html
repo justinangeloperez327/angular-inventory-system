@@ -1,108 +1,65 @@
 <app-content-container>
-  <app-page-header
-    title="Application Settings"
-    description="Backend-enforced organization and inventory operating policies."
-  />
+  <app-page-header title="Application Settings" description="Backend-enforced organization and inventory operating policies." />
 
   @if (error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Settings unavailable">{{ error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Settings unavailable">{{ error() }}</app-alert></div>
   }
-
   @if (saved()) {
-    <div class="mt-4">
-      <app-alert variant="success" title="Settings saved">Application settings were updated.</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="success" title="Settings saved">Application settings were updated.</app-alert></div>
   }
 
   @if (loading()) {
     <div class="mt-4"><app-skeleton height="28rem" /></div>
   } @else {
-    <form class="mt-6 max-w-4xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Organization</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Defaults used for display, pagination, and business documents.
-          </p>
+    <form class="mt-6 grid max-w-4xl gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Organization</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Defaults used for display, pagination, and business documents.</p>
         </div>
-
-        <div class="grid gap-3 md:grid-cols-2">
-          <app-input
-            label="Organization name"
-            formControlName="organizationName"
-            [error]="fieldError('organizationName')"
-          />
-          <app-select
-            label="Timezone"
-            [options]="timezoneOptions()"
-            formControlName="timezone"
-            [error]="fieldError('timezone')"
-          />
-          <app-select
-            label="Currency"
-            [options]="currencyOptions()"
-            formControlName="currencyCode"
-            [error]="fieldError('currencyCode')"
-          />
-          <app-input
-            type="number"
-            label="Default page size"
-            [min]="10"
-            [max]="100"
-            step="1"
-            formControlName="defaultPageSize"
-            [error]="fieldError('defaultPageSize')"
-          />
+        <div class="grid gap-4 p-4 md:grid-cols-2">
+          <app-input label="Organization name" formControlName="organizationName" [error]="fieldError('organizationName')" />
+          <app-select label="Timezone" [options]="timezoneOptions()" formControlName="timezone" [error]="fieldError('timezone')" />
+          <app-select label="Currency" [options]="currencyOptions()" formControlName="currencyCode" [error]="fieldError('currencyCode')" />
+          <app-input type="number" label="Default page size" [min]="10" [max]="100" step="1" formControlName="defaultPageSize" [error]="fieldError('defaultPageSize')" />
         </div>
       </section>
 
-      <section class="mt-5 border-t border-border pt-5">
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Inventory policy</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            These values express policy in the UI; the backend remains responsible for enforcement.
-          </p>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Inventory policy</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">UI policy settings; API enforcement remains authoritative.</p>
         </div>
 
-        <div class="divide-y divide-border border-y border-border">
-          <label class="flex cursor-pointer items-start gap-3 py-3">
-            <input class="mt-0.5" type="checkbox" formControlName="allowNegativeStock" />
-            <span>
-              <strong class="block text-sm font-semibold">Allow negative stock</strong>
-              <small class="mt-1 block text-xs leading-5 text-muted-foreground">
-                Allow issue or dispatch operations to take on-hand quantity below zero when backend policy permits it.
-              </small>
-            </span>
-          </label>
+        <label class="flex cursor-pointer items-start gap-3 border-b border-border px-4 py-4 transition-colors hover:bg-primary/5">
+          <input class="mt-0.5 size-4 accent-primary" type="checkbox" formControlName="allowNegativeStock" />
+          <span>
+            <strong class="block text-sm font-medium text-foreground">Allow negative stock</strong>
+            <small class="mt-1 block text-xs leading-5 text-muted-foreground">Allow issue or dispatch operations to take on-hand quantity below zero when backend policy permits it.</small>
+          </span>
+        </label>
 
-          <div class="py-3">
-            <app-select
-              label="Stock count concurrency policy"
-              [options]="[
-                { label: 'Freeze affected warehouse transactions', value: 'freeze' },
-                { label: 'Reconcile intervening movements', value: 'reconcile' }
-              ]"
-              formControlName="stockCountConcurrencyPolicy"
-              [error]="fieldError('stockCountConcurrencyPolicy')"
-            />
-          </div>
+        <div class="p-4">
+          <app-select
+            label="Stock count concurrency policy"
+            [options]="[
+              { label: 'Freeze affected warehouse transactions', value: 'freeze' },
+              { label: 'Reconcile intervening movements', value: 'reconcile' }
+            ]"
+            formControlName="stockCountConcurrencyPolicy"
+            [error]="fieldError('stockCountConcurrencyPolicy')"
+          />
         </div>
       </section>
 
       @if (settings(); as current) {
-        <div class="mt-3 text-right text-xs text-muted-foreground">
-          @if (current.updatedAt) {
-            Last updated {{ current.updatedAt }}
-          }
-          @if (current.updatedBy) {
-            by {{ current.updatedBy.name }}
-          }
+        <div class="text-right text-xs text-muted-foreground">
+          @if (current.updatedAt) { Last updated {{ current.updatedAt }} }
+          @if (current.updatedBy) { by {{ current.updatedBy.name }} }
         </div>
       }
 
-      <div class="mt-5 flex justify-end border-t border-border pt-4">
+      <div class="sticky bottom-0 z-[5] flex justify-end rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md">
         <app-button type="submit" [loading]="saving()">Save settings</app-button>
       </div>
     </form>

@@ -2,77 +2,58 @@
   @if (loading()) {
     <app-skeleton height="30rem" />
   } @else {
-    <app-page-header
-      [title]="editing ? 'Edit customer' : 'New customer'"
-      description="Maintain customer identity, contact, tax, and address information used by sales orders."
-    />
+    <app-page-header [title]="editing ? 'Edit customer' : 'New customer'" description="Maintain customer identity, contact, tax, and address information used by sales orders." />
 
     @if (error()) {
-      <div class="mt-4">
-        <app-alert variant="danger" title="Customer error">{{ error() }}</app-alert>
-      </div>
+      <div class="mt-4"><app-alert variant="danger" title="Customer error">{{ error() }}</app-alert></div>
     }
 
-    <form class="mt-6 max-w-5xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Customer</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Business identity and tax reference.
-          </p>
+    <form class="mt-6 grid max-w-5xl gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">01</span>
+          <div><h2 class="m-0 text-sm font-semibold text-foreground">Customer identity</h2><p class="mb-0 mt-0.5 text-xs text-muted-foreground">Business identity and tax reference.</p></div>
         </div>
-        <div class="grid gap-3 md:grid-cols-3">
+        <div class="grid gap-4 p-4 md:grid-cols-3">
           <app-input label="Code" formControlName="code" [error]="fieldError('code')" />
           <app-input class="md:col-span-2" label="Name" formControlName="name" [error]="fieldError('name')" />
           <app-input label="Tax number" formControlName="taxNumber" [error]="fieldError('taxNumber')" />
         </div>
       </section>
 
-      <section class="mt-5 border-t border-border pt-5">
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Contact</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Primary customer contact used for sales communication.
-          </p>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">02</span>
+          <div><h2 class="m-0 text-sm font-semibold text-foreground">Contact</h2><p class="mb-0 mt-0.5 text-xs text-muted-foreground">Primary customer contact used for sales communication.</p></div>
         </div>
-        <div class="grid gap-3 md:grid-cols-3">
+        <div class="grid gap-4 p-4 md:grid-cols-3">
           <app-input label="Contact name" formControlName="contactName" [error]="fieldError('contactName')" />
           <app-input type="email" label="Email" autocomplete="email" formControlName="email" [error]="fieldError('email')" />
           <app-input label="Phone" autocomplete="tel" formControlName="phone" [error]="fieldError('phone')" />
         </div>
       </section>
 
-      <section class="mt-5 border-t border-border pt-5">
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Address</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Billing or primary business address.
-          </p>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="flex items-start gap-3 border-b border-border px-4 py-3">
+          <span class="grid size-6 shrink-0 place-items-center rounded-sm bg-primary/10 text-[0.6875rem] font-semibold text-primary">03</span>
+          <div><h2 class="m-0 text-sm font-semibold text-foreground">Address</h2><p class="mb-0 mt-0.5 text-xs text-muted-foreground">Billing or primary business address.</p></div>
         </div>
-        <div class="grid gap-3 md:grid-cols-3">
+        <div class="grid gap-4 p-4 md:grid-cols-3">
           <app-input class="md:col-span-3" label="Address line 1" formControlName="addressLine1" [error]="fieldError('addressLine1')" />
           <app-input class="md:col-span-3" label="Address line 2" formControlName="addressLine2" [error]="fieldError('addressLine2')" />
           <app-input label="City" formControlName="city" [error]="fieldError('city')" />
           <app-input label="State / Province" formControlName="stateProvince" [error]="fieldError('stateProvince')" />
           <app-input label="Postal code" formControlName="postalCode" [error]="fieldError('postalCode')" />
-          <app-input
-            label="Country code"
-            placeholder="AE"
-            hint="ISO 3166-1 alpha-2"
-            formControlName="countryCode"
-            [error]="fieldError('countryCode')"
-          />
+          <app-input label="Country code" placeholder="AE" hint="ISO 3166-1 alpha-2" formControlName="countryCode" [error]="fieldError('countryCode')" />
         </div>
       </section>
 
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a
-          [routerLink]="id ? ['/customers', id] : ['/customers']"
-          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
-        >
-          Cancel
-        </a>
-        <app-button type="submit" [loading]="saving()">Save customer</app-button>
+      <div class="sticky bottom-0 z-[5] flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md">
+        <span class="text-xs text-muted-foreground">Customer status can be managed after the record is saved.</span>
+        <div class="flex items-center gap-3">
+          <a [routerLink]="id ? ['/customers', id] : ['/customers']" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Cancel</a>
+          <app-button type="submit" [loading]="saving()">Save customer</app-button>
+        </div>
       </div>
     </form>
   }

@@ -2,85 +2,52 @@
   @if (loading()) {
     <app-skeleton height="32rem" />
   } @else {
-    <app-page-header
-      [title]="editing ? 'Edit role' : 'New role'"
-      description="Permissions come from the backend catalog and remain authoritative at the API boundary."
-    />
+    <app-page-header [title]="editing ? 'Edit role' : 'New role'" description="Permissions come from the backend catalog and remain authoritative at the API boundary." />
 
     @if (error()) {
-      <div class="mt-4">
-        <app-alert variant="danger" title="Role administration error">{{ error() }}</app-alert>
-      </div>
+      <div class="mt-4"><app-alert variant="danger" title="Role administration error">{{ error() }}</app-alert></div>
     }
 
-    <form class="mt-6 max-w-5xl" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-      <section>
-        <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Role</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Define the role identity before assigning capabilities.
-          </p>
+    <form class="mt-6 grid max-w-5xl gap-5" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+        <div class="border-b border-border px-4 py-3">
+          <h2 class="m-0 text-sm font-semibold text-foreground">Role identity</h2>
+          <p class="mb-0 mt-0.5 text-xs text-muted-foreground">Define the role before assigning backend-provided capabilities.</p>
         </div>
-
-        <div class="grid gap-3 md:grid-cols-[minmax(12rem,1fr)_minmax(18rem,2fr)] md:items-start">
-          <app-input
-            label="Name"
-            formControlName="name"
-            [disabled]="builtIn()"
-            [error]="fieldError('name')"
-          />
-          <app-textarea
-            label="Description"
-            formControlName="description"
-            [error]="fieldError('description')"
-          />
+        <div class="grid gap-4 p-4 md:grid-cols-[minmax(12rem,1fr)_minmax(18rem,2fr)] md:items-start">
+          <app-input label="Name" formControlName="name" [disabled]="builtIn()" [error]="fieldError('name')" />
+          <app-textarea label="Description" formControlName="description" [error]="fieldError('description')" />
         </div>
-
         @if (builtIn()) {
-          <p class="mb-0 mt-3 text-xs text-muted-foreground">
-            Built-in role names are protected. Permission changes remain subject to backend policy.
-          </p>
+          <div class="border-t border-border bg-primary/5 px-4 py-3 text-xs text-muted-foreground">Built-in role names are protected. Permission changes remain subject to backend policy.</div>
         }
       </section>
 
-      <section class="mt-5 border-t border-border pt-5">
+      <section>
         <div class="mb-3">
-          <h2 class="m-0 text-lg font-semibold text-foreground">Permissions</h2>
-          <p class="mb-0 mt-1 text-xs text-muted-foreground">
-            Select capabilities from the backend-provided authorization catalog.
-          </p>
+          <h2 class="m-0 text-lg font-semibold tracking-[-0.015em] text-foreground">Permissions</h2>
+          <p class="mb-0 mt-1 text-xs text-muted-foreground">Select capabilities from the backend-provided authorization catalog.</p>
         </div>
 
-        <div class="divide-y divide-border border-y border-border">
+        <div class="grid gap-4">
           @for (group of permissionGroups(); track group.name) {
-            <section class="py-4">
-              <div class="flex items-center justify-between gap-4">
-                <strong class="text-sm font-semibold">{{ group.name }}</strong>
-                <label class="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    [checked]="groupSelected(group)"
-                    (change)="toggleGroup(group, $any($event.target).checked)"
-                  />
+            <section class="overflow-hidden rounded-sm border border-border bg-surface shadow-sm">
+              <div class="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+                <strong class="text-sm font-semibold text-foreground">{{ group.name }}</strong>
+                <label class="flex cursor-pointer items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <input class="size-4 accent-primary" type="checkbox" [checked]="groupSelected(group)" (change)="toggleGroup(group, $any($event.target).checked)" />
                   Select all
                 </label>
               </div>
 
-              <div class="mt-3 grid divide-y divide-border border-y border-border md:grid-cols-2 md:divide-y-0">
+              <div class="grid md:grid-cols-2">
                 @for (permission of group.permissions; track permission.key) {
-                  <label class="flex cursor-pointer items-start gap-3 border-b border-border py-3 last:border-b-0 md:border-b md:odd:border-r md:[&:nth-last-child(-n+2)]:border-b-0 md:px-3">
-                    <input
-                      class="mt-0.5"
-                      type="checkbox"
-                      [checked]="permissionSelected(permission.key)"
-                      (change)="togglePermission(permission.key, $event)"
-                    />
+                  <label class="flex cursor-pointer items-start gap-3 border-b border-border px-4 py-3 transition-colors hover:bg-primary/5 md:odd:border-r">
+                    <input class="mt-0.5 size-4 accent-primary" type="checkbox" [checked]="permissionSelected(permission.key)" (change)="togglePermission(permission.key, $event)" />
                     <span class="min-w-0">
-                      <strong class="block text-sm font-semibold">{{ permission.label }}</strong>
-                      <small class="mt-0.5 block font-mono text-xs text-subtle-foreground">{{ permission.key }}</small>
-                      @if (permission.description) {
-                        <small class="mt-1 block text-xs leading-5 text-muted-foreground">{{ permission.description }}</small>
-                      }
+                      <strong class="block text-sm font-medium text-foreground">{{ permission.label }}</strong>
+                      <small class="mt-0.5 block font-mono text-[0.6875rem] text-subtle-foreground">{{ permission.key }}</small>
+                      @if (permission.description) { <small class="mt-1 block text-xs leading-5 text-muted-foreground">{{ permission.description }}</small> }
                     </span>
                   </label>
                 }
@@ -94,13 +61,8 @@
         }
       </section>
 
-      <div class="mt-5 flex items-center justify-end gap-3 border-t border-border pt-4">
-        <a
-          routerLink="/administration/roles"
-          class="text-base font-medium text-muted-foreground no-underline hover:text-foreground"
-        >
-          Cancel
-        </a>
+      <div class="sticky bottom-0 z-[5] flex items-center justify-end gap-3 rounded-sm border border-border bg-surface/95 px-4 py-3 shadow-md backdrop-blur-md">
+        <a routerLink="/administration/roles" class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground">Cancel</a>
         <app-button type="submit" [loading]="saving()">Save role</app-button>
       </div>
     </form>

@@ -1,25 +1,18 @@
 <app-content-container>
-  <app-page-header
-    title="Suppliers"
-    description="Supplier identity and contact data used by purchasing and receiving."
-  >
+  <app-page-header title="Suppliers" description="Supplier identity and contact records used by purchasing and receiving.">
     <a
       actions
       routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
+      class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover"
       *appHasPermission="permissions.supplierManage"
     >
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       Add supplier
     </a>
   </app-page-header>
 
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
-    <app-input
-      type="search"
-      label="Search"
-      placeholder="Code, supplier, contact, email, or phone"
-      formControlName="search"
-    />
+    <app-input type="search" label="Search" placeholder="Code, supplier, contact, email, phone" formControlName="search" />
     <app-select
       label="Status"
       placeholder="All statuses"
@@ -29,7 +22,6 @@
       ]"
       formControlName="status"
     />
-
     <div class="filter-bar__actions">
       <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
       <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
@@ -37,114 +29,63 @@
   </form>
 
   @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Suppliers unavailable">{{ store.error() }}</app-alert>
-    </div>
+    <div class="mt-4"><app-alert variant="danger" title="Suppliers unavailable">{{ store.error() }}</app-alert></div>
   }
 
   @if (store.loading() && !store.hasSuppliers()) {
     <div class="mt-4"><app-skeleton height="20rem" /></div>
   } @else if (store.hasSuppliers()) {
-    <div class="mt-4">
+    <section class="mt-4" aria-labelledby="supplier-register-heading">
+      <div class="mb-2 flex items-baseline gap-2">
+        <h2 id="supplier-register-heading" class="m-0 text-sm font-semibold text-foreground">Supplier register</h2>
+        <span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span>
+      </div>
+
       <app-table>
         <thead>
           <tr>
-            <th>Code</th>
-            <th>Supplier</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Country</th>
-            <th>Status</th>
-            <th>Updated</th>
-            <th><span class="sr-only">Actions</span></th>
+            <th>Code</th><th>Supplier</th><th>Contact</th><th>Email</th><th>Phone</th><th>Country</th><th>Status</th><th>Updated</th><th><span class="sr-only">Actions</span></th>
           </tr>
         </thead>
         <tbody>
           @for (supplier of store.suppliers(); track supplier.id) {
             <tr>
-              <td class="font-mono text-xs">{{ supplier.code }}</td>
-              <td>
-                <a
-                  [routerLink]="supplier.id"
-                  class="font-semibold text-foreground no-underline hover:underline"
-                >
-                  {{ supplier.name }}
-                </a>
-              </td>
-              <td>{{ supplier.contactName || '—' }}</td>
+              <td class="font-mono text-xs text-muted-foreground">{{ supplier.code }}</td>
+              <td><a [routerLink]="supplier.id" class="font-medium text-foreground no-underline hover:text-primary">{{ supplier.name }}</a></td>
+              <td class="text-muted-foreground">{{ supplier.contactName || '—' }}</td>
               <td>
                 @if (supplier.email) {
-                  <a
-                    [href]="'mailto:' + supplier.email"
-                    class="text-foreground no-underline hover:underline"
-                  >
-                    {{ supplier.email }}
-                  </a>
-                } @else {
-                  —
-                }
+                  <a [href]="'mailto:' + supplier.email" class="text-primary no-underline hover:text-primary-hover">{{ supplier.email }}</a>
+                } @else { — }
               </td>
-              <td>
+              <td class="text-muted-foreground">
                 @if (supplier.phone) {
-                  <a
-                    [href]="'tel:' + supplier.phone"
-                    class="text-foreground no-underline hover:underline"
-                  >
-                    {{ supplier.phone }}
-                  </a>
-                } @else {
-                  —
-                }
+                  <a [href]="'tel:' + supplier.phone" class="text-foreground no-underline hover:text-primary">{{ supplier.phone }}</a>
+                } @else { — }
               </td>
-              <td class="font-mono text-xs">{{ supplier.countryCode || '—' }}</td>
-              <td>
-                <app-badge [variant]="supplier.active ? 'success' : 'neutral'">
-                  {{ supplier.active ? 'Active' : 'Inactive' }}
-                </app-badge>
-              </td>
-              <td class="whitespace-nowrap">{{ supplier.updatedAt | date: 'mediumDate' }}</td>
-              <td>
-                <div class="flex items-center gap-3 [&_a]:text-sm [&_a]:font-medium [&_a]:text-muted-foreground [&_a]:no-underline [&_a:hover]:text-foreground [&_button]:border-0 [&_button]:bg-transparent [&_button]:p-0 [&_button]:text-sm [&_button]:font-medium [&_button]:text-muted-foreground [&_button]:transition-colors [&_button:hover:not(:disabled)]:text-foreground [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-40" *appHasPermission="permissions.supplierManage">
-                  <a [routerLink]="[supplier.id, 'edit']">Edit</a>
-                  @if (supplier.active) {
-                    <button type="button" (click)="selectedForDeactivation.set(supplier)">Deactivate</button>
-                  } @else {
-                    <button
-                      type="button"
-                      [disabled]="store.statusUpdatingId() === supplier.id"
-                      (click)="store.setActive(supplier.id, true)"
-                    >
-                      Reactivate
-                    </button>
-                  }
+              <td class="font-mono text-xs text-muted-foreground">{{ supplier.countryCode || '—' }}</td>
+              <td><app-badge [variant]="supplier.active ? 'success' : 'neutral'">{{ supplier.active ? 'Active' : 'Inactive' }}</app-badge></td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ supplier.updatedAt | date: 'mediumDate' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="supplier.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  <a [routerLink]="[supplier.id, 'edit']" class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground" *appHasPermission="permissions.supplierManage">Edit</a>
                 </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
-
+    </section>
     <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} suppliers</span>
-      <app-pagination
-        [page]="store.pagination().page"
-        [totalPages]="store.pagination().totalPages"
-        (pageChange)="store.setPage($event)"
-      />
+      <span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span>
+      <app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" />
     </div>
   } @else if (!store.loading()) {
     <div class="mt-4">
-      <app-empty-state
-        title="No suppliers found"
-        description="No suppliers match the current filters."
-      >
-        <a
-          routerLink="new"
-          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
-          *appHasPermission="permissions.supplierManage"
-        >
+      <app-empty-state title="No suppliers found" description="No suppliers match the current filters.">
+        <a routerLink="new" class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover" *appHasPermission="permissions.supplierManage">
+          <span class="text-lg leading-none" aria-hidden="true">+</span>
           Add supplier
         </a>
       </app-empty-state>

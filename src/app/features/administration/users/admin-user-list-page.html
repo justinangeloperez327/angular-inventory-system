@@ -1,13 +1,7 @@
 <app-content-container>
-  <app-page-header
-    title="Users"
-    description="Account identity, role membership, and activation state."
-  >
-    <a
-      actions
-      routerLink="new"
-      class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
-    >
+  <app-page-header title="Users" description="Account identity, role membership, and activation state.">
+    <a actions routerLink="new" class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover">
+      <span class="text-lg leading-none" aria-hidden="true">+</span>
       New user
     </a>
   </app-page-header>
@@ -15,128 +9,55 @@
   <form class="filter-bar" [formGroup]="filters" (ngSubmit)="applyFilters()">
     <app-input type="search" label="Search" placeholder="Name or email" formControlName="search" />
     <app-select label="Role" placeholder="All roles" [options]="roleOptions()" formControlName="roleId" />
-    <app-select
-      label="Status"
-      placeholder="All statuses"
-      [options]="[
-        { label: 'Active', value: 'active' },
-        { label: 'Inactive', value: 'inactive' }
-      ]"
-      formControlName="status"
-    />
-
-    <div class="filter-bar__actions">
-      <app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button>
-      <app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button>
-    </div>
+    <app-select label="Status" placeholder="All statuses" [options]="[{ label: 'Active', value: 'active' }, { label: 'Inactive', value: 'inactive' }]" formControlName="status" />
+    <div class="filter-bar__actions"><app-button type="submit" variant="secondary" size="sm" [loading]="store.loading()">Apply</app-button><app-button type="button" variant="ghost" size="sm" (click)="clearFilters()">Clear</app-button></div>
   </form>
 
-  @if (store.error()) {
-    <div class="mt-4">
-      <app-alert variant="danger" title="Users unavailable">{{ store.error() }}</app-alert>
-    </div>
-  }
+  @if (store.error()) { <div class="mt-4"><app-alert variant="danger" title="Users unavailable">{{ store.error() }}</app-alert></div> }
 
   @if (store.loading() && !store.hasItems()) {
     <div class="mt-4"><app-skeleton height="22rem" /></div>
   } @else if (store.hasItems()) {
-    <div class="mt-4">
+    <section class="mt-4">
+      <div class="mb-2 flex items-baseline gap-2"><h2 class="m-0 text-sm font-semibold text-foreground">User register</h2><span class="text-xs text-subtle-foreground">{{ store.pagination().totalItems }} total</span></div>
       <app-table>
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Email</th>
-            <th>Roles</th>
-            <th>Status</th>
-            <th>Last login</th>
-            <th>Updated</th>
-            <th><span class="sr-only">Actions</span></th>
-          </tr>
-        </thead>
+        <thead><tr><th>User</th><th>Email</th><th>Roles</th><th>Status</th><th>Last login</th><th>Updated</th><th><span class="sr-only">Actions</span></th></tr></thead>
         <tbody>
           @for (user of store.items(); track user.id) {
             <tr>
-              <td>
-                <a [routerLink]="user.id" class="font-semibold text-foreground no-underline hover:underline">
-                  {{ user.name }}
-                </a>
-              </td>
-              <td>
-                <a [href]="'mailto:' + user.email" class="text-foreground no-underline hover:underline">
-                  {{ user.email }}
-                </a>
-              </td>
+              <td><a [routerLink]="user.id" class="font-medium text-foreground no-underline hover:text-primary">{{ user.name }}</a></td>
+              <td><a [href]="'mailto:' + user.email" class="text-primary no-underline hover:text-primary-hover">{{ user.email }}</a></td>
               <td>
                 @if (user.roles.length > 0) {
-                  <span class="font-medium">{{ user.roles[0].name }}</span>
-                  @if (user.roles.length > 1) {
-                    <span class="mt-0.5 block text-xs text-subtle-foreground">+{{ user.roles.length - 1 }} more</span>
-                  }
-                } @else {
-                  —
-                }
+                  <span class="font-medium text-foreground">{{ user.roles[0].name }}</span>
+                  @if (user.roles.length > 1) { <span class="mt-0.5 block text-[0.6875rem] text-subtle-foreground">+{{ user.roles.length - 1 }} more</span> }
+                } @else { — }
               </td>
-              <td>
-                <app-badge [variant]="user.active ? 'success' : 'neutral'">
-                  {{ user.active ? 'Active' : 'Inactive' }}
-                </app-badge>
-              </td>
-              <td class="whitespace-nowrap">{{ user.lastLoginAt ? (user.lastLoginAt | date: 'short') : 'Never' }}</td>
-              <td class="whitespace-nowrap">{{ user.updatedAt | date: 'short' }}</td>
-              <td>
-                <div class="flex items-center gap-3">
-                  <a
-                    [routerLink]="[user.id, 'edit']"
-                    class="text-sm font-medium text-muted-foreground no-underline hover:text-foreground"
-                  >
-                    Edit
-                  </a>
-                  <button
-                    type="button"
-                    class="border-0 bg-transparent p-0 text-sm font-medium text-muted-foreground hover:text-foreground"
-                    [class.text-danger]="user.active"
-                    (click)="pendingStatusUser.set(user)"
-                  >
-                    {{ user.active ? 'Deactivate' : 'Activate' }}
-                  </button>
+              <td><app-badge [variant]="user.active ? 'success' : 'neutral'">{{ user.active ? 'Active' : 'Inactive' }}</app-badge></td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ user.lastLoginAt ? (user.lastLoginAt | date: 'short') : 'Never' }}</td>
+              <td class="whitespace-nowrap text-muted-foreground">{{ user.updatedAt | date: 'short' }}</td>
+              <td class="text-right">
+                <div class="flex items-center justify-end gap-3">
+                  <a [routerLink]="user.id" class="text-xs font-medium text-primary no-underline hover:text-primary-hover">Open</a>
+                  <a [routerLink]="[user.id, 'edit']" class="text-xs font-medium text-muted-foreground no-underline hover:text-foreground">Edit</a>
+                  <button type="button" class="border-0 bg-transparent p-0 text-xs font-medium text-muted-foreground hover:text-foreground" [class.text-danger]="user.active" (click)="pendingStatusUser.set(user)">{{ user.active ? 'Deactivate' : 'Activate' }}</button>
                 </div>
               </td>
             </tr>
           }
         </tbody>
       </app-table>
-    </div>
-
-    <div class="data-footer">
-      <span>{{ store.pagination().totalItems }} users</span>
-      <app-pagination
-        [page]="store.pagination().page"
-        [totalPages]="store.pagination().totalPages"
-        (pageChange)="store.setPage($event)"
-      />
-    </div>
+    </section>
+    <div class="data-footer"><span>Showing page {{ store.pagination().page }} of {{ store.pagination().totalPages }}</span><app-pagination [page]="store.pagination().page" [totalPages]="store.pagination().totalPages" (pageChange)="store.setPage($event)" /></div>
   } @else if (!store.loading()) {
-    <div class="mt-4">
-      <app-empty-state title="No users found" description="No users match the current filters.">
-        <a
-          routerLink="new"
-          class="inline-flex min-h-control items-center rounded-sm border border-primary bg-primary px-3.5 text-base font-semibold text-primary-foreground no-underline transition-colors hover:bg-primary-hover"
-        >
-          New user
-        </a>
-      </app-empty-state>
-    </div>
+    <div class="mt-4"><app-empty-state title="No users found" description="No users match the current filters."><a routerLink="new" class="inline-flex min-h-control items-center gap-2 rounded-sm border border-primary bg-primary px-3.5 text-base font-medium text-primary-foreground no-underline shadow-control transition-colors hover:bg-primary-hover"><span class="text-lg leading-none" aria-hidden="true">+</span>New user</a></app-empty-state></div>
   }
 
   @if (pendingStatusUser(); as user) {
     <app-confirmation-dialog
       [open]="true"
       [title]="user.active ? 'Deactivate user' : 'Activate user'"
-      [message]="
-        user.active
-          ? 'Deactivate ' + user.name + '? Their historical activity remains preserved.'
-          : 'Activate ' + user.name + '? They may sign in again subject to authentication policy.'
-      "
+      [message]="user.active ? 'Deactivate ' + user.name + '? Their historical activity remains preserved.' : 'Activate ' + user.name + '? They may sign in again subject to authentication policy.'"
       [confirmLabel]="user.active ? 'Deactivate' : 'Activate'"
       [destructive]="user.active"
       (confirmed)="confirmStatusChange()"
